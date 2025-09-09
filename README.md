@@ -1,21 +1,14 @@
-# RepriceLab
+## RepriceLab
 
 Amazon satıcıları için Buy Box takibi, rakip analizi ve otomatik repricing yapan SaaS.
-
 Frontend: Next.js 14 + Tailwind · Backend: FastAPI + SQLAlchemy (SQLite/PostgreSQL)
 
 🌟 Özellikler
-
 📦 Buy Box sahiplik takibi ve geçmişi
-
 🏷️ Rakip fiyat/kargo ve satıcı bilgileri
-
 🤖 Repricing kuralları (min/max + strateji) ve fiyat önerisi
-
 📊 Dashboard (toplam ürün, sahiplik yüzdesi, 7-gün trend)
-
 🔔 Bildirim altyapısı (stub e‑posta/push)
-
 🚀 Hızlı Başlangıç
 
 Aşağıdaki iki yöntemden birini seçin.
@@ -24,7 +17,8 @@ Yöntem A — Lokal Geliştirme (SQLite ile)
 
 Gereksinimler: Python 3.11+, Node 18+, Git
 
-1) Backend
+# 1) Backend
+
 cd backend
 python -m venv .venv
 . .venv\Scripts\Activate.ps1
@@ -32,7 +26,9 @@ pip install --upgrade pip
 pip install -e .
 
 
-# backend/.env
+
+backend/.env
+
 @"
 DATABASE_URL=sqlite:///./app.db
 CORS_ORIGINS=http://localhost:3000
@@ -67,8 +63,11 @@ if __name__ == "__main__":
 
 python seed_db.py
 python -m uvicorn app.main:app --reload --port 8000
-2) Frontend
-# Yeni terminal
+
+# 2) Frontend
+
+Yeni terminal
+
 cd frontend
 npm install
 $env:NEXT_PUBLIC_API_URL="http://localhost:8000"
@@ -111,9 +110,12 @@ services:
 Çalıştırma:
 
 docker-compose up --build
-# Backend:  http://localhost:8000/docs
-# Frontend: http://localhost:3000
-🐘 PostgreSQL’e Geçiş
+
+Backend:  http://localhost:8000/docs
+Frontend: http://localhost:3000
+
+# 🐘 PostgreSQL’e Geçiş
+
 Tek komutla Postgres (Docker)
 docker run --name repricelab-postgres -e POSTGRES_USER=app -e POSTGRES_PASSWORD=app -e POSTGRES_DB=repricelab -p 5432:5432 -d postgres:16
 
@@ -138,7 +140,9 @@ volumes:
 Backend için DATABASE_URL:
 
 postgresql+psycopg2://app:app@db:5432/repricelab
-✨ Frontend İyileştirmeleri
+
+# ✨ Frontend İyileştirmeleri
+
 Toast (react-hot-toast)
 cd frontend
 npm i react-hot-toast
@@ -175,7 +179,8 @@ function Spark({ points }:{ points: Array<[string, number]> }) {
     </svg>
   );
 }
-🔌 API Kılavuzu (Özet)
+
+# 🔌 API Kılavuzu (Özet)
 
 POST /products/sync → Demo ürün ekler (3 kayıt)
 
@@ -189,7 +194,9 @@ GET /pricing/preview/{asin} → Önerilen fiyat
 
 Swagger: http://localhost:8000/docs
 
-🧱 Proje Yapısı
+
+# 🧱 Proje Yapısı
+
 RepriceLab/
 ├─ backend/
 │  ├─ app/
@@ -202,7 +209,9 @@ RepriceLab/
 │  ├─ public/, Dockerfile, package.json, tailwind
 ├─ scripts/ (normalize_whitespace.py, smoke_backend.py)
 └─ docker-compose.yml
-🧪 CI (GitHub Actions)
+
+
+# 🧪 CI (GitHub Actions)
 
 .github/workflows/ci.yml içerir:
 
@@ -212,18 +221,20 @@ frontend-build (Node 20 → npm ci → build)
 
 docker-compose-test (Compose ile ayağa kaldır, curl ile doğrula)
 
-⚙️ Ortam Değişkenleri
+# ⚙️ Ortam Değişkenleri
 
 Backend .env:
 
 DATABASE_URL=sqlite:///./app.db
 CORS_ORIGINS=http://localhost:3000
-# PostgreSQL: postgresql+psycopg2://app:app@localhost:5432/repricelab
+
+PostgreSQL: postgresql+psycopg2://app:app@localhost:5432/repricelab
 
 Frontend .env.local:
 
 NEXT_PUBLIC_API_URL=http://localhost:8000
-🆘 Sık Sorunlar
+
+# 🆘 Sık Sorunlar
 
 PowerShell script izni: Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass
 
@@ -235,6 +246,6 @@ Frontend 404: NEXT_PUBLIC_API_URL backend’i işaret etmeli
 
 Push ağ hataları: git config --global http.version HTTP/1.1
 
-📜 Lisans
+# 📜 Lisans
 
 MIT
