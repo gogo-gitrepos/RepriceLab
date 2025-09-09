@@ -1,34 +1,26 @@
-\# RepriceLab
+RepriceLab
 
 
 
-Amazon satıcıları için \*\*Buy Box takibi, rakip analizi ve otomatik repricing\*\* yapan SaaS uygulaması.
-
-Frontend: \*\*Next.js + Tailwind\*\*, Backend: \*\*FastAPI + SQLAlchemy (SQLite veya PostgreSQL)\*\*.
+Amazon satıcıları için Buy Box takibi, rakip analizi ve otomatik repricing yapan SaaS uygulaması.Frontend: Next.js + Tailwind, Backend: FastAPI + SQLAlchemy (SQLite veya PostgreSQL).
 
 
 
----
+🚀 Hızlı Başlangıç
 
 
 
-\## 🚀 Hızlı Başlangıç
+Yöntem A — Lokal Geliştirme (SQLite ile)
 
 
 
-\### Yöntem A — Lokal Geliştirme (SQLite ile)
+Gereksinimler: Python 3.11+, Node 18+, Git
 
 
 
-\*\*Gereksinimler\*\*: Python 3.11+, Node 18+, Git
+Backend kurulumu
 
 
-
-\*\*Backend kurulumu\*\*
-
-
-
-```powershell
 
 cd backend
 
@@ -100,15 +92,11 @@ python seed\_db.py
 
 python -m uvicorn app.main:app --reload --port 8000
 
-```
 
 
-
-\*\*Frontend kurulumu\*\*
-
+Frontend kurulumu
 
 
-```powershell
 
 \# yeni terminal
 
@@ -120,33 +108,27 @@ $env:NEXT\_PUBLIC\_API\_URL="http://localhost:8000"
 
 npm run dev
 
-```
+
+
+Test
 
 
 
-\*\*Test\*\*
+Swagger: http://localhost:8000/docs → POST /products/sync → GET /products/
 
 
 
-\* Swagger: \[http://localhost:8000/docs](http://localhost:8000/docs) → `POST /products/sync` → `GET /products/`
-
-\* UI: \[http://localhost:3000](http://localhost:3000) → Dashboard / Ürünler / Settings
+UI: http://localhost:3000 → Dashboard / Ürünler / Settings
 
 
 
----
+Yöntem B — Docker Compose (Backend + Frontend birlikte)
 
 
 
-\### Yöntem B — Docker Compose (Backend + Frontend birlikte)
+docker-compose.yml (proje kökünde):
 
 
-
-`docker-compose.yml` (proje kökünde):
-
-
-
-```yaml
 
 version: "3.9"
 
@@ -188,67 +170,49 @@ services:
 
 &nbsp;   command: \["npm","run","dev"]
 
-```
-
 
 
 Çalıştırma:
 
 
 
-```powershell
-
 docker-compose up --build
 
-```
+
+
+Backend: http://localhost:8000/docs
 
 
 
-\* Backend: \[http://localhost:8000/docs](http://localhost:8000/docs)
-
-\* Frontend: \[http://localhost:3000](http://localhost:3000)
+Frontend: http://localhost:3000
 
 
 
----
+🐘 PostgreSQL Entegrasyonu
 
 
 
-\## 🐘 PostgreSQL Entegrasyonu
+Docker ile hızlı başlatma
 
 
-
-\### Docker ile hızlı başlatma
-
-
-
-```powershell
 
 docker run --name repricelab-postgres -e POSTGRES\_USER=app -e POSTGRES\_PASSWORD=app -e POSTGRES\_DB=repricelab -p 5432:5432 -d postgres:16
 
-```
 
 
-
-`.env` güncelle:
-
+.env güncelle:
 
 
-```
 
 DATABASE\_URL=postgresql+psycopg2://app:app@localhost:5432/repricelab
 
 CORS\_ORIGINS=http://localhost:3000
 
-```
 
 
-
-\### Compose içine DB servisi eklemek
-
+Compose içine DB servisi eklemek
 
 
-```yaml
 
 &nbsp; db:
 
@@ -274,49 +238,33 @@ volumes:
 
 &nbsp; pgdata:
 
-```
 
 
-
-Backend servisine `DATABASE\_URL` ekleyin:
-
+Backend servisine DATABASE\_URL ekleyin:
 
 
-```
 
 postgresql+psycopg2://app:app@db:5432/repricelab
 
-```
+
+
+✨ Frontend Özellikleri
 
 
 
----
+Toast bildirimleri
 
 
-
-\## ✨ Frontend Özellikleri
-
-
-
-\### Toast bildirimleri
-
-
-
-```powershell
 
 cd frontend
 
 npm i react-hot-toast
 
-```
 
 
-
-`src/app/layout.tsx`:
-
+src/app/layout.tsx:
 
 
-```tsx
 
 import { Toaster } from 'react-hot-toast';
 
@@ -330,15 +278,11 @@ import { Toaster } from 'react-hot-toast';
 
 </body>
 
-```
-
 
 
 Kullanım:
 
 
-
-```tsx
 
 import toast from 'react-hot-toast';
 
@@ -346,19 +290,15 @@ toast.success('Ürünler senkronize edildi');
 
 toast.error('Bir hata oluştu');
 
-```
+
+
+Sparkline örneği
 
 
 
-\### Sparkline örneği
+src/app/page.tsx içine:
 
 
-
-`src/app/page.tsx` içine:
-
-
-
-```tsx
 
 function Spark({ points }:{ points: Array<\[string, number]> }) {
 
@@ -388,67 +328,63 @@ function Spark({ points }:{ points: Array<\[string, number]> }) {
 
 }
 
-```
+
+
+🔌 API Kılavuzu
 
 
 
----
+POST /products/sync → Demo ürün ekler
 
 
 
-\## 🔌 API Kılavuzu
+GET /products/ → Ürün listesi
 
 
 
-\* `POST /products/sync` → Demo ürün ekler
-
-\* `GET /products/` → Ürün listesi
-
-\* `GET /metrics/summary` → Ürün sayısı, Buy Box yüzdesi
-
-\* `POST /pricing/rule` → Yeni fiyatlama kuralı
-
-\* `GET /pricing/preview/{asin}` → Önerilen fiyat
+GET /metrics/summary → Ürün sayısı, Buy Box yüzdesi
 
 
 
-Swagger: \[http://localhost:8000/docs](http://localhost:8000/docs)
+POST /pricing/rule → Yeni fiyatlama kuralı
 
 
 
----
+GET /pricing/preview/{asin} → Önerilen fiyat
 
 
 
-\## 🧪 CI (GitHub Actions)
+Swagger: http://localhost:8000/docs
 
 
 
-`.github/workflows/ci.yml`:
+🧪 CI (GitHub Actions)
 
 
 
-\* \*\*backend-test\*\*: Python import smoke
-
-\* \*\*frontend-build\*\*: Node build
-
-\* \*\*docker-compose-test\*\*: Compose + curl check
+.github/workflows/ci.yml:
 
 
 
----
+backend-test: Python import smoke
 
 
 
-\## ⚙️ Ortam Değişkenleri
+frontend-build: Node build
 
 
 
-\*\*Backend `.env`:\*\*
+docker-compose-test: Compose + curl check
 
 
 
-```
+⚙️ Ortam Değişkenleri
+
+
+
+Backend .env:
+
+
 
 DATABASE\_URL=sqlite:///./app.db
 
@@ -456,51 +392,47 @@ CORS\_ORIGINS=http://localhost:3000
 
 \# PostgreSQL: postgresql+psycopg2://app:app@localhost:5432/repricelab
 
-```
 
 
-
-\*\*Frontend `.env.local`:\*\*
-
+Frontend .env.local:
 
 
-```
 
 NEXT\_PUBLIC\_API\_URL=http://localhost:8000
 
-```
+
+
+🆘 Sık Sorunlar
 
 
 
----
+PowerShell policy → Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass
 
 
 
-\## 🆘 Sık Sorunlar
+uvicorn not found → venv aktif mi?
 
 
 
-\* PowerShell policy → `Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass`
-
-\* `uvicorn not found` → venv aktif mi?
-
-\* Postgres bağlantı hatası → DB container açık mı?
-
-\* Frontend API 404 → `NEXT\_PUBLIC\_API\_URL` doğru mu?
-
-\* Push hataları → `git config --global http.version HTTP/1.1`
+Postgres bağlantı hatası → DB container açık mı?
 
 
 
----
+Frontend API 404 → NEXT\_PUBLIC\_API\_URL doğru mu?
 
 
 
-\## 📜 Lisans
+Push hataları → git config --global http.version HTTP/1.1
+
+
+
+📜 Lisans
 
 
 
 MIT
+
+
 
 
 
