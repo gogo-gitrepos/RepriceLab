@@ -1,438 +1,240 @@
 RepriceLab
 
+Amazon satıcıları için Buy Box takibi, rakip analizi ve otomatik repricing yapan SaaS.
 
+Frontend: Next.js 14 + Tailwind · Backend: FastAPI + SQLAlchemy (SQLite/PostgreSQL)
 
-Amazon satıcıları için Buy Box takibi, rakip analizi ve otomatik repricing yapan SaaS uygulaması.Frontend: Next.js + Tailwind, Backend: FastAPI + SQLAlchemy (SQLite veya PostgreSQL).
+🌟 Özellikler
 
+📦 Buy Box sahiplik takibi ve geçmişi
 
+🏷️ Rakip fiyat/kargo ve satıcı bilgileri
+
+🤖 Repricing kuralları (min/max + strateji) ve fiyat önerisi
+
+📊 Dashboard (toplam ürün, sahiplik yüzdesi, 7-gün trend)
+
+🔔 Bildirim altyapısı (stub e‑posta/push)
 
 🚀 Hızlı Başlangıç
 
-
+Aşağıdaki iki yöntemden birini seçin.
 
 Yöntem A — Lokal Geliştirme (SQLite ile)
 
-
-
 Gereksinimler: Python 3.11+, Node 18+, Git
 
-
-
-Backend kurulumu
-
-
-
+1) Backend
 cd backend
-
 python -m venv .venv
-
-. .venv\\Scripts\\Activate.ps1
-
+. .venv\Scripts\Activate.ps1
 pip install --upgrade pip
-
 pip install -e .
 
 
-
-\# .env dosyası (backend klasörü içinde)
-
+# backend/.env
 @"
-
-DATABASE\_URL=sqlite:///./app.db
-
-CORS\_ORIGINS=http://localhost:3000
-
+DATABASE_URL=sqlite:///./app.db
+CORS_ORIGINS=http://localhost:3000
 "@ | Set-Content -Encoding utf8 .env
 
 
-
-\# Seed script (demo user+store)
-
+# Demo seed (User + Store)
 @'
-
-from app.database import SessionLocal, init\_db
-
+from app.database import SessionLocal, init_db
 from app import models
 
 
-
 def main():
-
-&nbsp;   init\_db()
-
-&nbsp;   db = SessionLocal()
-
-&nbsp;   try:
-
-&nbsp;       u = models.User(email="demo@example.com"); db.add(u); db.flush()
-
-&nbsp;       st = models.Store(user\_id=u.id, region="NA", selling\_partner\_id="A1000",
-
-&nbsp;                         marketplace\_ids="ATVPDKIKX0DER", lwa\_refresh\_token="stub\_refresh\_token")
-
-&nbsp;       db.add(st); db.commit()
-
-&nbsp;       print("Seed OK -> user\_id=", u.id)
-
-&nbsp;   finally:
-
-&nbsp;       db.close()
+    init_db()
+    db = SessionLocal()
+    try:
+        u = models.User(email="demo@example.com"); db.add(u); db.flush()
+        st = models.Store(
+            user_id=u.id, region="NA", selling_partner_id="A1000",
+            marketplace_ids="ATVPDKIKX0DER", lwa_refresh_token="stub_refresh_token"
+        )
+        db.add(st); db.commit()
+        print("Seed OK -> user_id=", u.id)
+    finally:
+        db.close()
 
 
-
-if \_\_name\_\_ == "\_\_main\_\_":
-
-&nbsp;   main()
-
-'@ | Set-Content -Encoding utf8 seed\_db.py
+if __name__ == "__main__":
+    main()
+'@ | Set-Content -Encoding utf8 seed_db.py
 
 
-
-python seed\_db.py
-
+python seed_db.py
 python -m uvicorn app.main:app --reload --port 8000
-
-
-
-Frontend kurulumu
-
-
-
-\# yeni terminal
-
+2) Frontend
+# Yeni terminal
 cd frontend
-
 npm install
-
-$env:NEXT\_PUBLIC\_API\_URL="http://localhost:8000"
-
+$env:NEXT_PUBLIC_API_URL="http://localhost:8000"
 npm run dev
 
-
-
-Test
-
-
+Test:
 
 Swagger: http://localhost:8000/docs → POST /products/sync → GET /products/
 
-
-
 UI: http://localhost:3000 → Dashboard / Ürünler / Settings
 
+macOS/Linux (bash) kısayol: source backend/.venv/bin/activate ile benzer adımları uygulayın.
 
+Yöntem B — Docker Compose (Backend + Frontend)
 
-Yöntem B — Docker Compose (Backend + Frontend birlikte)
-
-
-
-docker-compose.yml (proje kökünde):
-
-
+docker-compose.yml (repo kökü):
 
 version: "3.9"
-
 services:
-
-&nbsp; backend:
-
-&nbsp;   build: ./backend
-
-&nbsp;   container\_name: repricelab-backend
-
-&nbsp;   ports: \["8000:8000"]
-
-&nbsp;   environment:
-
-&nbsp;     - UVICORN\_HOST=0.0.0.0
-
-&nbsp;     - UVICORN\_PORT=8000
-
-&nbsp;   command: \["python","-m","uvicorn","app.main:app","--host","0.0.0.0","--port","8000"]
-
-&nbsp;   working\_dir: /app
+  backend:
+    build: ./backend
+    container_name: repricelab-backend
+    ports: ["8000:8000"]
+    environment:
+      - UVICORN_HOST=0.0.0.0
+      - UVICORN_PORT=8000
+    command: ["python","-m","uvicorn","app.main:app","--host","0.0.0.0","--port","8000"]
+    working_dir: /app
 
 
-
-&nbsp; frontend:
-
-&nbsp;   build: ./frontend
-
-&nbsp;   container\_name: repricelab-frontend
-
-&nbsp;   ports: \["3000:3000"]
-
-&nbsp;   environment:
-
-&nbsp;     - NEXT\_PUBLIC\_API\_URL=http://backend:8000
-
-&nbsp;   depends\_on: \[backend]
-
-&nbsp;   command: \["npm","run","dev"]
-
-
+  frontend:
+    build: ./frontend
+    container_name: repricelab-frontend
+    ports: ["3000:3000"]
+    environment:
+      - NEXT_PUBLIC_API_URL=http://backend:8000
+    depends_on: [backend]
+    command: ["npm","run","dev"]
 
 Çalıştırma:
 
-
-
 docker-compose up --build
+# Backend:  http://localhost:8000/docs
+# Frontend: http://localhost:3000
+🐘 PostgreSQL’e Geçiş
+Tek komutla Postgres (Docker)
+docker run --name repricelab-postgres -e POSTGRES_USER=app -e POSTGRES_PASSWORD=app -e POSTGRES_DB=repricelab -p 5432:5432 -d postgres:16
 
+backend/.env:
 
-
-Backend: http://localhost:8000/docs
-
-
-
-Frontend: http://localhost:3000
-
-
-
-🐘 PostgreSQL Entegrasyonu
-
-
-
-Docker ile hızlı başlatma
-
-
-
-docker run --name repricelab-postgres -e POSTGRES\_USER=app -e POSTGRES\_PASSWORD=app -e POSTGRES\_DB=repricelab -p 5432:5432 -d postgres:16
-
-
-
-.env güncelle:
-
-
-
-DATABASE\_URL=postgresql+psycopg2://app:app@localhost:5432/repricelab
-
-CORS\_ORIGINS=http://localhost:3000
-
-
-
-Compose içine DB servisi eklemek
-
-
-
-&nbsp; db:
-
-&nbsp;   image: postgres:16
-
-&nbsp;   container\_name: repricelab-postgres
-
-&nbsp;   environment:
-
-&nbsp;     - POSTGRES\_USER=app
-
-&nbsp;     - POSTGRES\_PASSWORD=app
-
-&nbsp;     - POSTGRES\_DB=repricelab
-
-&nbsp;   ports: \["5432:5432"]
-
-&nbsp;   volumes:
-
-&nbsp;     - pgdata:/var/lib/postgresql/data
-
+DATABASE_URL=postgresql+psycopg2://app:app@localhost:5432/repricelab
+CORS_ORIGINS=http://localhost:3000
+Compose’a DB eklemek
+  db:
+    image: postgres:16
+    container_name: repricelab-postgres
+    environment:
+      - POSTGRES_USER=app
+      - POSTGRES_PASSWORD=app
+      - POSTGRES_DB=repricelab
+    ports: ["5432:5432"]
+    volumes:
+      - pgdata:/var/lib/postgresql/data
 volumes:
+  pgdata:
 
-&nbsp; pgdata:
-
-
-
-Backend servisine DATABASE\_URL ekleyin:
-
-
+Backend için DATABASE_URL:
 
 postgresql+psycopg2://app:app@db:5432/repricelab
-
-
-
-✨ Frontend Özellikleri
-
-
-
-Toast bildirimleri
-
-
-
+✨ Frontend İyileştirmeleri
+Toast (react-hot-toast)
 cd frontend
-
 npm i react-hot-toast
 
-
-
-src/app/layout.tsx:
-
-
+src/app/layout.tsx içine:
 
 import { Toaster } from 'react-hot-toast';
-
 ...
-
 <body>
-
-&nbsp; ...
-
-&nbsp; <Toaster position="top-right" />
-
+  ...
+  <Toaster position="top-right" />
 </body>
-
-
 
 Kullanım:
 
-
-
 import toast from 'react-hot-toast';
-
 toast.success('Ürünler senkronize edildi');
-
 toast.error('Bir hata oluştu');
-
-
-
-Sparkline örneği
-
-
+Basit Sparkline (paketsiz)
 
 src/app/page.tsx içine:
 
-
-
-function Spark({ points }:{ points: Array<\[string, number]> }) {
-
-&nbsp; if (!points?.length) return <span>Veri yok</span>;
-
-&nbsp; const w=160,h=48,pad=4;
-
-&nbsp; const ys = points.map((\[,y])=>y);
-
-&nbsp; const min = Math.min(...ys), max = Math.max(...ys)||1;
-
-&nbsp; const step = (w-2\*pad)/(points.length-1);
-
-&nbsp; const scaleY = (v:number)=> h-pad - ( (v-min)/(max-min||1) \* (h-2\*pad) );
-
-&nbsp; const d = points.map((\[,y],i)=>`${i?'L':'M'} ${pad+i\*step} ${scaleY(y)}`).join(' ');
-
-&nbsp; return (
-
-&nbsp;   <svg width={w} height={h}>
-
-&nbsp;     <path d={d} fill="none" stroke="currentColor" strokeWidth="2" />
-
-&nbsp;   </svg>
-
-&nbsp; );
-
+function Spark({ points }:{ points: Array<[string, number]> }) {
+  if (!points?.length) return <span>Veri yok</span>;
+  const w=160,h=48,pad=4;
+  const ys = points.map(([,y])=>y);
+  const min = Math.min(...ys), max = Math.max(...ys)||1;
+  const step = (w-2*pad)/(points.length-1);
+  const scaleY = (v:number)=> h-pad - ( (v-min)/(max-min||1) * (h-2*pad) );
+  const d = points.map(([,y],i)=>`${i?'L':'M'} ${pad+i*step} ${scaleY(y)}`).join(' ');
+  return (
+    <svg width={w} height={h}>
+      <path d={d} fill="none" stroke="currentColor" strokeWidth="2" />
+    </svg>
+  );
 }
+🔌 API Kılavuzu (Özet)
 
-
-
-🔌 API Kılavuzu
-
-
-
-POST /products/sync → Demo ürün ekler
-
-
+POST /products/sync → Demo ürün ekler (3 kayıt)
 
 GET /products/ → Ürün listesi
 
+GET /metrics/summary → Toplam ürün / Buy Box yüzdesi
 
-
-GET /metrics/summary → Ürün sayısı, Buy Box yüzdesi
-
-
-
-POST /pricing/rule → Yeni fiyatlama kuralı
-
-
+POST /pricing/rule → {min_price, max_price_formula, strategy}
 
 GET /pricing/preview/{asin} → Önerilen fiyat
 
-
-
 Swagger: http://localhost:8000/docs
 
-
-
+🧱 Proje Yapısı
+RepriceLab/
+├─ backend/
+│  ├─ app/
+│  │  ├─ services/ (spapi, repricing, buybox, notify, scheduler)
+│  │  ├─ routers/  (auth, products, pricing, notifications, metrics)
+│  │  ├─ main.py, models.py, schemas.py, config.py, database.py
+│  ├─ pyproject.toml, Dockerfile
+├─ frontend/
+│  ├─ src/app (Dashboard, Products, Settings, Product Detail)
+│  ├─ public/, Dockerfile, package.json, tailwind
+├─ scripts/ (normalize_whitespace.py, smoke_backend.py)
+└─ docker-compose.yml
 🧪 CI (GitHub Actions)
 
+.github/workflows/ci.yml içerir:
 
+backend-test (Python 3.11 → bağımlılıklar → import smoke)
 
-.github/workflows/ci.yml:
+frontend-build (Node 20 → npm ci → build)
 
-
-
-backend-test: Python import smoke
-
-
-
-frontend-build: Node build
-
-
-
-docker-compose-test: Compose + curl check
-
-
+docker-compose-test (Compose ile ayağa kaldır, curl ile doğrula)
 
 ⚙️ Ortam Değişkenleri
 
-
-
 Backend .env:
 
-
-
-DATABASE\_URL=sqlite:///./app.db
-
-CORS\_ORIGINS=http://localhost:3000
-
-\# PostgreSQL: postgresql+psycopg2://app:app@localhost:5432/repricelab
-
-
+DATABASE_URL=sqlite:///./app.db
+CORS_ORIGINS=http://localhost:3000
+# PostgreSQL: postgresql+psycopg2://app:app@localhost:5432/repricelab
 
 Frontend .env.local:
 
-
-
-NEXT\_PUBLIC\_API\_URL=http://localhost:8000
-
-
-
+NEXT_PUBLIC_API_URL=http://localhost:8000
 🆘 Sık Sorunlar
 
+PowerShell script izni: Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass
 
+uvicorn not found: venv aktif mi?
 
-PowerShell policy → Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass
+Postgres bağlantısı: container/URL doğru mu?
 
+Frontend 404: NEXT_PUBLIC_API_URL backend’i işaret etmeli
 
-
-uvicorn not found → venv aktif mi?
-
-
-
-Postgres bağlantı hatası → DB container açık mı?
-
-
-
-Frontend API 404 → NEXT\_PUBLIC\_API\_URL doğru mu?
-
-
-
-Push hataları → git config --global http.version HTTP/1.1
-
-
+Push ağ hataları: git config --global http.version HTTP/1.1
 
 📜 Lisans
 
-
-
 MIT
-
-
-
-
-
