@@ -254,4 +254,3 @@ docker run --name repricelab-postgres -e POSTGRES_USER=app -e POSTGRES_PASSWORD=
  # 📜 Lisans
 
  MIT
-```text
