@@ -1,4 +1,4 @@
-RepriceLab
+# RepriceLab
 
 Amazon satıcıları için Buy Box takibi, rakip analizi ve otomatik repricing yapan SaaS.
 
