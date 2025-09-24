@@ -19,3 +19,29 @@ frontend/.env.local
 Thumbs.db
 .vscode/*
 !.vscode/settings.json
+
+# ---- Node / Next.js (genel) ----
+node_modules/
+**/node_modules/
+**/.next/
+**/dist/
+**/build/
+**/out/
+**/coverage/
+**/.turbo/
+**/.vercel/
+npm-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# ---- Env ----
+.env
+**/.env
+**/.env.*
+!.env.example
+
+# ---- Python (ek) ----
+backend/.mypy_cache/
+backend/.pytest_cache/
+backend/htmlcov/
+backend/.coverage
