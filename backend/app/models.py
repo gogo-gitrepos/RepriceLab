@@ -3,6 +3,7 @@ from __future__ import annotations
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from sqlalchemy import String, Integer, Float, Boolean, ForeignKey, DateTime, Text
 from datetime import datetime
+from .services.encryption import encryption_service
 from .database import Base
 
 class User(Base):
@@ -17,7 +18,27 @@ class Store(Base):
     
     # Amazon SP-API Authentication
     selling_partner_id: Mapped[str] = mapped_column(String(64))
-    refresh_token: Mapped[str] = mapped_column(Text)  # LWA refresh token
+    _encrypted_refresh_token: Mapped[str] = mapped_column("refresh_token", Text)
+    
+    @property
+    def refresh_token(self) -> str:
+        """Decrypt and return refresh token"""
+        if not self._encrypted_refresh_token:
+            return ""
+        try:
+            return encryption_service.decrypt(self._encrypted_refresh_token)
+        except Exception:
+            # If decryption fails, assume it's plaintext (for migration)
+            return self._encrypted_refresh_token
+    
+    @refresh_token.setter
+    def refresh_token(self, value: str):
+        """Encrypt and store refresh token"""
+        if value:
+            self._encrypted_refresh_token = encryption_service.encrypt(value)
+        else:
+            self._encrypted_refresh_token = value
+    
     region: Mapped[str] = mapped_column(String(32))  # na, eu, fe
     marketplace_ids: Mapped[str] = mapped_column(String(255))  # comma-separated
     
