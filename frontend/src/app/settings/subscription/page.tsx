@@ -8,6 +8,7 @@ import { CreditCard, Check, Star, Zap, Crown, Shield } from 'lucide-react';
 
 export default function SubscriptionPage() {
   const [billingCycle, setBillingCycle] = useState<'monthly' | 'yearly'>('monthly');
+  const [selectedPlan, setSelectedPlan] = useState<string>('Plus');
 
   const plans = [
     {
@@ -152,11 +153,14 @@ export default function SubscriptionPage() {
         {plans.map((plan) => (
           <Card 
             key={plan.name} 
-            className={`relative ${
-              plan.popular 
-                ? 'border-2 border-blue-500 shadow-lg' 
-                : 'border'
+            className={`relative cursor-pointer transition-all duration-300 ${
+              selectedPlan === plan.name
+                ? 'scale-105 shadow-2xl ring-4 ring-purple-500/50'
+                : plan.popular 
+                  ? 'border-2 border-blue-500 shadow-lg hover:scale-105' 
+                  : 'border hover:scale-105'
             }`}
+            onClick={() => setSelectedPlan(plan.name)}
           >
             {plan.badge && (
               <div className="absolute -top-3 left-1/2 transform -translate-x-1/2">
@@ -199,10 +203,15 @@ export default function SubscriptionPage() {
             <CardContent className="pt-0">
               <div className="space-y-3 mb-6">
                 <Button 
-                  className="w-full" 
-                  variant={plan.buttonVariant}
+                  className={`w-full ${
+                    selectedPlan === plan.name 
+                      ? 'bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white' 
+                      : ''
+                  }`}
+                  variant={selectedPlan === plan.name ? 'default' : plan.buttonVariant}
+                  onClick={(e) => e.stopPropagation()}
                 >
-                  {plan.buttonText}
+                  {selectedPlan === plan.name ? 'Selected Plan' : plan.buttonText}
                 </Button>
                 
                 {(plan.name === 'Plus' || plan.name === 'Pro') && (
