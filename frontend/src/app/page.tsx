@@ -81,6 +81,12 @@ export default function LandingPage() {
             >
               Contact
             </Button>
+            <Button 
+              className="bg-white text-purple-900 hover:bg-gray-100 font-semibold px-6"
+              onClick={() => router.push('/login')}
+            >
+              Login
+            </Button>
           </div>
         </div>
       </nav>

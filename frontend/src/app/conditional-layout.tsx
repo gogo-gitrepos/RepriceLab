@@ -5,9 +5,9 @@ import { TopHeader } from './top-header';
 
 export function ConditionalLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
-  const isLandingPage = pathname === '/';
+  const isPublicPage = pathname === '/' || pathname === '/login' || pathname === '/features' || pathname === '/pricing' || pathname === '/contact';
 
-  if (isLandingPage) {
+  if (isPublicPage) {
     return <>{children}</>;
   }
 
