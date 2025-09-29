@@ -98,10 +98,10 @@ export function NavigationContent() {
               Products
             </MenuItem>
             <MenuItem href="/repricing-rules" icon={Settings}>
-              ReprIcIng Rules
+              Repricing Rules
             </MenuItem>
             <MenuItem href="/multichannel" icon={Zap}>
-              MultIchannel
+              Multichannel
             </MenuItem>
             <MenuItem href="/automations" icon={Wrench}>
               Automations
@@ -133,7 +133,7 @@ export function NavigationContent() {
               Orders
             </MenuItem>
             <MenuItem href="/repricing-activity" icon={Activity}>
-              ReprIcIng ActIvIty
+              Repricing Activity
             </MenuItem>
             <MenuItem href="/competitors" icon={Users}>
               Competitors
