@@ -1,37 +1,313 @@
 'use client';
 
 import { useState } from 'react';
-import { Bell, MessageSquare, HelpCircle, ChevronDown, Settings, CreditCard, LogOut, Package, Star, Monitor } from 'lucide-react';
+import { Bell, MessageSquare, HelpCircle, ChevronDown, Settings, CreditCard, LogOut, Package, Star, Monitor, X, Send, Search } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
 export function TopHeader() {
   const [profileDropdownOpen, setProfileDropdownOpen] = useState(false);
+  const [notificationsOpen, setNotificationsOpen] = useState(false);
+  const [messagesOpen, setMessagesOpen] = useState(false);
+  const [faqOpen, setFaqOpen] = useState(false);
+
+  const notifications = [
+    {
+      id: 1,
+      title: 'Price Update Alert',
+      message: 'Product ASIN B089XYZ123 price changed by competitor',
+      time: '2 minutes ago',
+      read: false
+    },
+    {
+      id: 2,
+      title: 'Buy Box Lost',
+      message: 'You lost the Buy Box for SKU ABC-123',
+      time: '15 minutes ago',
+      read: false
+    },
+    {
+      id: 3,
+      title: 'Repricing Complete',
+      message: 'Daily repricing cycle completed for 245 products',
+      time: '1 hour ago',
+      read: true
+    },
+    {
+      id: 4,
+      title: 'Low Stock Warning',
+      message: 'Product SKU DEF-456 has only 3 units remaining',
+      time: '2 hours ago',
+      read: true
+    }
+  ];
+
+  const conversations = [
+    {
+      id: 1,
+      name: 'Support Team',
+      lastMessage: 'Thank you for contacting us. How can we help you today?',
+      time: '10:30 AM',
+      unread: false
+    },
+    {
+      id: 2,
+      name: 'Technical Support',
+      lastMessage: 'Your API integration issue has been resolved.',
+      time: 'Yesterday',
+      unread: true
+    }
+  ];
+
+  const faqItems = [
+    {
+      question: 'How do I connect my Amazon seller account?',
+      answer: 'Go to Settings > Account Settings, then click "Connect Amazon Store" and follow the authorization process with your Amazon Seller Central credentials.'
+    },
+    {
+      question: 'What is the Buy Box and why is it important?',
+      answer: 'The Buy Box is the white box on Amazon product pages where customers can add items to their cart. Winning the Buy Box dramatically increases your sales as most customers buy from the Buy Box winner.'
+    },
+    {
+      question: 'How often does RepriceLab update prices?',
+      answer: 'RepriceLab monitors competitor prices in real-time and can update your prices as frequently as every 15 minutes, depending on your plan and repricing rules.'
+    },
+    {
+      question: 'Can I set minimum and maximum price limits?',
+      answer: 'Yes, you can set minimum and maximum price boundaries for each product to ensure your prices never go below your cost or above your desired maximum selling price.'
+    },
+    {
+      question: 'What marketplaces does RepriceLab support?',
+      answer: 'RepriceLab supports all major Amazon marketplaces including US, UK, Germany, France, Italy, Spain, Canada, Mexico, Japan, and Australia.'
+    },
+    {
+      question: 'How do I create repricing rules?',
+      answer: 'Navigate to Repricing Rules in the sidebar, click "Add New Rule", then configure your pricing strategy, conditions, and apply it to your selected products.'
+    },
+    {
+      question: 'Can I exclude certain competitors from my repricing strategy?',
+      answer: 'Yes, you can create competitor blacklists to exclude specific sellers from your repricing calculations in your rule settings.'
+    },
+    {
+      question: 'What happens if a competitor sets an unrealistically low price?',
+      answer: 'Your minimum price limits will protect you from following competitors into unprofitable pricing. RepriceLab will alert you but won\'t price below your set minimums.'
+    }
+  ];
 
   return (
-    <header className="h-16 bg-gray-800 flex items-center justify-end px-6 border-b">
+    <header className="h-16 bg-purple-600 flex items-center justify-end px-6 border-b relative z-40">
       <div className="flex items-center space-x-4">
         {/* Notification Bell */}
-        <Button variant="ghost" size="icon" className="text-gray-300 hover:text-white hover:bg-gray-700">
-          <Bell className="w-5 h-5" />
-        </Button>
+        <div className="relative">
+          <Button 
+            variant="ghost" 
+            size="icon" 
+            className="text-white hover:text-white hover:bg-purple-700"
+            onClick={() => {
+              setNotificationsOpen(!notificationsOpen);
+              setMessagesOpen(false);
+              setFaqOpen(false);
+            }}
+          >
+            <Bell className="w-5 h-5" />
+            {notifications.some(n => !n.read) && (
+              <span className="absolute -top-1 -right-1 w-3 h-3 bg-red-500 rounded-full"></span>
+            )}
+          </Button>
+
+          {notificationsOpen && (
+            <>
+              <div 
+                className="fixed inset-0 z-10" 
+                onClick={() => setNotificationsOpen(false)}
+              />
+              <div className="absolute right-0 mt-2 w-80 bg-white rounded-lg shadow-lg border z-20">
+                <div className="p-4 border-b">
+                  <h3 className="font-semibold text-gray-900">Notifications</h3>
+                </div>
+                <div className="max-h-96 overflow-y-auto">
+                  {notifications.map((notification) => (
+                    <div key={notification.id} className={`p-4 border-b hover:bg-gray-50 ${!notification.read ? 'bg-blue-50' : ''}`}>
+                      <div className="flex justify-between items-start">
+                        <div className="flex-1">
+                          <h4 className="font-medium text-gray-900">{notification.title}</h4>
+                          <p className="text-sm text-gray-600 mt-1">{notification.message}</p>
+                          <p className="text-xs text-gray-400 mt-2">{notification.time}</p>
+                        </div>
+                        {!notification.read && (
+                          <div className="w-2 h-2 bg-blue-500 rounded-full ml-2 mt-1"></div>
+                        )}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+                <div className="p-4 border-t">
+                  <button className="text-sm text-purple-600 hover:text-purple-700">
+                    Mark all as read
+                  </button>
+                </div>
+              </div>
+            </>
+          )}
+        </div>
 
         {/* Message Icon */}
-        <Button variant="ghost" size="icon" className="text-gray-300 hover:text-white hover:bg-gray-700">
-          <MessageSquare className="w-5 h-5" />
-        </Button>
+        <div className="relative">
+          <Button 
+            variant="ghost" 
+            size="icon" 
+            className="text-white hover:text-white hover:bg-purple-700"
+            onClick={() => {
+              setMessagesOpen(!messagesOpen);
+              setNotificationsOpen(false);
+              setFaqOpen(false);
+            }}
+          >
+            <MessageSquare className="w-5 h-5" />
+            {conversations.some(c => c.unread) && (
+              <span className="absolute -top-1 -right-1 w-3 h-3 bg-red-500 rounded-full"></span>
+            )}
+          </Button>
 
-        {/* Help Icon */}
-        <Button variant="ghost" size="icon" className="text-gray-300 hover:text-white hover:bg-gray-700">
-          <HelpCircle className="w-5 h-5" />
-        </Button>
+          {messagesOpen && (
+            <>
+              <div 
+                className="fixed inset-0 z-10" 
+                onClick={() => setMessagesOpen(false)}
+              />
+              <div className="absolute right-0 mt-2 w-80 bg-white rounded-lg shadow-lg border z-20">
+                <div className="p-4 border-b">
+                  <div className="flex justify-between items-center">
+                    <h3 className="font-semibold text-gray-900">Messages</h3>
+                    <Button 
+                      size="sm" 
+                      className="bg-purple-600 hover:bg-purple-700 text-white"
+                      onClick={() => {/* Handle new chat with support */}}
+                    >
+                      <MessageSquare className="w-4 h-4 mr-2" />
+                      Contact Support
+                    </Button>
+                  </div>
+                </div>
+                <div className="max-h-96 overflow-y-auto">
+                  {conversations.map((conversation) => (
+                    <div key={conversation.id} className="p-4 border-b hover:bg-gray-50 cursor-pointer">
+                      <div className="flex justify-between items-start">
+                        <div className="flex-1">
+                          <div className="flex items-center">
+                            <h4 className="font-medium text-gray-900">{conversation.name}</h4>
+                            {conversation.unread && (
+                              <div className="w-2 h-2 bg-blue-500 rounded-full ml-2"></div>
+                            )}
+                          </div>
+                          <p className="text-sm text-gray-600 mt-1 truncate">{conversation.lastMessage}</p>
+                          <p className="text-xs text-gray-400 mt-2">{conversation.time}</p>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+                {conversations.length === 0 && (
+                  <div className="p-8 text-center text-gray-500">
+                    <MessageSquare className="w-12 h-12 mx-auto mb-4 text-gray-300" />
+                    <p>No conversations yet</p>
+                    <p className="text-sm mt-1">Start a conversation with our support team</p>
+                  </div>
+                )}
+              </div>
+            </>
+          )}
+        </div>
+
+        {/* Help/FAQ Icon */}
+        <div className="relative">
+          <Button 
+            variant="ghost" 
+            size="icon" 
+            className="text-white hover:text-white hover:bg-purple-700"
+            onClick={() => {
+              setFaqOpen(!faqOpen);
+              setNotificationsOpen(false);
+              setMessagesOpen(false);
+            }}
+          >
+            <HelpCircle className="w-5 h-5" />
+          </Button>
+
+          {faqOpen && (
+            <>
+              <div 
+                className="fixed inset-0 z-10" 
+                onClick={() => setFaqOpen(false)}
+              />
+              <div className="absolute right-0 mt-2 w-96 bg-white rounded-lg shadow-lg border z-20">
+                <div className="p-4 border-b">
+                  <div className="flex justify-between items-center">
+                    <h3 className="font-semibold text-gray-900">Frequently Asked Questions</h3>
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      onClick={() => setFaqOpen(false)}
+                    >
+                      <X className="w-4 h-4" />
+                    </Button>
+                  </div>
+                  <div className="mt-3 relative">
+                    <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
+                    <input
+                      type="text"
+                      placeholder="Search FAQ..."
+                      className="w-full pl-10 pr-4 py-2 bg-gray-100 border border-gray-200 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                    />
+                  </div>
+                </div>
+                <div className="max-h-96 overflow-y-auto">
+                  {faqItems.map((item, index) => (
+                    <div key={index} className="p-4 border-b">
+                      <details className="group">
+                        <summary className="font-medium text-gray-900 cursor-pointer hover:text-purple-600 list-none">
+                          <div className="flex justify-between items-center">
+                            <span>{item.question}</span>
+                            <ChevronDown className="w-4 h-4 group-open:rotate-180 transition-transform" />
+                          </div>
+                        </summary>
+                        <p className="text-sm text-gray-600 mt-3 leading-relaxed">{item.answer}</p>
+                      </details>
+                    </div>
+                  ))}
+                </div>
+                <div className="p-4 border-t bg-gray-50">
+                  <div className="text-center">
+                    <p className="text-sm text-gray-600 mb-2">Can't find what you're looking for?</p>
+                    <Button 
+                      size="sm" 
+                      className="bg-purple-600 hover:bg-purple-700 text-white"
+                      onClick={() => {
+                        setFaqOpen(false);
+                        setMessagesOpen(true);
+                      }}
+                    >
+                      <MessageSquare className="w-4 h-4 mr-2" />
+                      Contact Support
+                    </Button>
+                  </div>
+                </div>
+              </div>
+            </>
+          )}
+        </div>
 
         {/* User Profile Dropdown */}
         <div className="relative">
           <button
-            onClick={() => setProfileDropdownOpen(!profileDropdownOpen)}
-            className="flex items-center space-x-2 text-gray-300 hover:text-white bg-gray-700 rounded-full px-3 py-2 transition-colors"
+            onClick={() => {
+              setProfileDropdownOpen(!profileDropdownOpen);
+              setNotificationsOpen(false);
+              setMessagesOpen(false);
+              setFaqOpen(false);
+            }}
+            className="flex items-center space-x-2 text-white hover:text-white bg-purple-700 rounded-full px-3 py-2 transition-colors"
           >
-            <div className="w-8 h-8 bg-gray-600 rounded-full flex items-center justify-center">
+            <div className="w-8 h-8 bg-purple-800 rounded-full flex items-center justify-center">
               <span className="text-white font-bold text-sm">GG</span>
             </div>
             <ChevronDown className="w-4 h-4" />
