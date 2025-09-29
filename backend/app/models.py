@@ -46,6 +46,24 @@ class Product(Base):
     title: Mapped[str] = mapped_column(String(512))
     condition_type: Mapped[str] = mapped_column(String(32), default="New")
     
+    # Amazon Marketplace & Listing Details
+    marketplace_id: Mapped[str] = mapped_column(String(16), default="ATVPDKIKX0DER")  # US marketplace default
+    product_type: Mapped[str | None] = mapped_column(String(64), nullable=True)  # Amazon product type (LUGGAGE, etc.)
+    listing_status: Mapped[str] = mapped_column(String(32), default="active")  # active, inactive, incomplete
+    fulfillment_channel: Mapped[str] = mapped_column(String(8), default="FBM")  # FBA or FBM
+    
+    # Product Details for Listing Management
+    description: Mapped[str | None] = mapped_column(Text, nullable=True)
+    brand: Mapped[str | None] = mapped_column(String(128), nullable=True)
+    manufacturer: Mapped[str | None] = mapped_column(String(128), nullable=True)
+    product_image_url: Mapped[str | None] = mapped_column(Text, nullable=True)
+    
+    # Physical Attributes for Shipping
+    item_weight: Mapped[float | None] = mapped_column(Float, nullable=True)  # in pounds
+    item_length: Mapped[float | None] = mapped_column(Float, nullable=True)  # in inches
+    item_width: Mapped[float | None] = mapped_column(Float, nullable=True)   # in inches
+    item_height: Mapped[float | None] = mapped_column(Float, nullable=True)  # in inches
+    
     # Pricing Information
     price: Mapped[float] = mapped_column(Float)
     currency: Mapped[str] = mapped_column(String(8), default="USD")
@@ -57,9 +75,18 @@ class Product(Base):
     buybox_owner: Mapped[str | None] = mapped_column(String(64), nullable=True)
     buybox_owning: Mapped[bool] = mapped_column(Boolean, default=False)
     
+    # Synchronization Tracking
+    last_synced_at: Mapped[datetime | None] = mapped_column(DateTime, nullable=True)
+    sync_status: Mapped[str] = mapped_column(String(16), default="pending")  # pending, synced, error
+    sync_error_message: Mapped[str | None] = mapped_column(Text, nullable=True)
+    
     # Repricing Settings
     repricing_enabled: Mapped[bool] = mapped_column(Boolean, default=False)
     last_repriced_at: Mapped[datetime | None] = mapped_column(DateTime, nullable=True)
+    
+    # Timestamps
+    created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
+    updated_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
     
     # Relationships
     store: Mapped["Store"] = relationship(back_populates="products")
