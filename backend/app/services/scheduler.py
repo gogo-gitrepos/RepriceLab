@@ -26,7 +26,7 @@ def run_cycle():
     try:
         stores = db.query(Store).all()
         for st in stores:
-            client = SPAPIClient(st.region, st.lwa_refresh_token)
+            client = SPAPIClient(st.region, st.refresh_token)
             products = db.query(Product).filter(Product.user_id == st.user_id).all()
             for p in products:
                 offers = _run_async(client.get_competitive_pricing(p.asin))
