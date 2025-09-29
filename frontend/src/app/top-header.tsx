@@ -9,8 +9,11 @@ export function TopHeader() {
   const [notificationsOpen, setNotificationsOpen] = useState(false);
   const [messagesOpen, setMessagesOpen] = useState(false);
   const [faqOpen, setFaqOpen] = useState(false);
+  const [searchTerm, setSearchTerm] = useState('');
+  const [newMessage, setNewMessage] = useState('');
+  const [showSupportChat, setShowSupportChat] = useState(false);
 
-  const notifications = [
+  const [notifications, setNotifications] = useState([
     {
       id: 1,
       title: 'Price Update Alert',
@@ -39,9 +42,9 @@ export function TopHeader() {
       time: '2 hours ago',
       read: true
     }
-  ];
+  ]);
 
-  const conversations = [
+  const [conversations, setConversations] = useState([
     {
       id: 1,
       name: 'Support Team',
@@ -56,7 +59,23 @@ export function TopHeader() {
       time: 'Yesterday',
       unread: true
     }
-  ];
+  ]);
+
+  const markAllAsRead = () => {
+    setNotifications(notifications.map(n => ({ ...n, read: true })));
+  };
+
+  const startSupportChat = () => {
+    setShowSupportChat(true);
+    setMessagesOpen(true);
+  };
+
+  const sendMessage = () => {
+    if (newMessage.trim()) {
+      // Add new message logic here
+      setNewMessage('');
+    }
+  };
 
   const faqItems = [
     {
@@ -92,6 +111,11 @@ export function TopHeader() {
       answer: 'Your minimum price limits will protect you from following competitors into unprofitable pricing. RepriceLab will alert you but won\'t price below your set minimums.'
     }
   ];
+
+  const filteredFaqItems = faqItems.filter(item => 
+    item.question.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    item.answer.toLowerCase().includes(searchTerm.toLowerCase())
+  );
 
   return (
     <header className="h-16 bg-purple-600 flex items-center justify-end px-6 border-b relative z-40">
@@ -141,7 +165,10 @@ export function TopHeader() {
                   ))}
                 </div>
                 <div className="p-4 border-t">
-                  <button className="text-sm text-purple-600 hover:text-purple-700">
+                  <button 
+                    onClick={markAllAsRead}
+                    className="text-sm text-purple-600 hover:text-purple-700"
+                  >
                     Mark all as read
                   </button>
                 </div>
@@ -181,7 +208,7 @@ export function TopHeader() {
                     <Button 
                       size="sm" 
                       className="bg-purple-600 hover:bg-purple-700 text-white"
-                      onClick={() => {/* Handle new chat with support */}}
+                      onClick={startSupportChat}
                     >
                       <MessageSquare className="w-4 h-4 mr-2" />
                       Contact Support
@@ -206,7 +233,29 @@ export function TopHeader() {
                     </div>
                   ))}
                 </div>
-                {conversations.length === 0 && (
+                {showSupportChat && (
+                  <div className="p-4 border-t">
+                    <div className="flex space-x-2">
+                      <input
+                        type="text"
+                        placeholder="Type your message..."
+                        value={newMessage}
+                        onChange={(e) => setNewMessage(e.target.value)}
+                        onKeyPress={(e) => e.key === 'Enter' && sendMessage()}
+                        className="flex-1 px-3 py-2 bg-gray-100 border border-gray-200 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                      />
+                      <Button 
+                        size="sm" 
+                        onClick={sendMessage}
+                        className="bg-purple-600 hover:bg-purple-700 text-white"
+                      >
+                        <Send className="w-4 h-4" />
+                      </Button>
+                    </div>
+                  </div>
+                )}
+
+                {conversations.length === 0 && !showSupportChat && (
                   <div className="p-8 text-center text-gray-500">
                     <MessageSquare className="w-12 h-12 mx-auto mb-4 text-gray-300" />
                     <p>No conversations yet</p>
@@ -256,12 +305,14 @@ export function TopHeader() {
                     <input
                       type="text"
                       placeholder="Search FAQ..."
+                      value={searchTerm}
+                      onChange={(e) => setSearchTerm(e.target.value)}
                       className="w-full pl-10 pr-4 py-2 bg-gray-100 border border-gray-200 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent"
                     />
                   </div>
                 </div>
                 <div className="max-h-96 overflow-y-auto">
-                  {faqItems.map((item, index) => (
+                  {filteredFaqItems.map((item, index) => (
                     <div key={index} className="p-4 border-b">
                       <details className="group">
                         <summary className="font-medium text-gray-900 cursor-pointer hover:text-purple-600 list-none">
@@ -283,7 +334,7 @@ export function TopHeader() {
                       className="bg-purple-600 hover:bg-purple-700 text-white"
                       onClick={() => {
                         setFaqOpen(false);
-                        setMessagesOpen(true);
+                        startSupportChat();
                       }}
                     >
                       <MessageSquare className="w-4 h-4 mr-2" />

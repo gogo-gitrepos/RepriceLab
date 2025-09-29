@@ -267,7 +267,7 @@ export function NavigationContent() {
       )}
 
       {/* Desktop Sidebar */}
-      <aside className="w-64 border-r bg-white flex-col hidden md:flex">
+      <aside className="border-r bg-white flex-col hidden md:flex">
         <NavigationHeader />
 
         <NavigationMenu />

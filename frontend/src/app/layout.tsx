@@ -11,14 +11,15 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     <html lang="tr">
       <body className="min-h-screen bg-background text-foreground">
         <ClientProviders>
-          <div className="flex min-h-screen">
-            <NavigationContent />
-            <div className="flex-1 flex flex-col">
-              <div className="w-full">
-                <TopHeader />
-              </div>
-              <main className="flex-1 p-4 md:p-8">{children}</main>
+          <div className="min-h-screen grid grid-rows-[auto_1fr] grid-cols-[256px_1fr]">
+            {/* Header spanning full width */}
+            <div className="col-span-2">
+              <TopHeader />
             </div>
+            
+            {/* Sidebar and main content */}
+            <NavigationContent />
+            <main className="p-4 md:p-8">{children}</main>
           </div>
         </ClientProviders>
       </body>
