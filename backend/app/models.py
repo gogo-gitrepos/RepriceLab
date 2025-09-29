@@ -14,24 +14,55 @@ class Store(Base):
     __tablename__ = "stores"
     id: Mapped[int] = mapped_column(Integer, primary_key=True)
     user_id: Mapped[int] = mapped_column(ForeignKey("users.id"))
-    region: Mapped[str] = mapped_column(String(32))
+    
+    # Amazon SP-API Authentication
     selling_partner_id: Mapped[str] = mapped_column(String(64))
-    marketplace_ids: Mapped[str] = mapped_column(String(255))
-    lwa_refresh_token: Mapped[str] = mapped_column(Text)
+    refresh_token: Mapped[str] = mapped_column(Text)  # LWA refresh token
+    region: Mapped[str] = mapped_column(String(32))  # na, eu, fe
+    marketplace_ids: Mapped[str] = mapped_column(String(255))  # comma-separated
+    
+    # Store Information
+    store_name: Mapped[str] = mapped_column(String(255))
+    seller_id: Mapped[str | None] = mapped_column(String(64), nullable=True)
+    
+    # Connection Status
+    is_active: Mapped[bool] = mapped_column(Boolean, default=True)
+    last_sync: Mapped[datetime | None] = mapped_column(DateTime, nullable=True)
+    created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
+    
+    # Relationships
     user: Mapped["User"] = relationship()
+    products: Mapped[list["Product"]] = relationship(back_populates="store")
 
 class Product(Base):
     __tablename__ = "products"
     id: Mapped[int] = mapped_column(Integer, primary_key=True)
     user_id: Mapped[int] = mapped_column(ForeignKey("users.id"))
+    store_id: Mapped[int | None] = mapped_column(ForeignKey("stores.id"), nullable=True)
+    
+    # Amazon Product Information
     sku: Mapped[str] = mapped_column(String(64))
     asin: Mapped[str] = mapped_column(String(16))
     title: Mapped[str] = mapped_column(String(512))
+    condition_type: Mapped[str] = mapped_column(String(32), default="New")
+    
+    # Pricing Information
     price: Mapped[float] = mapped_column(Float)
     currency: Mapped[str] = mapped_column(String(8), default="USD")
+    min_price: Mapped[float | None] = mapped_column(Float, nullable=True)
+    max_price: Mapped[float | None] = mapped_column(Float, nullable=True)
+    
+    # Inventory & Buy Box
     stock_qty: Mapped[int] = mapped_column(Integer, default=0)
     buybox_owner: Mapped[str | None] = mapped_column(String(64), nullable=True)
     buybox_owning: Mapped[bool] = mapped_column(Boolean, default=False)
+    
+    # Repricing Settings
+    repricing_enabled: Mapped[bool] = mapped_column(Boolean, default=False)
+    last_repriced_at: Mapped[datetime | None] = mapped_column(DateTime, nullable=True)
+    
+    # Relationships
+    store: Mapped["Store"] = relationship(back_populates="products")
 
 class PriceHistory(Base):
     __tablename__ = "price_history"
