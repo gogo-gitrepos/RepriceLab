@@ -3,7 +3,7 @@ import { useI18n } from '@/lib/i18n';
 import { LanguageSwitcher } from '@/components/language-switcher';
 import { useRouter, usePathname } from 'next/navigation';
 import Link from 'next/link';
-import { Search, LayoutDashboard, Package, Settings, Wrench, Zap, Upload, Star, AlertTriangle, ShoppingCart, Activity, Users, BarChart3, Cog, Store, Menu, X } from 'lucide-react';
+import { Search, LayoutDashboard, Package, Settings, Wrench, Zap, Upload, Star, AlertTriangle, ShoppingCart, Activity, Users, BarChart3, Cog, Store, Menu, X, ChevronDown, ChevronUp, Building2, UserPlus, Radio, CreditCard } from 'lucide-react';
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 
@@ -13,6 +13,7 @@ export function NavigationContent() {
   const pathname = usePathname();
   const [searchQuery, setSearchQuery] = useState('');
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [settingsDropdownOpen, setSettingsDropdownOpen] = useState(false);
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
@@ -43,6 +44,28 @@ export function NavigationContent() {
           isActive 
             ? 'bg-purple-100 text-purple-700 border-r-2 border-purple-600' 
             : 'text-gray-700 hover:bg-gray-100'
+        }`}
+      >
+        <Icon className="w-4 h-4" />
+        <span>{children}</span>
+      </Link>
+    );
+  };
+
+  const DropdownMenuItem = ({ href, icon: Icon, children }: {
+    href: string;
+    icon: React.ComponentType<any>;
+    children: React.ReactNode;
+  }) => {
+    const isActive = isActiveRoute(href);
+    return (
+      <Link 
+        href={href}
+        onClick={() => setMobileMenuOpen(false)}
+        className={`flex items-center space-x-3 px-6 py-2 rounded-md text-sm transition-colors ${
+          isActive 
+            ? 'bg-purple-100 text-purple-700' 
+            : 'text-gray-600 hover:bg-gray-50'
         }`}
       >
         <Icon className="w-4 h-4" />
@@ -149,9 +172,48 @@ export function NavigationContent() {
         <div>
           <SectionTitle>System</SectionTitle>
           <div className="space-y-1">
-            <MenuItem href="/settings" icon={Cog}>
-              Settings
-            </MenuItem>
+            {/* Settings Dropdown */}
+            <div>
+              <button
+                onClick={() => setSettingsDropdownOpen(!settingsDropdownOpen)}
+                className={`w-full flex items-center justify-between px-3 py-2 rounded-md text-sm transition-colors ${
+                  pathname.startsWith('/settings') 
+                    ? 'bg-purple-100 text-purple-700 border-r-2 border-purple-600' 
+                    : 'text-gray-700 hover:bg-gray-100'
+                }`}
+              >
+                <div className="flex items-center space-x-3">
+                  <Cog className="w-4 h-4" />
+                  <span>Settings</span>
+                </div>
+                {settingsDropdownOpen ? (
+                  <ChevronUp className="w-4 h-4" />
+                ) : (
+                  <ChevronDown className="w-4 h-4" />
+                )}
+              </button>
+              
+              {settingsDropdownOpen && (
+                <div className="mt-1 space-y-1">
+                  <DropdownMenuItem href="/settings/account" icon={Cog}>
+                    Account Settings
+                  </DropdownMenuItem>
+                  <DropdownMenuItem href="/settings/company" icon={Building2}>
+                    Company Settings
+                  </DropdownMenuItem>
+                  <DropdownMenuItem href="/settings/users" icon={UserPlus}>
+                    Users
+                  </DropdownMenuItem>
+                  <DropdownMenuItem href="/settings/channels" icon={Radio}>
+                    Channels
+                  </DropdownMenuItem>
+                  <DropdownMenuItem href="/settings/subscription" icon={CreditCard}>
+                    Subscription
+                  </DropdownMenuItem>
+                </div>
+              )}
+            </div>
+            
             <MenuItem href="/app-store" icon={Store}>
               App Store
             </MenuItem>
