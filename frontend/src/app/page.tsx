@@ -1,409 +1,323 @@
 'use client';
-import React, { useState, useEffect } from 'react';
-import { apiClient, MetricsSummary, Product } from '../lib/api';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
 import { Badge } from '@/components/ui/badge';
-import { useI18n } from '@/lib/i18n';
-import { ChevronDown, MessageCircle, Phone, Mail, BarChart3, TrendingUp, Users, Activity, Target, Zap, ShoppingCart, Award } from 'lucide-react';
+import { 
+  Zap, 
+  TrendingUp, 
+  Target, 
+  BarChart3, 
+  Shield, 
+  Clock, 
+  Award,
+  ChevronRight,
+  CheckCircle2,
+  Star,
+  ArrowRight
+} from 'lucide-react';
+import { useRouter } from 'next/navigation';
 
-export default function DashboardPage() {
-  const { t } = useI18n();
-  const [metrics, setMetrics] = useState<MetricsSummary | null>(null);
-  const [products, setProducts] = useState<Product[]>([]);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+export default function LandingPage() {
+  const router = useRouter();
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
 
-  const refresh = async () => {
-    setError(null);
-    try {
-      const [m, p] = await Promise.all([apiClient.getMetrics(), apiClient.getProducts()]);
-      setMetrics(m); 
-      setProducts(p);
-    } catch (e: any) { 
-      setError(e.message); 
-    }
-  };
-
-  useEffect(() => { refresh(); }, []);
-
-  // Demo data for the dashboard
-  const insightsData = [
-    { label: 'Category A', percentage: 75, color: 'bg-blue-500' },
-    { label: 'Category B', percentage: 60, color: 'bg-green-500' },
-    { label: 'Category C', percentage: 45, color: 'bg-purple-500' },
-    { label: 'Category D', percentage: 30, color: 'bg-orange-500' },
-    { label: 'Category E', percentage: 20, color: 'bg-red-500' },
-  ];
-
-  const competitorsData = [
-    { name: 'TechInnovate Plus', percentage: 85 },
-    { name: 'ElectroWorld Store', percentage: 70 },
-    { name: 'DigitalSolutions Pro', percentage: 55 },
-    { name: 'SmartChoice Market', percentage: 40 },
-    { name: 'TechValue Express', percentage: 25 },
-  ];
-
-  const CircularProgress = ({ percentage, size = 120, strokeWidth = 8, showLabel = false }: { 
-    percentage: number; 
-    size?: number; 
-    strokeWidth?: number;
-    showLabel?: boolean;
-  }) => {
-    const radius = (size - strokeWidth) / 2;
-    const circumference = radius * 2 * Math.PI;
-    const strokeDasharray = circumference;
-    const strokeDashoffset = circumference - (percentage / 100) * circumference;
-
-    return (
-      <div className="relative flex items-center justify-center" style={{ width: size, height: size }}>
-        <svg width={size} height={size} className="transform -rotate-90">
-          <circle
-            cx={size / 2}
-            cy={size / 2}
-            r={radius}
-            stroke="#e5e7eb"
-            strokeWidth={strokeWidth}
-            fill="none"
-          />
-          <circle
-            cx={size / 2}
-            cy={size / 2}
-            r={radius}
-            stroke="#3b82f6"
-            strokeWidth={strokeWidth}
-            fill="none"
-            strokeLinecap="round"
-            strokeDasharray={strokeDasharray}
-            strokeDashoffset={strokeDashoffset}
-            className="transition-all duration-1000 ease-out"
-          />
-        </svg>
-        {showLabel && (
-          <div className="absolute flex flex-col items-center">
-            <span className="text-2xl font-bold">{percentage}%</span>
-          </div>
-        )}
-      </div>
-    );
+  const handleLogin = (e: React.FormEvent) => {
+    e.preventDefault();
+    router.push('/dashboard');
   };
 
   return (
-    <div className="space-y-8 bg-gradient-to-br from-gray-50 via-white to-purple-50 min-h-screen p-6 -mx-4 md:-mx-8 -my-4 md:-my-8">
-      {/* Account Status Banner */}
-      <div className="bg-gradient-to-r from-purple-600 via-purple-700 to-indigo-600 text-white p-6 rounded-2xl shadow-2xl border border-purple-500/20 backdrop-blur-sm">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center space-x-4">
-            <div className="w-12 h-12 bg-white/20 rounded-xl flex items-center justify-center backdrop-blur-sm">
+    <div className="min-h-screen bg-gradient-to-br from-purple-900 via-indigo-900 to-purple-800 relative overflow-hidden">
+      {/* Animated background elements */}
+      <div className="absolute inset-0 overflow-hidden">
+        <div className="absolute -top-40 -right-40 w-96 h-96 bg-purple-500 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-blob"></div>
+        <div className="absolute -bottom-40 -left-40 w-96 h-96 bg-indigo-500 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-blob animation-delay-2000"></div>
+        <div className="absolute top-1/2 left-1/2 w-96 h-96 bg-pink-500 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-blob animation-delay-4000"></div>
+      </div>
+
+      {/* Navigation */}
+      <nav className="relative z-10 px-6 py-6">
+        <div className="max-w-7xl mx-auto flex items-center justify-between">
+          <div className="flex items-center space-x-3">
+            <div className="w-10 h-10 bg-gradient-to-r from-purple-400 to-pink-400 rounded-xl flex items-center justify-center shadow-2xl">
               <Zap className="w-6 h-6 text-white" />
             </div>
-            <div>
-              <h3 className="font-semibold text-lg mb-1 tracking-tight">{t('safeMode.title')}</h3>
-              <p className="text-purple-100 font-medium">{t('safeMode.description')}</p>
+            <span className="text-2xl font-bold text-white">RepriceLab<span className="text-purple-300">.com</span></span>
+          </div>
+          <div className="flex items-center space-x-4">
+            <Button variant="ghost" className="text-white hover:bg-white/10 font-medium">
+              Features
+            </Button>
+            <Button variant="ghost" className="text-white hover:bg-white/10 font-medium">
+              Pricing
+            </Button>
+            <Button variant="ghost" className="text-white hover:bg-white/10 font-medium">
+              Contact
+            </Button>
+          </div>
+        </div>
+      </nav>
+
+      {/* Hero Section */}
+      <div className="relative z-10 max-w-7xl mx-auto px-6 py-16">
+        <div className="grid lg:grid-cols-2 gap-16 items-center">
+          {/* Left side - Hero content */}
+          <div className="space-y-8">
+            <div className="inline-flex items-center space-x-2 bg-white/10 backdrop-blur-sm px-4 py-2 rounded-full border border-white/20">
+              <Star className="w-4 h-4 text-yellow-300 fill-yellow-300" />
+              <span className="text-sm font-semibold text-white">Trusted by thousands of pro sellers worldwide</span>
+            </div>
+            
+            <h1 className="text-5xl lg:text-6xl font-bold text-white leading-tight">
+              Maximize Sales and Profits with the World's #1 Repricer
+            </h1>
+            
+            <p className="text-xl text-purple-100 leading-relaxed">
+              Automate price changes. Secure the Buy Box. Boost your sales with intelligent repricing algorithms trusted by professional Amazon sellers.
+            </p>
+
+            {/* Stats */}
+            <div className="grid grid-cols-3 gap-4 pt-4">
+              <div className="bg-white/10 backdrop-blur-sm rounded-2xl p-4 border border-white/20">
+                <div className="text-3xl font-bold text-white">5B+</div>
+                <div className="text-sm text-purple-200 mt-1">Price changes/week</div>
+              </div>
+              <div className="bg-white/10 backdrop-blur-sm rounded-2xl p-4 border border-white/20">
+                <div className="text-3xl font-bold text-white">99.9%</div>
+                <div className="text-sm text-purple-200 mt-1">Uptime guarantee</div>
+              </div>
+              <div className="bg-white/10 backdrop-blur-sm rounded-2xl p-4 border border-white/20">
+                <div className="text-3xl font-bold text-white">24/7</div>
+                <div className="text-sm text-purple-200 mt-1">Automation</div>
+              </div>
+            </div>
+
+            {/* Features list */}
+            <div className="space-y-3 pt-4">
+              <div className="flex items-center space-x-3">
+                <CheckCircle2 className="w-5 h-5 text-green-400" />
+                <span className="text-white font-medium">14-day free trial • No credit card required</span>
+              </div>
+              <div className="flex items-center space-x-3">
+                <CheckCircle2 className="w-5 h-5 text-green-400" />
+                <span className="text-white font-medium">Guided setup & onboarding support</span>
+              </div>
+              <div className="flex items-center space-x-3">
+                <CheckCircle2 className="w-5 h-5 text-green-400" />
+                <span className="text-white font-medium">Advanced Buy Box algorithms</span>
+              </div>
             </div>
           </div>
-          <Button 
-            variant="secondary" 
-            size="sm" 
-            className="bg-white/10 border-white/20 text-white hover:bg-white/20 backdrop-blur-sm font-medium px-6 py-3 rounded-xl transition-all duration-200 shadow-lg"
-          >
-{t('safeMode.learnMore')}
-          </Button>
+
+          {/* Right side - Login form */}
+          <div className="lg:pl-8">
+            <Card className="bg-white/95 backdrop-blur-xl shadow-2xl border-0">
+              <CardHeader className="space-y-2 pb-6">
+                <CardTitle className="text-3xl font-bold text-gray-900">Welcome Back</CardTitle>
+                <CardDescription className="text-base text-gray-600">
+                  Sign in to access your repricing dashboard
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <form onSubmit={handleLogin} className="space-y-5">
+                  <div className="space-y-2">
+                    <Label htmlFor="email" className="text-sm font-semibold text-gray-700">
+                      Email Address
+                    </Label>
+                    <Input
+                      id="email"
+                      type="email"
+                      placeholder="john@repricer.com"
+                      value={email}
+                      onChange={(e) => setEmail(e.target.value)}
+                      className="h-12 text-base border-gray-300 focus:border-purple-500 focus:ring-purple-500"
+                      required
+                    />
+                  </div>
+                  
+                  <div className="space-y-2">
+                    <div className="flex items-center justify-between">
+                      <Label htmlFor="password" className="text-sm font-semibold text-gray-700">
+                        Password
+                      </Label>
+                      <button type="button" className="text-sm font-medium text-purple-600 hover:text-purple-700">
+                        Forgot password?
+                      </button>
+                    </div>
+                    <Input
+                      id="password"
+                      type="password"
+                      placeholder="Enter your password"
+                      value={password}
+                      onChange={(e) => setPassword(e.target.value)}
+                      className="h-12 text-base border-gray-300 focus:border-purple-500 focus:ring-purple-500"
+                      required
+                    />
+                  </div>
+
+                  <Button 
+                    type="submit" 
+                    className="w-full h-12 text-base font-semibold bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white shadow-lg hover:shadow-xl transition-all duration-200"
+                  >
+                    Sign In to Dashboard
+                    <ArrowRight className="w-5 h-5 ml-2" />
+                  </Button>
+
+                  <div className="relative py-4">
+                    <div className="absolute inset-0 flex items-center">
+                      <div className="w-full border-t border-gray-300"></div>
+                    </div>
+                    <div className="relative flex justify-center text-sm">
+                      <span className="px-4 bg-white text-gray-500 font-medium">Or continue with</span>
+                    </div>
+                  </div>
+
+                  <Button 
+                    type="button" 
+                    variant="outline" 
+                    className="w-full h-12 text-base font-semibold border-2 border-gray-300 hover:bg-gray-50"
+                  >
+                    <svg className="w-5 h-5 mr-3" viewBox="0 0 24 24">
+                      <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
+                      <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
+                      <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/>
+                      <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
+                    </svg>
+                    Sign in with Google
+                  </Button>
+
+                  <div className="text-center pt-4">
+                    <p className="text-sm text-gray-600">
+                      Don't have an account?{' '}
+                      <button type="button" className="font-semibold text-purple-600 hover:text-purple-700">
+                        Start free trial
+                      </button>
+                    </p>
+                  </div>
+                </form>
+              </CardContent>
+            </Card>
+
+            {/* Trust badges */}
+            <div className="mt-6 flex items-center justify-center space-x-8">
+              <div className="flex items-center space-x-2">
+                <Shield className="w-5 h-5 text-green-400" />
+                <span className="text-sm text-white font-medium">Bank-level security</span>
+              </div>
+              <div className="flex items-center space-x-2">
+                <Clock className="w-5 h-5 text-blue-400" />
+                <span className="text-sm text-white font-medium">Setup in minutes</span>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
 
-      {/* Financial Metrics */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-        <Card className="bg-gradient-to-br from-red-50 to-red-100/50 border-red-200/50 shadow-xl hover:shadow-2xl transition-all duration-300 hover:-translate-y-1">
-          <CardContent className="p-6">
-            <div className="flex items-center space-x-3 mb-3">
-              <div className="w-10 h-10 bg-gradient-to-r from-red-500 to-red-600 rounded-xl flex items-center justify-center shadow-lg">
-                <TrendingUp className="w-5 h-5 text-white" />
-              </div>
-              <div>
-                <div className="text-3xl font-bold text-red-600 tracking-tight">$0.00</div>
-                <p className="text-sm font-medium text-red-700">Spent this period</p>
-              </div>
+      {/* Features Section */}
+      <div className="relative z-10 max-w-7xl mx-auto px-6 py-20">
+        <div className="text-center mb-16">
+          <h2 className="text-4xl font-bold text-white mb-4">
+            Why Choose RepriceLab?
+          </h2>
+          <p className="text-xl text-purple-200">
+            Powerful features to help you dominate the Buy Box
+          </p>
+        </div>
+
+        <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
+          <div className="bg-white/10 backdrop-blur-sm rounded-2xl p-6 border border-white/20 hover:bg-white/15 transition-all duration-200">
+            <div className="w-14 h-14 bg-gradient-to-r from-blue-500 to-blue-600 rounded-xl flex items-center justify-center mb-4 shadow-lg">
+              <Zap className="w-7 h-7 text-white" />
             </div>
-            <p className="text-xs text-red-600/70 font-medium">vs previous period</p>
-          </CardContent>
-        </Card>
-        
-        <Card className="bg-gradient-to-br from-blue-50 to-blue-100/50 border-blue-200/50 shadow-xl hover:shadow-2xl transition-all duration-300 hover:-translate-y-1">
-          <CardContent className="p-6">
-            <div className="flex items-center space-x-3 mb-3">
-              <div className="w-10 h-10 bg-gradient-to-r from-blue-500 to-blue-600 rounded-xl flex items-center justify-center shadow-lg">
-                <ShoppingCart className="w-5 h-5 text-white" />
-              </div>
-              <div>
-                <div className="text-3xl font-bold text-blue-600 tracking-tight">$0.00</div>
-                <p className="text-sm font-medium text-blue-700">Daily limit remaining</p>
-              </div>
+            <h3 className="text-xl font-bold text-white mb-2">Lightning Fast</h3>
+            <p className="text-purple-200">Price changes in seconds, not minutes. React instantly to competitor moves.</p>
+          </div>
+
+          <div className="bg-white/10 backdrop-blur-sm rounded-2xl p-6 border border-white/20 hover:bg-white/15 transition-all duration-200">
+            <div className="w-14 h-14 bg-gradient-to-r from-green-500 to-green-600 rounded-xl flex items-center justify-center mb-4 shadow-lg">
+              <Target className="w-7 h-7 text-white" />
             </div>
-            <p className="text-xs text-blue-600/70 font-medium">Refreshes at midnight</p>
-          </CardContent>
-        </Card>
-        
-        <Card className="bg-gradient-to-br from-purple-50 to-purple-100/50 border-purple-200/50 shadow-xl hover:shadow-2xl transition-all duration-300 hover:-translate-y-1 md:col-span-2">
-          <CardContent className="p-6">
-            <div className="space-y-4">
-              <div className="flex items-center space-x-4">
-                <div className="w-14 h-14 bg-gradient-to-r from-purple-500 to-purple-600 rounded-2xl flex items-center justify-center shadow-lg">
-                  <Users className="w-7 h-7 text-white" />
-                </div>
-                <div>
-                  <div className="font-bold text-lg text-purple-800">Need Help?</div>
-                  <p className="text-sm font-medium text-purple-600">Our support team is here to help you succeed!</p>
-                </div>
-              </div>
-              
-              <div className="space-y-3">
-                <Button variant="outline" size="sm" className="w-full justify-start border-purple-200 text-purple-700 hover:bg-purple-50 hover:border-purple-300 transition-all duration-200 font-medium py-3 rounded-xl">
-                  <Mail className="w-4 h-4 mr-3" />
-                  Send us an email
-                </Button>
-                <Button variant="outline" size="sm" className="w-full justify-start border-purple-200 text-purple-700 hover:bg-purple-50 hover:border-purple-300 transition-all duration-200 font-medium py-3 rounded-xl">
-                  <Phone className="w-4 h-4 mr-3" />
-                  Schedule a call
-                </Button>
-              </div>
+            <h3 className="text-xl font-bold text-white mb-2">Smart Algorithms</h3>
+            <p className="text-purple-200">Advanced AI-powered repricing strategies to maximize profits.</p>
+          </div>
+
+          <div className="bg-white/10 backdrop-blur-sm rounded-2xl p-6 border border-white/20 hover:bg-white/15 transition-all duration-200">
+            <div className="w-14 h-14 bg-gradient-to-r from-purple-500 to-purple-600 rounded-xl flex items-center justify-center mb-4 shadow-lg">
+              <BarChart3 className="w-7 h-7 text-white" />
             </div>
-          </CardContent>
-        </Card>
+            <h3 className="text-xl font-bold text-white mb-2">Real-time Analytics</h3>
+            <p className="text-purple-200">Comprehensive insights and actionable data at your fingertips.</p>
+          </div>
+
+          <div className="bg-white/10 backdrop-blur-sm rounded-2xl p-6 border border-white/20 hover:bg-white/15 transition-all duration-200">
+            <div className="w-14 h-14 bg-gradient-to-r from-orange-500 to-orange-600 rounded-xl flex items-center justify-center mb-4 shadow-lg">
+              <Award className="w-7 h-7 text-white" />
+            </div>
+            <h3 className="text-xl font-bold text-white mb-2">Buy Box Winner</h3>
+            <p className="text-purple-200">Proven algorithms to help you win and hold the Buy Box.</p>
+          </div>
+        </div>
       </div>
 
-      {/* Sales Data Section */}
-      <Card className="bg-gradient-to-br from-white to-gray-50/50 border-gray-200/50 shadow-xl hover:shadow-2xl transition-all duration-300">
-        <CardHeader className="bg-gradient-to-r from-gray-50 to-gray-100/50 rounded-t-xl border-b border-gray-200/50">
-          <div className="flex items-center justify-between">
-            <CardTitle className="flex items-center gap-3 text-xl font-bold text-gray-800">
-              <div className="w-10 h-10 bg-gradient-to-r from-gray-600 to-gray-700 rounded-xl flex items-center justify-center shadow-lg">
-                <BarChart3 className="w-5 h-5 text-white" />
-              </div>
-              Sales data unavailable for this period
-            </CardTitle>
-            <Button variant="outline" size="sm" className="border-gray-300 text-gray-700 hover:bg-gray-50 font-medium px-4 py-2 rounded-xl transition-all duration-200">
-              Settings
+      {/* Footer CTA */}
+      <div className="relative z-10 max-w-5xl mx-auto px-6 py-20 text-center">
+        <div className="bg-white/10 backdrop-blur-sm rounded-3xl p-12 border border-white/20">
+          <h2 className="text-4xl font-bold text-white mb-4">
+            Start Repricing with the #1 Trusted Repricer
+          </h2>
+          <p className="text-xl text-purple-200 mb-8">
+            Join thousands of successful Amazon sellers using RepriceLab
+          </p>
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
+            <Button 
+              size="lg" 
+              className="h-14 px-8 text-lg font-semibold bg-white text-purple-900 hover:bg-gray-100 shadow-xl"
+              onClick={() => router.push('/dashboard')}
+            >
+              Start Free Trial
+              <ChevronRight className="w-5 h-5 ml-2" />
+            </Button>
+            <Button 
+              size="lg" 
+              variant="outline" 
+              className="h-14 px-8 text-lg font-semibold border-2 border-white text-white hover:bg-white/10"
+            >
+              Book a Demo
             </Button>
           </div>
-        </CardHeader>
-        <CardContent className="p-8">
-          <div className="h-52 flex items-center justify-center bg-gradient-to-br from-gray-50 to-gray-100/50 rounded-2xl border border-gray-200/50">
-            <div className="text-center">
-              <div className="w-16 h-16 bg-gradient-to-r from-gray-400 to-gray-500 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-lg">
-                <BarChart3 className="w-8 h-8 text-white" />
-              </div>
-              <p className="text-gray-600 font-semibold text-lg">No data available for the selected period</p>
-              <p className="text-sm text-gray-500 mt-2 font-medium">Data will appear once sales are recorded</p>
-            </div>
-          </div>
-        </CardContent>
-      </Card>
-
-      {/* Insights and Profitability Row */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-        {/* Insights */}
-        <Card className="bg-gradient-to-br from-emerald-50 to-emerald-100/50 border-emerald-200/50 shadow-xl hover:shadow-2xl transition-all duration-300 hover:-translate-y-1">
-          <CardHeader className="bg-gradient-to-r from-emerald-50 to-emerald-100/50 rounded-t-xl border-b border-emerald-200/50">
-            <CardTitle className="flex items-center gap-3 text-xl font-bold text-emerald-800">
-              <div className="w-10 h-10 bg-gradient-to-r from-emerald-500 to-emerald-600 rounded-xl flex items-center justify-center shadow-lg">
-                <TrendingUp className="w-5 h-5 text-white" />
-              </div>
-              Insights
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="p-6">
-            <div className="space-y-5">
-              {insightsData.map((item, index) => (
-                <div key={index} className="flex items-center justify-between bg-white/60 p-4 rounded-xl border border-emerald-200/30 hover:bg-white/80 transition-all duration-200">
-                  <div className="flex items-center space-x-4 flex-1">
-                    <div className={`w-3 h-3 rounded-full ${item.color} shadow-md`}></div>
-                    <span className="text-sm font-semibold text-emerald-800 min-w-0 flex-1">{item.label}</span>
-                    <span className="text-sm font-bold text-emerald-700">{item.percentage}%</span>
-                  </div>
-                  <div className="w-28 ml-4">
-                    <div className="w-full bg-emerald-200/50 rounded-full h-3 shadow-inner">
-                      <div 
-                        className={`h-3 rounded-full ${item.color} shadow-sm transition-all duration-500`}
-                        style={{ width: `${item.percentage}%` }}
-                      />
-                    </div>
-                  </div>
-                </div>
-              ))}
-            </div>
-            <div className="mt-8 text-center bg-white/60 p-6 rounded-xl border border-emerald-200/30">
-              <p className="text-sm font-semibold text-emerald-700">No products found.</p>
-              <p className="text-sm font-medium text-emerald-600 mt-1">Start adding your insights here!</p>
-            </div>
-          </CardContent>
-        </Card>
-
-        {/* Profitability */}
-        <Card className="bg-gradient-to-br from-blue-50 to-blue-100/50 border-blue-200/50 shadow-xl hover:shadow-2xl transition-all duration-300 hover:-translate-y-1">
-          <CardHeader className="bg-gradient-to-r from-blue-50 to-blue-100/50 rounded-t-xl border-b border-blue-200/50">
-            <CardTitle className="text-xl font-bold text-blue-800">Profitability</CardTitle>
-            <CardDescription className="text-blue-600 font-medium">Profitability of sales</CardDescription>
-          </CardHeader>
-          <CardContent className="p-6">
-            <div className="flex items-center justify-center bg-white/60 rounded-2xl p-6 border border-blue-200/30">
-              <div className="relative">
-                <CircularProgress percentage={84} size={160} />
-                <div className="absolute inset-0 flex items-center justify-center">
-                  <div className="text-center">
-                    <div className="text-3xl font-bold text-blue-700">84%</div>
-                    <div className="text-sm font-semibold text-blue-600">Profitable</div>
-                  </div>
-                </div>
-              </div>
-            </div>
-            <div className="mt-6 text-center bg-white/60 p-4 rounded-xl border border-blue-200/30">
-              <p className="text-sm font-semibold text-blue-800">8.4K Products without ads are profitable</p>
-              <p className="text-xs font-medium text-blue-600 mt-1">Based on current sales data analysis</p>
-            </div>
-          </CardContent>
-        </Card>
+          <p className="text-sm text-purple-200 mt-6">
+            14-day trial • No credit card required • Guided setup
+          </p>
+        </div>
       </div>
 
-      {/* Repricing Insights */}
-      <Card className="bg-gradient-to-br from-orange-50 to-orange-100/50 border-orange-200/50 shadow-xl hover:shadow-2xl transition-all duration-300">
-        <CardHeader className="bg-gradient-to-r from-orange-50 to-orange-100/50 rounded-t-xl border-b border-orange-200/50">
-          <CardTitle className="flex items-center gap-3 text-xl font-bold text-orange-800">
-            <div className="w-10 h-10 bg-gradient-to-r from-orange-500 to-orange-600 rounded-xl flex items-center justify-center shadow-lg">
-              <Target className="w-5 h-5 text-white" />
-            </div>
-            Repricing Insights
-          </CardTitle>
-          <CardDescription className="text-orange-600 font-medium">Live Repricer activity</CardDescription>
-        </CardHeader>
-        <CardContent className="p-8">
-          <div className="grid grid-cols-1 md:grid-cols-5 gap-6">
-            <div className="text-center bg-white/60 p-6 rounded-2xl border border-orange-200/30 hover:bg-white/80 transition-all duration-200">
-              <div className="font-semibold text-sm mb-3 text-orange-700">Optimized listings</div>
-              <div className="text-3xl font-bold text-orange-800">{metrics?.total_products || 5}</div>
-              <div className="text-xs text-orange-600 mt-2 font-medium">of {metrics?.total_products || 5}</div>
-            </div>
-            
-            <div className="text-center bg-white/60 p-6 rounded-2xl border border-blue-200/30 hover:bg-white/80 transition-all duration-200">
-              <div className="font-semibold text-sm mb-3 text-blue-700">Repricing listings</div>
-              <div className="text-3xl font-bold text-blue-600">{Math.floor((metrics?.total_products || 5) * 0.8)}</div>
-              <div className="text-xs text-blue-600 mt-2 font-medium">of {metrics?.total_products || 5}</div>
-            </div>
-            
-            <div className="text-center bg-white/60 p-6 rounded-2xl border border-amber-200/30 hover:bg-white/80 transition-all duration-200">
-              <div className="font-semibold text-sm mb-3 text-amber-700">Underpriced listings</div>
-              <div className="text-3xl font-bold text-amber-600">{Math.floor((metrics?.total_products || 5) * 0.2)}</div>
-              <div className="text-xs text-amber-600 mt-2 font-medium">of {metrics?.total_products || 5}</div>
-            </div>
-            
-            <div className="text-center bg-white/60 p-6 rounded-2xl border border-red-200/30 hover:bg-white/80 transition-all duration-200">
-              <div className="font-semibold text-sm mb-3 text-red-700">Buy box loss listings</div>
-              <div className="text-3xl font-bold text-red-600">{Math.floor((metrics?.total_products || 5) * 0.4)}</div>
-              <div className="text-xs text-red-600 mt-2 font-medium">of {metrics?.total_products || 5}</div>
-            </div>
-            
-            <div className="text-center bg-white/60 p-6 rounded-2xl border border-green-200/30 hover:bg-white/80 transition-all duration-200">
-              <div className="font-semibold text-sm mb-3 text-green-700">Latest price listings</div>
-              <div className="text-3xl font-bold text-green-600">{Math.floor((metrics?.total_products || 5) * 0.6)}</div>
-              <div className="text-xs text-green-600 mt-2 font-medium">of {metrics?.total_products || 5}</div>
-            </div>
-          </div>
-        </CardContent>
-      </Card>
+      {/* Footer */}
+      <footer className="relative z-10 border-t border-white/10 py-8">
+        <div className="max-w-7xl mx-auto px-6 text-center text-purple-200">
+          <p>&copy; 2025 RepriceLab.com. All rights reserved.</p>
+        </div>
+      </footer>
 
-      {/* Activity History and Buy Box Row */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-        {/* Activity History */}
-        <Card className="lg:col-span-2 bg-gradient-to-br from-indigo-50 to-indigo-100/50 border-indigo-200/50 shadow-xl hover:shadow-2xl transition-all duration-300">
-          <CardHeader className="bg-gradient-to-r from-indigo-50 to-indigo-100/50 rounded-t-xl border-b border-indigo-200/50">
-            <CardTitle className="flex items-center gap-3 text-xl font-bold text-indigo-800">
-              <div className="w-10 h-10 bg-gradient-to-r from-indigo-500 to-indigo-600 rounded-xl flex items-center justify-center shadow-lg">
-                <Activity className="w-5 h-5 text-white" />
-              </div>
-              Activity History
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="p-8">
-            <div className="mb-6 bg-white/60 p-6 rounded-2xl border border-indigo-200/30">
-              <div className="text-4xl font-bold text-indigo-800">68,724</div>
-              <p className="text-sm font-semibold text-indigo-600 mt-2">Total pricing events processed in the last 30 days</p>
-            </div>
-            <div className="h-52 bg-gradient-to-br from-white/60 to-indigo-50/50 rounded-2xl border border-indigo-200/30 flex items-center justify-center">
-              <div className="text-center">
-                <div className="w-16 h-16 bg-gradient-to-r from-indigo-400 to-indigo-500 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-lg">
-                  <Activity className="w-8 h-8 text-white" />
-                </div>
-                <p className="text-indigo-700 font-semibold text-lg">Activity chart visualization</p>
-                <p className="text-sm text-indigo-600 mt-2 font-medium">Historical repricing data will appear here</p>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-
-        {/* Buy Box Ownership */}
-        <Card className="bg-gradient-to-br from-yellow-50 to-yellow-100/50 border-yellow-200/50 shadow-xl hover:shadow-2xl transition-all duration-300 hover:-translate-y-1">
-          <CardHeader className="bg-gradient-to-r from-yellow-50 to-yellow-100/50 rounded-t-xl border-b border-yellow-200/50">
-            <CardTitle className="flex items-center gap-3 text-xl font-bold text-yellow-800">
-              <div className="w-10 h-10 bg-gradient-to-r from-yellow-500 to-yellow-600 rounded-xl flex items-center justify-center shadow-lg">
-                <Award className="w-5 h-5 text-white" />
-              </div>
-              Buy Box Ownership
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="p-6">
-            <div className="flex flex-col items-center bg-white/60 rounded-2xl p-6 border border-yellow-200/30">
-              <CircularProgress percentage={Math.round(metrics?.buybox_ownership_pct || 60)} size={140} showLabel={true} />
-              <div className="mt-6 text-center">
-                <div className="text-sm font-semibold text-yellow-800">Current Buy Box Rate</div>
-                <div className="text-xs font-medium text-yellow-700 mt-2">
-                  {Math.round(metrics?.buybox_ownership_pct || 60)}% of your listings own the Buy Box
-                </div>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-      </div>
-
-      {/* Top Competitors */}
-      <Card className="bg-gradient-to-br from-rose-50 to-rose-100/50 border-rose-200/50 shadow-xl hover:shadow-2xl transition-all duration-300">
-        <CardHeader className="bg-gradient-to-r from-rose-50 to-rose-100/50 rounded-t-xl border-b border-rose-200/50">
-          <CardTitle className="flex items-center gap-3 text-xl font-bold text-rose-800">
-            <div className="w-10 h-10 bg-gradient-to-r from-rose-500 to-rose-600 rounded-xl flex items-center justify-center shadow-lg">
-              <Users className="w-5 h-5 text-white" />
-            </div>
-            Top Competitors
-          </CardTitle>
-          <CardDescription className="text-rose-600 font-medium">Most frequently competing sellers across your listings</CardDescription>
-        </CardHeader>
-        <CardContent className="p-8">
-          <div className="space-y-5">
-            {competitorsData.map((competitor, index) => (
-              <div key={index} className="flex items-center justify-between bg-white/60 p-5 rounded-2xl border border-rose-200/30 hover:bg-white/80 transition-all duration-200">
-                <div className="flex items-center space-x-4 flex-1">
-                  <div className="w-8 h-8 bg-gradient-to-r from-rose-400 to-rose-500 rounded-xl flex items-center justify-center text-white font-bold text-sm shadow-lg">
-                    {index + 1}
-                  </div>
-                  <span className="text-sm font-semibold text-rose-800 min-w-0 flex-1">{competitor.name}</span>
-                  <span className="text-sm font-bold text-rose-700">{competitor.percentage}%</span>
-                </div>
-                <div className="w-36 ml-4">
-                  <div className="w-full bg-rose-200/50 rounded-full h-3 shadow-inner">
-                    <div 
-                      className="h-3 rounded-full bg-gradient-to-r from-rose-500 to-rose-600 shadow-sm transition-all duration-500"
-                      style={{ width: `${competitor.percentage}%` }}
-                    />
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
-          <div className="mt-8 text-center">
-            <Button variant="outline" size="sm" className="border-rose-300 text-rose-700 hover:bg-rose-50 hover:border-rose-400 font-medium px-6 py-3 rounded-xl transition-all duration-200 shadow-lg">
-              View All Competitors
-            </Button>
-          </div>
-        </CardContent>
-      </Card>
+      <style jsx>{`
+        @keyframes blob {
+          0%, 100% { transform: translate(0, 0) scale(1); }
+          33% { transform: translate(30px, -50px) scale(1.1); }
+          66% { transform: translate(-20px, 20px) scale(0.9); }
+        }
+        .animate-blob {
+          animation: blob 7s infinite;
+        }
+        .animation-delay-2000 {
+          animation-delay: 2s;
+        }
+        .animation-delay-4000 {
+          animation-delay: 4s;
+        }
+      `}</style>
     </div>
   );
 }
