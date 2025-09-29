@@ -11,27 +11,6 @@ export default function SubscriptionPage() {
 
   const plans = [
     {
-      name: 'Free',
-      description: 'Perfect for getting started',
-      price: { monthly: 0, yearly: 0 },
-      badge: null,
-      features: [
-        'Up to 10 products',
-        'Basic repricing rules',
-        'Email support',
-        'Amazon integration',
-        'Basic analytics'
-      ],
-      limitations: [
-        'Limited to 10 products',
-        'Basic support only',
-        'No advanced features'
-      ],
-      buttonText: 'Current Plan',
-      buttonVariant: 'outline' as const,
-      popular: false
-    },
-    {
       name: 'Plus',
       description: 'For growing businesses',
       price: { monthly: 49, yearly: 490 },
@@ -108,8 +87,6 @@ export default function SubscriptionPage() {
 
   const getPlanIcon = (planName: string) => {
     switch (planName) {
-      case 'Free':
-        return <Shield className="w-5 h-5 text-gray-600" />;
       case 'Plus':
         return <Zap className="w-5 h-5 text-blue-600" />;
       case 'Pro':
@@ -171,7 +148,7 @@ export default function SubscriptionPage() {
       </div>
 
       {/* Pricing Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         {plans.map((plan) => (
           <Card 
             key={plan.name} 
@@ -224,7 +201,6 @@ export default function SubscriptionPage() {
                 <Button 
                   className="w-full" 
                   variant={plan.buttonVariant}
-                  disabled={plan.name === 'Free'}
                 >
                   {plan.buttonText}
                 </Button>
@@ -282,7 +258,6 @@ export default function SubscriptionPage() {
               <thead>
                 <tr className="border-b">
                   <th className="text-left py-3 px-4">Features</th>
-                  <th className="text-center py-3 px-4">Free</th>
                   <th className="text-center py-3 px-4">Plus</th>
                   <th className="text-center py-3 px-4">Pro</th>
                   <th className="text-center py-3 px-4">Enterprise</th>
@@ -291,35 +266,30 @@ export default function SubscriptionPage() {
               <tbody className="text-sm">
                 <tr className="border-b">
                   <td className="py-3 px-4 font-medium">Products</td>
-                  <td className="text-center py-3 px-4">10</td>
                   <td className="text-center py-3 px-4">5,000</td>
                   <td className="text-center py-3 px-4">10,000+</td>
                   <td className="text-center py-3 px-4">Unlimited</td>
                 </tr>
                 <tr className="border-b">
                   <td className="py-3 px-4 font-medium">Repricing Rules</td>
-                  <td className="text-center py-3 px-4">Basic</td>
                   <td className="text-center py-3 px-4">Advanced</td>
                   <td className="text-center py-3 px-4">AI-Powered</td>
                   <td className="text-center py-3 px-4">Custom</td>
                 </tr>
                 <tr className="border-b">
                   <td className="py-3 px-4 font-medium">Marketplaces</td>
-                  <td className="text-center py-3 px-4">Amazon</td>
                   <td className="text-center py-3 px-4">Multi</td>
                   <td className="text-center py-3 px-4">All</td>
                   <td className="text-center py-3 px-4">All + Custom</td>
                 </tr>
                 <tr className="border-b">
                   <td className="py-3 px-4 font-medium">Support</td>
-                  <td className="text-center py-3 px-4">Email</td>
                   <td className="text-center py-3 px-4">Priority Email</td>
                   <td className="text-center py-3 px-4">Phone + Email</td>
                   <td className="text-center py-3 px-4">Dedicated Manager</td>
                 </tr>
                 <tr className="border-b">
                   <td className="py-3 px-4 font-medium">API Access</td>
-                  <td className="text-center py-3 px-4">-</td>
                   <td className="text-center py-3 px-4">-</td>
                   <td className="text-center py-3 px-4">✓</td>
                   <td className="text-center py-3 px-4">Priority</td>
