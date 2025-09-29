@@ -58,10 +58,13 @@ exposeLocalhost = true
 localPort = 36587
 externalPort = 3000
 
-
 [[ports]]
 localPort = 38629
 externalPort = 3001
+
+[[ports]]
+localPort = 39181
+externalPort = 3002
 
 [deployment]
 deploymentTarget = "vm"

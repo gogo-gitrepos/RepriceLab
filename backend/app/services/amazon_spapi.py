@@ -8,7 +8,7 @@ import logging
 logger = logging.getLogger(__name__)
 
 try:
-    from sp_api.api import Orders, Reports, Feeds
+    from sp_api.api import Orders, Reports, Feeds, ListingsItems, CatalogItems, ProductPricing
     from sp_api.base import SellingApiException
     SPAPI_AVAILABLE = True
 except ImportError as e:
@@ -51,9 +51,11 @@ class AmazonSPAPIClient:
         # Initialize API clients
         try:
             self.orders_api = Orders(credentials=self.credentials)
-            # Add other APIs as needed
             self.reports_api = Reports(credentials=self.credentials)
             self.feeds_api = Feeds(credentials=self.credentials)
+            self.listings_api = ListingsItems(credentials=self.credentials)
+            self.catalog_api = CatalogItems(credentials=self.credentials)
+            self.pricing_api = ProductPricing(credentials=self.credentials)
         except Exception as e:
             logger.error(f"Failed to initialize SP-API clients: {e}")
             raise
@@ -94,16 +96,44 @@ class AmazonSPAPIClient:
                 "message": f"SP-API connection failed: {str(e)}"
             }
     
-    async def get_seller_listings(self, marketplace_id: str, seller_id: str) -> Dict[str, Any]:
-        """Get seller's product listings - placeholder for now"""
-        try:
-            # Note: Actual listings API implementation would go here
-            # For now, return mock data to test the flow
+    async def get_seller_listings(self, marketplace_id: str, seller_id: str, sku: str = None) -> Dict[str, Any]:
+        """Get seller's product listings from Amazon SP-API"""
+        if not SPAPI_AVAILABLE:
             return {
-                "success": True,
-                "listings": [],
-                "message": "Listings API not fully implemented yet"
+                "success": False,
+                "error": "SP-API package not available"
             }
+            
+        try:
+            if sku:
+                # Get specific listing by SKU
+                response = self.listings_api.get_listings_item(
+                    seller_id=seller_id,
+                    sku=sku,
+                    marketplace_ids=[marketplace_id],
+                    included_data=["summaries", "attributes", "issues", "offers", "fulfillmentAvailability"]
+                )
+                
+                if hasattr(response, 'payload') and response.payload:
+                    return {
+                        "success": True,
+                        "listing": response.payload,
+                        "message": f"Retrieved listing for SKU: {sku}"
+                    }
+                else:
+                    return {
+                        "success": False,
+                        "error": f"No listing found for SKU: {sku}"
+                    }
+            else:
+                # For demo purposes, return success with message about bulk listing
+                # In production, you'd use Reports API or iterate through known SKUs
+                return {
+                    "success": True,
+                    "listings": [],
+                    "message": "Bulk listing retrieval requires Reports API integration or SKU iteration"
+                }
+                
         except Exception as e:
             logger.error(f"Failed to get listings: {e}")
             return {
@@ -112,14 +142,31 @@ class AmazonSPAPIClient:
             }
     
     async def get_product_pricing(self, asin: str, marketplace_id: str) -> Dict[str, Any]:
-        """Get competitive pricing for a product - placeholder for now"""
-        try:
-            # Note: Actual pricing API implementation would go here
+        """Get competitive pricing for a product"""
+        if not SPAPI_AVAILABLE:
             return {
-                "success": True,
-                "pricing": {},
-                "message": "Pricing API not fully implemented yet"
+                "success": False,
+                "error": "SP-API package not available"
             }
+            
+        try:
+            response = self.pricing_api.get_competitive_pricing(
+                marketplace_id=marketplace_id,
+                asins=[asin]
+            )
+            
+            if hasattr(response, 'payload') and response.payload:
+                return {
+                    "success": True,
+                    "pricing": response.payload,
+                    "message": f"Retrieved pricing for ASIN: {asin}"
+                }
+            else:
+                return {
+                    "success": False,
+                    "error": f"No pricing found for ASIN: {asin}"
+                }
+                
         except Exception as e:
             logger.error(f"Failed to get pricing for {asin}: {e}")
             return {
@@ -128,14 +175,31 @@ class AmazonSPAPIClient:
             }
     
     async def get_product_details(self, asin: str, marketplace_id: str) -> Dict[str, Any]:
-        """Get product catalog details - placeholder for now"""
-        try:
-            # Note: Actual catalog API implementation would go here
+        """Get product catalog details"""
+        if not SPAPI_AVAILABLE:
             return {
-                "success": True,
-                "product": {},
-                "message": "Catalog API not fully implemented yet"
+                "success": False,
+                "error": "SP-API package not available"
             }
+            
+        try:
+            response = self.catalog_api.get_catalog_item(
+                marketplace_ids=[marketplace_id],
+                asin=asin
+            )
+            
+            if hasattr(response, 'payload') and response.payload:
+                return {
+                    "success": True,
+                    "product": response.payload,
+                    "message": f"Retrieved catalog details for ASIN: {asin}"
+                }
+            else:
+                return {
+                    "success": False,
+                    "error": f"No catalog details found for ASIN: {asin}"
+                }
+                
         except Exception as e:
             logger.error(f"Failed to get product details for {asin}: {e}")
             return {
