@@ -84,13 +84,13 @@ export function NavigationContent() {
     <div className="p-6 border-b border-gray-200/50 bg-gradient-to-r from-gray-50/50 to-purple-50/30">
       {/* Search Bar */}
       <form onSubmit={handleSearch} className="relative">
-        <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 w-4 h-4 text-purple-400" />
+        <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-600" />
         <input
           type="text"
           placeholder="Search Title, SKU or ASIN..."
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
-          className="w-full pl-12 pr-4 py-3 bg-gradient-to-r from-white to-purple-50/50 border border-purple-200/50 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent shadow-sm transition-all duration-200 font-medium placeholder:text-purple-400/70"
+          className="w-full pl-12 pr-4 py-3 bg-white border-2 border-gray-300 rounded-xl text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-purple-600 focus:border-purple-600 shadow-md transition-all duration-200 font-medium placeholder:text-gray-500"
         />
       </form>
     </div>

@@ -74,7 +74,7 @@ const I18nContext = createContext<I18nContextType | undefined>(undefined);
 
 export function I18nProvider({ children }: { children: ReactNode }) {
   const t = (key: string, params?: Record<string, string>): string => {
-    let text = translations[key] || key;
+    let text = (translations as Record<string, string>)[key] || key;
     
     if (params) {
       Object.entries(params).forEach(([paramKey, value]) => {
