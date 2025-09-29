@@ -9,6 +9,7 @@ import logging
 from datetime import datetime
 
 from ..database import SessionLocal
+from ..dependencies import get_current_user_id
 
 def get_db():
     db = SessionLocal()
@@ -199,13 +200,13 @@ async def disconnect_amazon_store(
 
 @router.get("/stores")
 async def get_user_stores(
-    user_id: int = Query(..., description="User ID"),
+    current_user_id: int = Depends(get_current_user_id),
     db: Session = Depends(get_db)
 ):
     """Get all Amazon stores for a user"""
     
     stores = db.execute(
-        select(Store).where(Store.user_id == user_id, Store.is_active == True)
+        select(Store).where(Store.user_id == current_user_id, Store.is_active == True)
     ).scalars().all()
     
     store_list = []

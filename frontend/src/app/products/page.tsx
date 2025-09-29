@@ -97,7 +97,7 @@ export default function ProductsPage() {
     try {
       setLoading(true);
       const storeParam = selectedStore ? `&store_id=${selectedStore}` : '';
-      const response = await fetch(`http://localhost:8000/api/products/?${storeParam.replace('&', '')}limit=50`);
+      const response = await fetch(`http://localhost:8000/api/products/?${storeParam ? storeParam.substring(1) + '&' : ''}limit=50`);
       const data = await response.json();
       if (response.ok) {
         setProducts(data.products || []);
