@@ -8,7 +8,7 @@ export function NavigationContent() {
   return (
     <aside className="w-64 border-r bg-card p-4 hidden md:block">
       <div className="flex items-center justify-between mb-4">
-        <h1 className="text-xl font-bold">BuyBox SaaS</h1>
+        <h1 className="text-xl font-bold">RepriceLab</h1>
         <LanguageSwitcher />
       </div>
       <nav className="space-y-2">
