@@ -1,0 +1,147 @@
+Build a production-ready web app similar in capability to a modern Amazon repricer dashboard.
+Stack: Next.js (App Router, TypeScript), React Query, Tailwind, shadcn/ui, Node/Express (or Next API routes), PostgreSQL + Prisma, Redis (queues + rate limit), worker (BullMQ), background schedulers (Temporal/cron), OAuth + email/password, AWS S3 for exports, Stripe for billing. Clean, fast, responsive.
+
+Core user stories
+
+Connect Amazon Seller Central via Amazon SP-API (Listings, Offers, BuyBox price, Inventory, Orders). Secure OAuth flow, token refresh, rate limiting.
+
+Import & list SKUs/ASINs with columns: title, condition, your price, min/max, landed price, comp count, your BB status, inventory, last repriced at.
+
+Rules engine:
+
+Global + per-SKU rules.
+
+Scenarios: If Buy Box Winner, Buy Box Suppressed, No Competitors, Competition below Min, Competition equals Min, Used listings scope (match same condition only).
+
+Actions: set price to min/max, match lowest landed −/+ offset, upward-only micro-raise, hold price.
+
+Offsets by percent or amount; guardrails: per-SKU min/max & global floors/ceilings; MAP compliance.
+
+Kick-Start Repricer: time-boxed micro-adjustments from current price (below/by percent or amount), cadence (e.g., every 5–15 minutes), “stay at” duration, option to ignore competitor changes during stay.
+
+Buy Box Chaser: periodic tiny decreases until Buy Box; respects min; configurable step (percent/amount) and interval.
+
+Sleep Mode (optional): quiet hours; Out-of-Stock → Max Price toggle.
+
+Scheduling: rule runs by SKU set/marketplace; queue-based execution; retry + jitter; backoff.
+
+Simulation/Sandbox: run a rule on historical offer data to preview effect (no live change).
+
+Logs & Audit: every price change with before/after, rule id, trigger reason, competing offers snapshot, marketplace, latency; export CSV.
+
+Alerts: email/in-app for Buy Box loss, suppressed BB, hitting min, API failures. Webhooks + Slack.
+
+Dashboard KPIs: Buy Box % (time-weighted), revenue, avg price change, SKUs at min/max, suppressed count, API health, queued jobs.
+
+RBAC: Owner, Admin, Analyst, Read-only; per-store access.
+
+Billing: plan limits (SKUs, frequency, users), usage-based overage.
+
+Pages / UI
+
+Dashboard / Summary
+
+KPIs cards, trend charts (last 24h/7d/30d), queue health, recent price changes table.
+
+Listings
+
+Table with multi-select bulk edit (min/max, assign rule, enable/disable repricing).
+
+Filters: BB status, inventory, condition, at-min/at-max, suppressed BB.
+
+Inline edit for price/min/max; side drawer with competitor snapshot.
+
+Rules
+
+Rule list + “Create/Edit Rule” form with sections:
+
+Scenarios (dropdowns):
+
+If Buy Box Winner → options: Upward only micro-raise, Do not reprice, Hold.
+
+If Buy Box Suppressed → Match lowest landed (respect min) | Hold | Min + premium.
+
+If No Competitors → Move to Max | Hold.
+
+If Competition Below Min → Set to Min.
+
+If Competition Equals Min → Stay at Min.
+
+Used Listings → Compete only with same condition.
+
+Kick-Start Repricer (toggle, step value + unit, cadence, stay duration, ignore-changes toggle).
+
+Buy Box Chaser (toggle, cadence, step value + unit).
+
+Sleep Mode (quiet hours). Out of Stock → Max Price (toggle).
+
+Safety: never undercut min, MAP, max change per run, daily change cap.
+
+Activity & Logs
+
+Infinite table: SKU, old/new price, rule, trigger, competitors, BB result, runtime, status; filters; CSV export.
+
+Simulation
+
+Pick SKUs + rule + period → show projected price path, expected BB%, min hits, margin impact.
+
+Integrations
+
+Amazon SP-API connection status, scopes, refresh; Slack/Webhook configs.
+
+Settings
+
+Store defaults (currency, tax, shipping), global floors/ceilings, time zone.
+
+Billing & Team
+
+Plans, usage meters, RBAC user invites.
+
+Data model (Prisma sketch)
+
+User(id, email, role, orgId, …)
+
+Org(id, name, plan, limits…)
+
+Store(id, orgId, marketplace, spApiKeys…)
+
+Sku(id, storeId, asin, condition, title, minPrice, maxPrice, currentPrice, enabled, …)
+
+Rule(id, storeId, name, config JSON, active)
+
+Assignment(id, ruleId, skuId)
+
+RepriceJob(id, skuId, ruleId, status, ranAt, result JSON)
+
+PriceChange(id, skuId, from, to, reason, ruleId, bbWon:boolean, meta JSON, createdAt)
+
+CompetitorSnapshot(id, skuId, offers JSON, fetchedAt)
+
+Alert(id, storeId, type, payload, status)
+
+Audit(id, actorId, action, target, diff JSON, createdAt)
+
+APIs (example)
+
+POST /api/rules (CRUD), POST /api/reprice/run (single/bulk), GET /api/listings,
+GET /api/logs, POST /api/simulate, POST /api/integrations/amazon/connect, webhooks receiver.
+
+Repricing algorithm (high level)
+
+Fetch latest offers + BB status.
+
+Evaluate scenarios in priority order; compute target price using offsets (percent/amount).
+
+Clamp to [min, max]; enforce daily change cap; write PriceChange; push to SP-API.
+
+Record competitor snapshot; emit events for alerts; schedule next run.
+
+Non-functional
+
+Secure secrets (no plaintext), full audit, feature flags, pagination, optimistic UI, E2E tests (Playwright), unit tests, CI/CD, error budgets, observability (OpenTelemetry).
+
+Deliver:
+
+Working Next.js app with the pages/components above, seeded fake data + mock SP-API, clean UI (cards, tables, drawers), and stubs for live Amazon SP-API.
+
+Make it elegant, fast, and production-ready.”
