@@ -80,23 +80,7 @@ export function NavigationContent() {
     </h3>
   );
 
-  const NavigationHeader = () => (
-    <div className="p-6 border-b border-gray-200/50 bg-gradient-to-r from-gray-50/50 to-purple-50/30">
-      {/* Search Bar */}
-      <form onSubmit={handleSearch} className="relative">
-        <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-600" />
-        <input
-          type="text"
-          placeholder="Search Title, SKU or ASIN..."
-          value={searchQuery}
-          onChange={(e) => setSearchQuery(e.target.value)}
-          className="w-full pl-12 pr-4 py-3 bg-white border-2 border-gray-300 rounded-xl text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-purple-600 focus:border-purple-600 shadow-md transition-all duration-200 font-medium placeholder:text-gray-500"
-        />
-      </form>
-    </div>
-  );
-
-  const NavigationMenu = () => (
+  const navigationMenuContent = (
     <div className="flex-1 overflow-y-auto p-4">
       <nav className="space-y-6">
         {/* Dashboard */}
@@ -215,6 +199,22 @@ export function NavigationContent() {
     </div>
   );
 
+  const navigationHeader = (
+    <div className="p-6 border-b border-gray-200/50 bg-gradient-to-r from-gray-50/50 to-purple-50/30">
+      {/* Search Bar */}
+      <form onSubmit={handleSearch} className="relative">
+        <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-600" />
+        <input
+          type="text"
+          placeholder="Search Title, SKU or ASIN..."
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
+          className="w-full pl-12 pr-4 py-3 bg-white border-2 border-gray-300 rounded-xl text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-purple-600 focus:border-purple-600 shadow-md transition-all duration-200 font-medium placeholder:text-gray-500"
+        />
+      </form>
+    </div>
+  );
+
   return (
     <>
       {/* Mobile Menu Button */}
@@ -232,8 +232,8 @@ export function NavigationContent() {
             onClick={() => setMobileMenuOpen(false)}
           />
           <div className="fixed left-0 top-0 h-full w-64 bg-white z-50 flex flex-col md:hidden">
-            <NavigationHeader />
-            <NavigationMenu />
+            {navigationHeader}
+            {navigationMenuContent}
             <div className="p-4 border-t">
               <LanguageSwitcher />
             </div>
@@ -243,9 +243,9 @@ export function NavigationContent() {
 
       {/* Desktop Sidebar */}
       <aside className="border-r border-gray-200/50 bg-gradient-to-b from-white via-gray-50/30 to-purple-50/20 flex-col hidden md:flex shadow-xl backdrop-blur-sm">
-        <NavigationHeader />
+        {navigationHeader}
 
-        <NavigationMenu />
+        {navigationMenuContent}
         
         {/* Language Switcher */}
         <div className="p-4 border-t">
