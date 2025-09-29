@@ -92,16 +92,16 @@ export function NavigationContent() {
 
         {/* Repricing Section */}
         <div>
-          <SectionTitle>Repricing</SectionTitle>
+          <SectionTitle>ReprIcIng</SectionTitle>
           <div className="space-y-1">
             <MenuItem href="/products" icon={Package}>
               Products
             </MenuItem>
             <MenuItem href="/repricing-rules" icon={Settings}>
-              Repricing Rules
+              ReprIcIng Rules
             </MenuItem>
             <MenuItem href="/multichannel" icon={Zap}>
-              Multichannel
+              MultIchannel
             </MenuItem>
             <MenuItem href="/automations" icon={Wrench}>
               Automations
@@ -127,13 +127,13 @@ export function NavigationContent() {
 
         {/* Insights Section */}
         <div>
-          <SectionTitle>Insights</SectionTitle>
+          <SectionTitle>InsIghts</SectionTitle>
           <div className="space-y-1">
             <MenuItem href="/orders" icon={ShoppingCart}>
               Orders
             </MenuItem>
             <MenuItem href="/repricing-activity" icon={Activity}>
-              Repricing Activity
+              ReprIcIng ActIvIty
             </MenuItem>
             <MenuItem href="/competitors" icon={Users}>
               Competitors
