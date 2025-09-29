@@ -13,7 +13,7 @@ export default function SubscriptionPage() {
     {
       name: 'Plus',
       description: 'For growing businesses',
-      price: { monthly: 49, yearly: 490 },
+      price: { monthly: 99, yearly: 990 },
       badge: 'Most Popular',
       features: [
         'Up to 5,000 products',
@@ -33,7 +33,7 @@ export default function SubscriptionPage() {
     {
       name: 'Pro',
       description: 'For serious sellers',
-      price: { monthly: 99, yearly: 990 },
+      price: { monthly: 199, yearly: 1990 },
       badge: 'Best Value',
       features: [
         '10,000+ products',
@@ -55,7 +55,7 @@ export default function SubscriptionPage() {
     {
       name: 'Enterprise',
       description: 'For large operations',
-      price: { monthly: 249, yearly: 2490 },
+      price: { monthly: 299, yearly: 2990 },
       badge: 'Enterprise',
       features: [
         'Unlimited products',
