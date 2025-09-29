@@ -49,6 +49,11 @@ const translations = {
   'productDetail.notes': 'Notes',
   'productDetail.demoNote': 'This page works with demo data without SP-API. In real integration, offer data and Buy Box owner information comes from the backend.',
   
+  // Safe Mode
+  'safeMode.title': 'Your account is currently running in Safe Mode',
+  'safeMode.description': 'All repricing actions are paused. Contact support to enable full mode.',
+  'safeMode.learnMore': 'Learn More',
+  
   // Settings
   'settings.title': 'Settings · Pricing Rules',
   'settings.minPrice': 'Minimum Price',

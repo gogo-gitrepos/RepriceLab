@@ -40,10 +40,10 @@ export function NavigationContent() {
       <Link 
         href={href}
         onClick={() => setMobileMenuOpen(false)}
-        className={`flex items-center space-x-3 px-3 py-2 rounded-md text-sm transition-colors ${
+        className={`flex items-center space-x-3 px-4 py-3 rounded-xl text-sm transition-all duration-200 font-medium relative ${
           isActive 
-            ? 'bg-purple-100 text-purple-700 border-r-2 border-purple-600' 
-            : 'text-gray-700 hover:bg-gray-100'
+            ? 'bg-gradient-to-r from-purple-100 to-purple-50 text-purple-700 shadow-lg ring-2 ring-purple-200 before:absolute before:left-0 before:top-1/2 before:-translate-y-1/2 before:w-1 before:h-8 before:bg-purple-600 before:rounded-r' 
+            : 'text-gray-700 hover:bg-gradient-to-r hover:from-gray-50 hover:to-purple-50/30 hover:text-purple-600 hover:shadow-md hover:scale-105'
         }`}
       >
         <Icon className="w-4 h-4" />
@@ -62,10 +62,10 @@ export function NavigationContent() {
       <Link 
         href={href}
         onClick={() => setMobileMenuOpen(false)}
-        className={`flex items-center space-x-3 px-6 py-2 rounded-md text-sm transition-colors ${
+        className={`flex items-center space-x-3 px-6 py-3 rounded-xl text-sm transition-all duration-200 font-medium ${
           isActive 
-            ? 'bg-purple-100 text-purple-700' 
-            : 'text-gray-600 hover:bg-gray-50'
+            ? 'bg-gradient-to-r from-purple-100 to-purple-50 text-purple-700 shadow-md ring-1 ring-purple-200' 
+            : 'text-gray-600 hover:bg-gradient-to-r hover:from-gray-50 hover:to-purple-50/30 hover:text-purple-600 hover:shadow-sm'
         }`}
       >
         <Icon className="w-4 h-4" />
@@ -75,22 +75,22 @@ export function NavigationContent() {
   };
 
   const SectionTitle = ({ children }: { children: React.ReactNode }) => (
-    <h3 className="px-3 py-2 text-xs font-semibold text-gray-500 tracking-wider">
+    <h3 className="px-4 py-3 text-xs font-bold text-purple-600 tracking-wider uppercase bg-gradient-to-r from-purple-50/50 to-transparent rounded-lg mx-2">
       {children}
     </h3>
   );
 
   const NavigationHeader = () => (
-    <div className="p-4 border-b">
+    <div className="p-6 border-b border-gray-200/50 bg-gradient-to-r from-gray-50/50 to-purple-50/30">
       {/* Search Bar */}
       <form onSubmit={handleSearch} className="relative">
-        <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
+        <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 w-4 h-4 text-purple-400" />
         <input
           type="text"
           placeholder="Search Title, SKU or ASIN..."
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
-          className="w-full pl-10 pr-4 py-2 bg-gray-100 border border-gray-200 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+          className="w-full pl-12 pr-4 py-3 bg-gradient-to-r from-white to-purple-50/50 border border-purple-200/50 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent shadow-sm transition-all duration-200 font-medium placeholder:text-purple-400/70"
         />
       </form>
     </div>
@@ -168,10 +168,10 @@ export function NavigationContent() {
             <div>
               <button
                 onClick={() => setSettingsDropdownOpen(!settingsDropdownOpen)}
-                className={`w-full flex items-center justify-between px-3 py-2 rounded-md text-sm transition-colors ${
+                className={`w-full flex items-center justify-between px-4 py-3 rounded-xl text-sm transition-all duration-200 font-medium relative ${
                   pathname.startsWith('/settings') 
-                    ? 'bg-purple-100 text-purple-700 border-r-2 border-purple-600' 
-                    : 'text-gray-700 hover:bg-gray-100'
+                    ? 'bg-gradient-to-r from-purple-100 to-purple-50 text-purple-700 shadow-lg ring-2 ring-purple-200 before:absolute before:left-0 before:top-1/2 before:-translate-y-1/2 before:w-1 before:h-8 before:bg-purple-600 before:rounded-r' 
+                    : 'text-gray-700 hover:bg-gradient-to-r hover:from-gray-50 hover:to-purple-50/30 hover:text-purple-600 hover:shadow-md hover:scale-105'
                 }`}
               >
                 <div className="flex items-center space-x-3">
@@ -242,7 +242,7 @@ export function NavigationContent() {
       )}
 
       {/* Desktop Sidebar */}
-      <aside className="border-r bg-white flex-col hidden md:flex">
+      <aside className="border-r border-gray-200/50 bg-gradient-to-b from-white via-gray-50/30 to-purple-50/20 flex-col hidden md:flex shadow-xl backdrop-blur-sm">
         <NavigationHeader />
 
         <NavigationMenu />

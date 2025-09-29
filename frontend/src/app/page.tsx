@@ -89,58 +89,81 @@ export default function DashboardPage() {
   };
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-8 bg-gradient-to-br from-gray-50 via-white to-purple-50 min-h-screen p-6 -mx-4 md:-mx-8 -my-4 md:-my-8">
       {/* Account Status Banner */}
-      <div className="bg-gradient-to-r from-purple-600 to-purple-700 text-white p-4 rounded-lg">
+      <div className="bg-gradient-to-r from-purple-600 via-purple-700 to-indigo-600 text-white p-6 rounded-2xl shadow-2xl border border-purple-500/20 backdrop-blur-sm">
         <div className="flex items-center justify-between">
-          <div>
-            <h3 className="font-medium mb-1">Your account is currently running in Safe Mode</h3>
-            <p className="text-sm text-purple-100">All repricing actions are paused. Contact support to enable full mode.</p>
+          <div className="flex items-center space-x-4">
+            <div className="w-12 h-12 bg-white/20 rounded-xl flex items-center justify-center backdrop-blur-sm">
+              <Zap className="w-6 h-6 text-white" />
+            </div>
+            <div>
+              <h3 className="font-semibold text-lg mb-1 tracking-tight">{t('safeMode.title')}</h3>
+              <p className="text-purple-100 font-medium">{t('safeMode.description')}</p>
+            </div>
           </div>
-          <Button variant="secondary" size="sm">
-            Learn More
+          <Button 
+            variant="secondary" 
+            size="sm" 
+            className="bg-white/10 border-white/20 text-white hover:bg-white/20 backdrop-blur-sm font-medium px-6 py-3 rounded-xl transition-all duration-200 shadow-lg"
+          >
+{t('safeMode.learnMore')}
           </Button>
         </div>
       </div>
 
       {/* Financial Metrics */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-        <Card>
-          <CardContent className="p-4">
-            <div className="text-2xl font-bold text-red-600">$0.00</div>
-            <p className="text-sm text-muted-foreground">Spent this period</p>
-            <p className="text-xs text-muted-foreground mt-1">vs previous period</p>
+        <Card className="bg-gradient-to-br from-red-50 to-red-100/50 border-red-200/50 shadow-xl hover:shadow-2xl transition-all duration-300 hover:-translate-y-1">
+          <CardContent className="p-6">
+            <div className="flex items-center space-x-3 mb-3">
+              <div className="w-10 h-10 bg-gradient-to-r from-red-500 to-red-600 rounded-xl flex items-center justify-center shadow-lg">
+                <TrendingUp className="w-5 h-5 text-white" />
+              </div>
+              <div>
+                <div className="text-3xl font-bold text-red-600 tracking-tight">$0.00</div>
+                <p className="text-sm font-medium text-red-700">Spent this period</p>
+              </div>
+            </div>
+            <p className="text-xs text-red-600/70 font-medium">vs previous period</p>
           </CardContent>
         </Card>
         
-        <Card>
-          <CardContent className="p-4">
-            <div className="text-2xl font-bold">$0.00</div>
-            <p className="text-sm text-muted-foreground">Daily limit remaining</p>
-            <p className="text-xs text-muted-foreground mt-1">Refreshes at midnight</p>
+        <Card className="bg-gradient-to-br from-blue-50 to-blue-100/50 border-blue-200/50 shadow-xl hover:shadow-2xl transition-all duration-300 hover:-translate-y-1">
+          <CardContent className="p-6">
+            <div className="flex items-center space-x-3 mb-3">
+              <div className="w-10 h-10 bg-gradient-to-r from-blue-500 to-blue-600 rounded-xl flex items-center justify-center shadow-lg">
+                <ShoppingCart className="w-5 h-5 text-white" />
+              </div>
+              <div>
+                <div className="text-3xl font-bold text-blue-600 tracking-tight">$0.00</div>
+                <p className="text-sm font-medium text-blue-700">Daily limit remaining</p>
+              </div>
+            </div>
+            <p className="text-xs text-blue-600/70 font-medium">Refreshes at midnight</p>
           </CardContent>
         </Card>
         
-        <Card>
-          <CardContent className="p-4">
+        <Card className="bg-gradient-to-br from-purple-50 to-purple-100/50 border-purple-200/50 shadow-xl hover:shadow-2xl transition-all duration-300 hover:-translate-y-1 md:col-span-2">
+          <CardContent className="p-6">
             <div className="space-y-4">
-              <div className="flex items-center space-x-3">
-                <div className="w-12 h-12 bg-purple-100 rounded-full flex items-center justify-center">
-                  <Users className="w-6 h-6 text-purple-600" />
+              <div className="flex items-center space-x-4">
+                <div className="w-14 h-14 bg-gradient-to-r from-purple-500 to-purple-600 rounded-2xl flex items-center justify-center shadow-lg">
+                  <Users className="w-7 h-7 text-white" />
                 </div>
                 <div>
-                  <div className="font-medium">Need Help?</div>
-                  <p className="text-sm text-muted-foreground">Our support team is here to help you succeed!</p>
+                  <div className="font-bold text-lg text-purple-800">Need Help?</div>
+                  <p className="text-sm font-medium text-purple-600">Our support team is here to help you succeed!</p>
                 </div>
               </div>
               
-              <div className="space-y-2">
-                <Button variant="outline" size="sm" className="w-full justify-start">
-                  <Mail className="w-4 h-4 mr-2" />
+              <div className="space-y-3">
+                <Button variant="outline" size="sm" className="w-full justify-start border-purple-200 text-purple-700 hover:bg-purple-50 hover:border-purple-300 transition-all duration-200 font-medium py-3 rounded-xl">
+                  <Mail className="w-4 h-4 mr-3" />
                   Send us an email
                 </Button>
-                <Button variant="outline" size="sm" className="w-full justify-start">
-                  <Phone className="w-4 h-4 mr-2" />
+                <Button variant="outline" size="sm" className="w-full justify-start border-purple-200 text-purple-700 hover:bg-purple-50 hover:border-purple-300 transition-all duration-200 font-medium py-3 rounded-xl">
+                  <Phone className="w-4 h-4 mr-3" />
                   Schedule a call
                 </Button>
               </div>
@@ -150,51 +173,58 @@ export default function DashboardPage() {
       </div>
 
       {/* Sales Data Section */}
-      <Card>
-        <CardHeader>
+      <Card className="bg-gradient-to-br from-white to-gray-50/50 border-gray-200/50 shadow-xl hover:shadow-2xl transition-all duration-300">
+        <CardHeader className="bg-gradient-to-r from-gray-50 to-gray-100/50 rounded-t-xl border-b border-gray-200/50">
           <div className="flex items-center justify-between">
-            <CardTitle className="flex items-center gap-2">
-              <BarChart3 className="w-5 h-5" />
+            <CardTitle className="flex items-center gap-3 text-xl font-bold text-gray-800">
+              <div className="w-10 h-10 bg-gradient-to-r from-gray-600 to-gray-700 rounded-xl flex items-center justify-center shadow-lg">
+                <BarChart3 className="w-5 h-5 text-white" />
+              </div>
               Sales data unavailable for this period
             </CardTitle>
-            <Button variant="outline" size="sm">
+            <Button variant="outline" size="sm" className="border-gray-300 text-gray-700 hover:bg-gray-50 font-medium px-4 py-2 rounded-xl transition-all duration-200">
               Settings
             </Button>
           </div>
         </CardHeader>
-        <CardContent>
-          <div className="h-48 flex items-center justify-center bg-gray-50 rounded-lg">
+        <CardContent className="p-8">
+          <div className="h-52 flex items-center justify-center bg-gradient-to-br from-gray-50 to-gray-100/50 rounded-2xl border border-gray-200/50">
             <div className="text-center">
-              <BarChart3 className="w-12 h-12 text-gray-400 mx-auto mb-2" />
-              <p className="text-muted-foreground">No data available for the selected period</p>
-              <p className="text-sm text-muted-foreground mt-1">Data will appear once sales are recorded</p>
+              <div className="w-16 h-16 bg-gradient-to-r from-gray-400 to-gray-500 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-lg">
+                <BarChart3 className="w-8 h-8 text-white" />
+              </div>
+              <p className="text-gray-600 font-semibold text-lg">No data available for the selected period</p>
+              <p className="text-sm text-gray-500 mt-2 font-medium">Data will appear once sales are recorded</p>
             </div>
           </div>
         </CardContent>
       </Card>
 
       {/* Insights and Profitability Row */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
         {/* Insights */}
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <TrendingUp className="w-5 h-5" />
+        <Card className="bg-gradient-to-br from-emerald-50 to-emerald-100/50 border-emerald-200/50 shadow-xl hover:shadow-2xl transition-all duration-300 hover:-translate-y-1">
+          <CardHeader className="bg-gradient-to-r from-emerald-50 to-emerald-100/50 rounded-t-xl border-b border-emerald-200/50">
+            <CardTitle className="flex items-center gap-3 text-xl font-bold text-emerald-800">
+              <div className="w-10 h-10 bg-gradient-to-r from-emerald-500 to-emerald-600 rounded-xl flex items-center justify-center shadow-lg">
+                <TrendingUp className="w-5 h-5 text-white" />
+              </div>
               Insights
             </CardTitle>
           </CardHeader>
-          <CardContent>
-            <div className="space-y-4">
+          <CardContent className="p-6">
+            <div className="space-y-5">
               {insightsData.map((item, index) => (
-                <div key={index} className="flex items-center justify-between">
-                  <div className="flex items-center space-x-3 flex-1">
-                    <span className="text-sm font-medium min-w-0 flex-1">{item.label}</span>
-                    <span className="text-sm text-muted-foreground">{item.percentage}%</span>
+                <div key={index} className="flex items-center justify-between bg-white/60 p-4 rounded-xl border border-emerald-200/30 hover:bg-white/80 transition-all duration-200">
+                  <div className="flex items-center space-x-4 flex-1">
+                    <div className={`w-3 h-3 rounded-full ${item.color} shadow-md`}></div>
+                    <span className="text-sm font-semibold text-emerald-800 min-w-0 flex-1">{item.label}</span>
+                    <span className="text-sm font-bold text-emerald-700">{item.percentage}%</span>
                   </div>
-                  <div className="w-24">
-                    <div className="w-full bg-gray-200 rounded-full h-2">
+                  <div className="w-28 ml-4">
+                    <div className="w-full bg-emerald-200/50 rounded-full h-3 shadow-inner">
                       <div 
-                        className={`h-2 rounded-full ${item.color}`}
+                        className={`h-3 rounded-full ${item.color} shadow-sm transition-all duration-500`}
                         style={{ width: `${item.percentage}%` }}
                       />
                     </div>
@@ -202,122 +232,130 @@ export default function DashboardPage() {
                 </div>
               ))}
             </div>
-            <div className="mt-6 text-center">
-              <p className="text-sm text-muted-foreground">No products found.</p>
-              <p className="text-sm text-muted-foreground">Start adding your insights here!</p>
+            <div className="mt-8 text-center bg-white/60 p-6 rounded-xl border border-emerald-200/30">
+              <p className="text-sm font-semibold text-emerald-700">No products found.</p>
+              <p className="text-sm font-medium text-emerald-600 mt-1">Start adding your insights here!</p>
             </div>
           </CardContent>
         </Card>
 
         {/* Profitability */}
-        <Card>
-          <CardHeader>
-            <CardTitle>Profitability</CardTitle>
-            <CardDescription>Profitability of sales</CardDescription>
+        <Card className="bg-gradient-to-br from-blue-50 to-blue-100/50 border-blue-200/50 shadow-xl hover:shadow-2xl transition-all duration-300 hover:-translate-y-1">
+          <CardHeader className="bg-gradient-to-r from-blue-50 to-blue-100/50 rounded-t-xl border-b border-blue-200/50">
+            <CardTitle className="text-xl font-bold text-blue-800">Profitability</CardTitle>
+            <CardDescription className="text-blue-600 font-medium">Profitability of sales</CardDescription>
           </CardHeader>
-          <CardContent>
-            <div className="flex items-center justify-center">
+          <CardContent className="p-6">
+            <div className="flex items-center justify-center bg-white/60 rounded-2xl p-6 border border-blue-200/30">
               <div className="relative">
-                <CircularProgress percentage={84} size={140} />
+                <CircularProgress percentage={84} size={160} />
                 <div className="absolute inset-0 flex items-center justify-center">
                   <div className="text-center">
-                    <div className="text-2xl font-bold">84%</div>
-                    <div className="text-xs text-muted-foreground">Profitable</div>
+                    <div className="text-3xl font-bold text-blue-700">84%</div>
+                    <div className="text-sm font-semibold text-blue-600">Profitable</div>
                   </div>
                 </div>
               </div>
             </div>
-            <div className="mt-4 text-center">
-              <p className="text-sm">8.4K Products without ads are profitable</p>
-              <p className="text-xs text-muted-foreground mt-1">Based on current sales data analysis</p>
+            <div className="mt-6 text-center bg-white/60 p-4 rounded-xl border border-blue-200/30">
+              <p className="text-sm font-semibold text-blue-800">8.4K Products without ads are profitable</p>
+              <p className="text-xs font-medium text-blue-600 mt-1">Based on current sales data analysis</p>
             </div>
           </CardContent>
         </Card>
       </div>
 
       {/* Repricing Insights */}
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <Target className="w-5 h-5" />
+      <Card className="bg-gradient-to-br from-orange-50 to-orange-100/50 border-orange-200/50 shadow-xl hover:shadow-2xl transition-all duration-300">
+        <CardHeader className="bg-gradient-to-r from-orange-50 to-orange-100/50 rounded-t-xl border-b border-orange-200/50">
+          <CardTitle className="flex items-center gap-3 text-xl font-bold text-orange-800">
+            <div className="w-10 h-10 bg-gradient-to-r from-orange-500 to-orange-600 rounded-xl flex items-center justify-center shadow-lg">
+              <Target className="w-5 h-5 text-white" />
+            </div>
             Repricing Insights
           </CardTitle>
-          <CardDescription>Live Repricer activity</CardDescription>
+          <CardDescription className="text-orange-600 font-medium">Live Repricer activity</CardDescription>
         </CardHeader>
-        <CardContent>
-          <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
-            <div className="text-center">
-              <div className="font-medium text-sm mb-2">Optimized listings</div>
-              <div className="text-2xl font-bold">{metrics?.total_products || 5}</div>
-              <div className="text-xs text-muted-foreground">of {metrics?.total_products || 5}</div>
+        <CardContent className="p-8">
+          <div className="grid grid-cols-1 md:grid-cols-5 gap-6">
+            <div className="text-center bg-white/60 p-6 rounded-2xl border border-orange-200/30 hover:bg-white/80 transition-all duration-200">
+              <div className="font-semibold text-sm mb-3 text-orange-700">Optimized listings</div>
+              <div className="text-3xl font-bold text-orange-800">{metrics?.total_products || 5}</div>
+              <div className="text-xs text-orange-600 mt-2 font-medium">of {metrics?.total_products || 5}</div>
             </div>
             
-            <div className="text-center">
-              <div className="font-medium text-sm mb-2">Repricing listings</div>
-              <div className="text-2xl font-bold text-blue-600">{Math.floor((metrics?.total_products || 5) * 0.8)}</div>
-              <div className="text-xs text-muted-foreground">of {metrics?.total_products || 5}</div>
+            <div className="text-center bg-white/60 p-6 rounded-2xl border border-blue-200/30 hover:bg-white/80 transition-all duration-200">
+              <div className="font-semibold text-sm mb-3 text-blue-700">Repricing listings</div>
+              <div className="text-3xl font-bold text-blue-600">{Math.floor((metrics?.total_products || 5) * 0.8)}</div>
+              <div className="text-xs text-blue-600 mt-2 font-medium">of {metrics?.total_products || 5}</div>
             </div>
             
-            <div className="text-center">
-              <div className="font-medium text-sm mb-2">Underpriced listings</div>
-              <div className="text-2xl font-bold text-orange-600">{Math.floor((metrics?.total_products || 5) * 0.2)}</div>
-              <div className="text-xs text-muted-foreground">of {metrics?.total_products || 5}</div>
+            <div className="text-center bg-white/60 p-6 rounded-2xl border border-amber-200/30 hover:bg-white/80 transition-all duration-200">
+              <div className="font-semibold text-sm mb-3 text-amber-700">Underpriced listings</div>
+              <div className="text-3xl font-bold text-amber-600">{Math.floor((metrics?.total_products || 5) * 0.2)}</div>
+              <div className="text-xs text-amber-600 mt-2 font-medium">of {metrics?.total_products || 5}</div>
             </div>
             
-            <div className="text-center">
-              <div className="font-medium text-sm mb-2">Buy box loss listings</div>
-              <div className="text-2xl font-bold text-red-600">{Math.floor((metrics?.total_products || 5) * 0.4)}</div>
-              <div className="text-xs text-muted-foreground">of {metrics?.total_products || 5}</div>
+            <div className="text-center bg-white/60 p-6 rounded-2xl border border-red-200/30 hover:bg-white/80 transition-all duration-200">
+              <div className="font-semibold text-sm mb-3 text-red-700">Buy box loss listings</div>
+              <div className="text-3xl font-bold text-red-600">{Math.floor((metrics?.total_products || 5) * 0.4)}</div>
+              <div className="text-xs text-red-600 mt-2 font-medium">of {metrics?.total_products || 5}</div>
             </div>
             
-            <div className="text-center">
-              <div className="font-medium text-sm mb-2">Latest price listings</div>
-              <div className="text-2xl font-bold text-green-600">{Math.floor((metrics?.total_products || 5) * 0.6)}</div>
-              <div className="text-xs text-muted-foreground">of {metrics?.total_products || 5}</div>
+            <div className="text-center bg-white/60 p-6 rounded-2xl border border-green-200/30 hover:bg-white/80 transition-all duration-200">
+              <div className="font-semibold text-sm mb-3 text-green-700">Latest price listings</div>
+              <div className="text-3xl font-bold text-green-600">{Math.floor((metrics?.total_products || 5) * 0.6)}</div>
+              <div className="text-xs text-green-600 mt-2 font-medium">of {metrics?.total_products || 5}</div>
             </div>
           </div>
         </CardContent>
       </Card>
 
       {/* Activity History and Buy Box Row */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         {/* Activity History */}
-        <Card className="lg:col-span-2">
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <Activity className="w-5 h-5" />
+        <Card className="lg:col-span-2 bg-gradient-to-br from-indigo-50 to-indigo-100/50 border-indigo-200/50 shadow-xl hover:shadow-2xl transition-all duration-300">
+          <CardHeader className="bg-gradient-to-r from-indigo-50 to-indigo-100/50 rounded-t-xl border-b border-indigo-200/50">
+            <CardTitle className="flex items-center gap-3 text-xl font-bold text-indigo-800">
+              <div className="w-10 h-10 bg-gradient-to-r from-indigo-500 to-indigo-600 rounded-xl flex items-center justify-center shadow-lg">
+                <Activity className="w-5 h-5 text-white" />
+              </div>
               Activity History
             </CardTitle>
           </CardHeader>
-          <CardContent>
-            <div className="mb-4">
-              <div className="text-2xl font-bold">68,724</div>
-              <p className="text-sm text-muted-foreground">Total pricing events processed in the last 30 days</p>
+          <CardContent className="p-8">
+            <div className="mb-6 bg-white/60 p-6 rounded-2xl border border-indigo-200/30">
+              <div className="text-4xl font-bold text-indigo-800">68,724</div>
+              <p className="text-sm font-semibold text-indigo-600 mt-2">Total pricing events processed in the last 30 days</p>
             </div>
-            <div className="h-48 bg-gray-50 rounded-lg flex items-center justify-center">
+            <div className="h-52 bg-gradient-to-br from-white/60 to-indigo-50/50 rounded-2xl border border-indigo-200/30 flex items-center justify-center">
               <div className="text-center">
-                <Activity className="w-12 h-12 text-gray-400 mx-auto mb-2" />
-                <p className="text-muted-foreground">Activity chart visualization</p>
-                <p className="text-sm text-muted-foreground mt-1">Historical repricing data will appear here</p>
+                <div className="w-16 h-16 bg-gradient-to-r from-indigo-400 to-indigo-500 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-lg">
+                  <Activity className="w-8 h-8 text-white" />
+                </div>
+                <p className="text-indigo-700 font-semibold text-lg">Activity chart visualization</p>
+                <p className="text-sm text-indigo-600 mt-2 font-medium">Historical repricing data will appear here</p>
               </div>
             </div>
           </CardContent>
         </Card>
 
         {/* Buy Box Ownership */}
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <Award className="w-5 h-5" />
+        <Card className="bg-gradient-to-br from-yellow-50 to-yellow-100/50 border-yellow-200/50 shadow-xl hover:shadow-2xl transition-all duration-300 hover:-translate-y-1">
+          <CardHeader className="bg-gradient-to-r from-yellow-50 to-yellow-100/50 rounded-t-xl border-b border-yellow-200/50">
+            <CardTitle className="flex items-center gap-3 text-xl font-bold text-yellow-800">
+              <div className="w-10 h-10 bg-gradient-to-r from-yellow-500 to-yellow-600 rounded-xl flex items-center justify-center shadow-lg">
+                <Award className="w-5 h-5 text-white" />
+              </div>
               Buy Box Ownership
             </CardTitle>
           </CardHeader>
-          <CardContent>
-            <div className="flex flex-col items-center">
-              <CircularProgress percentage={Math.round(metrics?.buybox_ownership_pct || 60)} size={120} showLabel={true} />
-              <div className="mt-4 text-center">
-                <div className="text-sm font-medium">Current Buy Box Rate</div>
-                <div className="text-xs text-muted-foreground mt-1">
+          <CardContent className="p-6">
+            <div className="flex flex-col items-center bg-white/60 rounded-2xl p-6 border border-yellow-200/30">
+              <CircularProgress percentage={Math.round(metrics?.buybox_ownership_pct || 60)} size={140} showLabel={true} />
+              <div className="mt-6 text-center">
+                <div className="text-sm font-semibold text-yellow-800">Current Buy Box Rate</div>
+                <div className="text-xs font-medium text-yellow-700 mt-2">
                   {Math.round(metrics?.buybox_ownership_pct || 60)}% of your listings own the Buy Box
                 </div>
               </div>
@@ -327,26 +365,31 @@ export default function DashboardPage() {
       </div>
 
       {/* Top Competitors */}
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <Users className="w-5 h-5" />
+      <Card className="bg-gradient-to-br from-rose-50 to-rose-100/50 border-rose-200/50 shadow-xl hover:shadow-2xl transition-all duration-300">
+        <CardHeader className="bg-gradient-to-r from-rose-50 to-rose-100/50 rounded-t-xl border-b border-rose-200/50">
+          <CardTitle className="flex items-center gap-3 text-xl font-bold text-rose-800">
+            <div className="w-10 h-10 bg-gradient-to-r from-rose-500 to-rose-600 rounded-xl flex items-center justify-center shadow-lg">
+              <Users className="w-5 h-5 text-white" />
+            </div>
             Top Competitors
           </CardTitle>
-          <CardDescription>Most frequently competing sellers across your listings</CardDescription>
+          <CardDescription className="text-rose-600 font-medium">Most frequently competing sellers across your listings</CardDescription>
         </CardHeader>
-        <CardContent>
-          <div className="space-y-4">
+        <CardContent className="p-8">
+          <div className="space-y-5">
             {competitorsData.map((competitor, index) => (
-              <div key={index} className="flex items-center justify-between">
-                <div className="flex items-center space-x-3 flex-1">
-                  <span className="text-sm font-medium min-w-0 flex-1">{competitor.name}</span>
-                  <span className="text-sm text-muted-foreground">{competitor.percentage}%</span>
+              <div key={index} className="flex items-center justify-between bg-white/60 p-5 rounded-2xl border border-rose-200/30 hover:bg-white/80 transition-all duration-200">
+                <div className="flex items-center space-x-4 flex-1">
+                  <div className="w-8 h-8 bg-gradient-to-r from-rose-400 to-rose-500 rounded-xl flex items-center justify-center text-white font-bold text-sm shadow-lg">
+                    {index + 1}
+                  </div>
+                  <span className="text-sm font-semibold text-rose-800 min-w-0 flex-1">{competitor.name}</span>
+                  <span className="text-sm font-bold text-rose-700">{competitor.percentage}%</span>
                 </div>
-                <div className="w-32">
-                  <div className="w-full bg-gray-200 rounded-full h-2">
+                <div className="w-36 ml-4">
+                  <div className="w-full bg-rose-200/50 rounded-full h-3 shadow-inner">
                     <div 
-                      className="h-2 rounded-full bg-blue-500"
+                      className="h-3 rounded-full bg-gradient-to-r from-rose-500 to-rose-600 shadow-sm transition-all duration-500"
                       style={{ width: `${competitor.percentage}%` }}
                     />
                   </div>
@@ -354,8 +397,8 @@ export default function DashboardPage() {
               </div>
             ))}
           </div>
-          <div className="mt-4 text-center">
-            <Button variant="outline" size="sm">
+          <div className="mt-8 text-center">
+            <Button variant="outline" size="sm" className="border-rose-300 text-rose-700 hover:bg-rose-50 hover:border-rose-400 font-medium px-6 py-3 rounded-xl transition-all duration-200 shadow-lg">
               View All Competitors
             </Button>
           </div>
