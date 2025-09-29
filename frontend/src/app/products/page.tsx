@@ -80,7 +80,7 @@ export default function ProductsPage() {
 
   const loadStores = async () => {
     try {
-      const response = await fetch(`http://localhost:8000/api/auth/amazon/stores?user_id=${userId}`);
+      const response = await fetch(`http://localhost:8000/api/auth/amazon/stores`);
       const data = await response.json();
       if (response.ok) {
         setStores(data.stores || []);
@@ -97,7 +97,7 @@ export default function ProductsPage() {
     try {
       setLoading(true);
       const storeParam = selectedStore ? `&store_id=${selectedStore}` : '';
-      const response = await fetch(`http://localhost:8000/api/products/?user_id=${userId}${storeParam}&limit=50`);
+      const response = await fetch(`http://localhost:8000/api/products/?${storeParam.replace('&', '')}limit=50`);
       const data = await response.json();
       if (response.ok) {
         setProducts(data.products || []);
@@ -111,7 +111,7 @@ export default function ProductsPage() {
 
   const loadStats = async () => {
     try {
-      const response = await fetch(`http://localhost:8000/api/products/stats/summary?user_id=${userId}`);
+      const response = await fetch(`http://localhost:8000/api/products/stats/summary`);
       const data = await response.json();
       if (response.ok) {
         setStats(data);

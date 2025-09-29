@@ -48,10 +48,23 @@ class ProductSyncService:
             
             # Create SP-API client
             spapi_client = create_spapi_client(store.refresh_token, store.region)
-            if not spapi_client:
+            if not spapi_client and sku_list:
+                # If specific SKUs were requested but no SP-API client, this is an error
                 return {
                     "success": False,
                     "error": "Failed to create SP-API client"
+                }
+            elif not spapi_client:
+                # No SP-API client and no specific SKUs - create demo products
+                logger.info(f"SP-API unavailable, creating demo products for store {store.id}")
+                demo_products = await self._create_demo_products(db, store)
+                return {
+                    "success": True,
+                    "message": f"Created {len(demo_products)} demo products for testing",
+                    "demo_mode": True,
+                    "synced_count": len(demo_products),
+                    "error_count": 0,
+                    "products": demo_products
                 }
             
             # Get marketplace IDs
