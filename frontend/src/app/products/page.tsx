@@ -1,60 +1,86 @@
 'use client';
 import { useEffect, useState } from 'react';
 import { apiClient, Product } from '../../lib/api';
-
+import { useI18n } from '@/lib/i18n';
+import { Card, CardContent } from '@/components/ui/card';
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
 
 export default function ProductsPage() {
-const [items, setItems] = useState<Product[]>([]);
-const [q, setQ] = useState('');
+  const { t } = useI18n();
+  const [items, setItems] = useState<Product[]>([]);
+  const [q, setQ] = useState('');
 
+  useEffect(() => { apiClient.getProducts().then(setItems); }, []);
 
-useEffect(() => { apiClient.getProducts().then(setItems); }, []);
+  const filtered = items.filter(p => (
+    p.asin.toLowerCase().includes(q.toLowerCase()) ||
+    p.sku.toLowerCase().includes(q.toLowerCase()) ||
+    p.title.toLowerCase().includes(q.toLowerCase())
+  ));
 
-
-const filtered = items.filter(p => (
-p.asin.toLowerCase().includes(q.toLowerCase()) ||
-p.sku.toLowerCase().includes(q.toLowerCase()) ||
-p.title.toLowerCase().includes(q.toLowerCase())
-));
-
-
-return (
-<div className="space-y-4">
-<div className="flex items-center justify-between">
-<h2 className="text-2xl font-semibold">Ürünler</h2>
-<input value={q} onChange={e=>setQ(e.target.value)} placeholder="Ara..." className="px-3 py-2 border rounded-md" />
-</div>
-<div className="rounded-2xl shadow-sm border bg-white overflow-hidden">
-<div className="overflow-x-auto">
-<table className="min-w-full text-sm">
-<thead className="bg-gray-50">
-<tr>
-<th className="text-left p-3">SKU</th>
-<th className="text-left p-3">ASIN</th>
-<th className="text-left p-3">Başlık</th>
-<th className="text-right p-3">Fiyat</th>
-<th className="text-left p-3">BB Sahibi</th>
-<th className="text-center p-3">Stok</th>
-</tr>
-</thead>
-<tbody>
-{filtered.map(p => (
-<tr key={p.id} className="border-t hover:bg-gray-50">
-<td className="p-3">{p.sku}</td>
-<td className="p-3"><a className="text-blue-600 hover:underline" href={`/products/${p.asin}`}>{p.asin}</a></td>
-<td className="p-3">{p.title}</td>
-<td className="p-3 text-right">{p.price.toFixed(2)} {p.currency}</td>
-<td className="p-3">{p.buybox_owner || (p.buybox_owning ? 'Siz' : '-')}</td>
-<td className="p-3 text-center">{p.stock_qty}</td>
-</tr>
-))}
-{filtered.length === 0 && (
-<tr><td className="p-4 text-gray-500" colSpan={6}>Kayıt bulunamadı.</td></tr>
-)}
-</tbody>
-</table>
-</div>
-</div>
-</div>
-);
+  return (
+    <div className="space-y-6">
+      <div className="flex items-center justify-between">
+        <h2 className="text-3xl font-bold tracking-tight">{t('products.title')}</h2>
+        <input 
+          value={q} 
+          onChange={e=>setQ(e.target.value)} 
+          placeholder={t('products.search')} 
+          className="px-3 py-2 border rounded-md bg-background"
+        />
+      </div>
+      
+      <Card>
+        <CardContent>
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>{t('products.sku')}</TableHead>
+                <TableHead>{t('products.asin')}</TableHead>
+                <TableHead>{t('products.title_field')}</TableHead>
+                <TableHead className="text-right">{t('products.price')}</TableHead>
+                <TableHead>{t('products.buyboxOwner')}</TableHead>
+                <TableHead className="text-center">{t('products.stock')}</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {filtered.map(p => (
+                <TableRow key={p.id}>
+                  <TableCell className="font-medium">{p.sku}</TableCell>
+                  <TableCell>
+                    <Button variant="link" className="h-auto p-0" asChild>
+                      <a href={`/products/${p.asin}`}>{p.asin}</a>
+                    </Button>
+                  </TableCell>
+                  <TableCell className="max-w-[300px] truncate">{p.title}</TableCell>
+                  <TableCell className="text-right">
+                    {p.price.toFixed(2)} {p.currency}
+                  </TableCell>
+                  <TableCell>
+                    {p.buybox_owning ? (
+                      <Badge variant="default">{t('products.you')}</Badge>
+                    ) : p.buybox_owner ? (
+                      <Badge variant="secondary">{p.buybox_owner}</Badge>
+                    ) : (
+                      <span className="text-muted-foreground">-</span>
+                    )}
+                  </TableCell>
+                  <TableCell className="text-center">{p.stock_qty}</TableCell>
+                </TableRow>
+              ))}
+              {filtered.length === 0 && (
+                <TableRow>
+                  <TableCell colSpan={6} className="h-24 text-center">
+                    <p className="text-muted-foreground">{t('products.noResults')}</p>
+                  </TableCell>
+                </TableRow>
+              )}
+            </TableBody>
+          </Table>
+        </CardContent>
+      </Card>
+    </div>
+  );
 }

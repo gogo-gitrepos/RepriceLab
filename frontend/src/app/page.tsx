@@ -5,8 +5,10 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Button } from '@/components/ui/button';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
+import { useI18n } from '@/lib/i18n';
 
 export default function DashboardPage() {
+  const { t } = useI18n();
   const [metrics, setMetrics] = useState<MetricsSummary | null>(null);
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(false);
@@ -43,13 +45,13 @@ export default function DashboardPage() {
   return (
     <div className="space-y-6">
       <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-3">
-        <h2 className="text-3xl font-bold tracking-tight">Dashboard</h2>
+        <h2 className="text-3xl font-bold tracking-tight">{t('dashboard.title')}</h2>
         <div className="flex gap-2">
           <Button variant="outline" onClick={refresh}>
-            Yenile
+            {t('dashboard.refresh')}
           </Button>
           <Button onClick={doSync} disabled={loading}>
-            {loading ? 'Senkronize ediliyor…' : 'Ürünleri Senkronize Et'}
+            {loading ? t('dashboard.syncing') : t('dashboard.sync')}
           </Button>
         </div>
       </div>
@@ -65,40 +67,40 @@ export default function DashboardPage() {
       <section className="grid grid-cols-1 md:grid-cols-3 gap-6">
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Toplam Ürün</CardTitle>
+            <CardTitle className="text-sm font-medium">{t('dashboard.totalProducts')}</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{metrics?.total_products ?? '-'}</div>
             <p className="text-xs text-muted-foreground">
-              Aktif ürün sayısı
+              {t('dashboard.activeProducts')}
             </p>
           </CardContent>
         </Card>
         
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Buy Box Sahiplik</CardTitle>
+            <CardTitle className="text-sm font-medium">{t('dashboard.buyboxOwnership')}</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">
               {metrics ? metrics.buybox_ownership_pct.toFixed(1) + '%' : '-'}
             </div>
             <p className="text-xs text-muted-foreground">
-              Sahip olduğunuz ürün oranı
+              {t('dashboard.ownershipPercentage')}
             </p>
           </CardContent>
         </Card>
         
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Son 7 Gün</CardTitle>
+            <CardTitle className="text-sm font-medium">{t('dashboard.last7Days')}</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">
-              {metrics && metrics.last7days_ownership.length === 0 ? 'Veri yok' : '—'}
+              {metrics && metrics.last7days_ownership.length === 0 ? t('dashboard.noData') : '—'}
             </div>
             <p className="text-xs text-muted-foreground">
-              Trend analizi
+              {t('dashboard.trendAnalysis')}
             </p>
           </CardContent>
         </Card>
@@ -107,25 +109,25 @@ export default function DashboardPage() {
       <Card>
         <CardHeader>
           <div className="flex items-center justify-between">
-            <CardTitle>Ürünler</CardTitle>
+            <CardTitle>{t('dashboard.products')}</CardTitle>
             <Button variant="link" asChild>
-              <a href="/products">Tümünü gör</a>
+              <a href="/products">{t('dashboard.viewAll')}</a>
             </Button>
           </div>
           <CardDescription>
-            Son eklenen ürünlerinizin özeti
+            {t('dashboard.recentProducts')}
           </CardDescription>
         </CardHeader>
         <CardContent>
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead>SKU</TableHead>
-                <TableHead>ASIN</TableHead>
-                <TableHead>Başlık</TableHead>
-                <TableHead className="text-right">Fiyat</TableHead>
-                <TableHead>BB Sahibi</TableHead>
-                <TableHead className="text-center">Stok</TableHead>
+                <TableHead>{t('products.sku')}</TableHead>
+                <TableHead>{t('products.asin')}</TableHead>
+                <TableHead>{t('products.title_field')}</TableHead>
+                <TableHead className="text-right">{t('products.price')}</TableHead>
+                <TableHead>{t('products.buyboxOwner')}</TableHead>
+                <TableHead className="text-center">{t('products.stock')}</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -143,7 +145,7 @@ export default function DashboardPage() {
                   </TableCell>
                   <TableCell>
                     {p.buybox_owning ? (
-                      <Badge variant="default">Siz</Badge>
+                      <Badge variant="default">{t('products.you')}</Badge>
                     ) : p.buybox_owner ? (
                       <Badge variant="secondary">{p.buybox_owner}</Badge>
                     ) : (
@@ -157,9 +159,9 @@ export default function DashboardPage() {
                 <TableRow>
                   <TableCell colSpan={6} className="h-24 text-center">
                     <div className="flex flex-col items-center justify-center space-y-2">
-                      <p className="text-muted-foreground">Henüz ürün yok.</p>
+                      <p className="text-muted-foreground">{t('dashboard.noProducts')}</p>
                       <Button variant="outline" onClick={doSync} disabled={loading}>
-                        Ürünleri Senkronize Et
+                        {t('dashboard.syncProducts')}
                       </Button>
                     </div>
                   </TableCell>
