@@ -1,23 +1,16 @@
 # backend/app/routers/products.py
 from fastapi import APIRouter, HTTPException, Depends, Query
 from sqlalchemy.orm import Session
-from sqlalchemy import select
+from sqlalchemy import select, func, and_
 from typing import List, Optional
 import logging
 
-from ..database import SessionLocal
+from ..dependencies import get_db, get_current_user_id
 from ..models import Product, Store
 from ..services.product_sync import ProductSyncService
 
 logger = logging.getLogger(__name__)
 router = APIRouter(prefix="/api/products", tags=["Products"])
-
-def get_db():
-    db = SessionLocal()
-    try:
-        yield db
-    finally:
-        db.close()
 
 # Initialize product sync service
 product_sync_service = ProductSyncService()
@@ -25,14 +18,21 @@ product_sync_service = ProductSyncService()
 @router.get("/")
 async def list_products(
     store_id: Optional[int] = Query(None, description="Filter by store ID"),
-    user_id: int = Query(..., description="User ID"),
     limit: int = Query(50, description="Number of products to return"),
     offset: int = Query(0, description="Offset for pagination"),
+    current_user_id: int = Depends(get_current_user_id),
     db: Session = Depends(get_db)
 ):
     """Get list of products for a user, optionally filtered by store"""
     
-    query = select(Product).where(Product.user_id == user_id)
+    # Get total count for pagination
+    total_query = select(func.count(Product.id)).where(Product.user_id == current_user_id)
+    if store_id:
+        total_query = total_query.where(Product.store_id == store_id)
+    total_count = db.execute(total_query).scalar()
+    
+    # Get products
+    query = select(Product).where(Product.user_id == current_user_id)
     
     if store_id:
         query = query.where(Product.store_id == store_id)
@@ -67,6 +67,7 @@ async def list_products(
     return {
         "products": product_list,
         "count": len(product_list),
+        "total": total_count,
         "offset": offset,
         "limit": limit
     }
@@ -74,11 +75,16 @@ async def list_products(
 @router.get("/{product_id}")
 async def get_product(
     product_id: int,
+    current_user_id: int = Depends(get_current_user_id),
     db: Session = Depends(get_db)
 ):
     """Get detailed information for a specific product"""
     
-    product = db.execute(select(Product).where(Product.id == product_id)).scalar_one_or_none()
+    product = db.execute(
+        select(Product).where(
+            and_(Product.id == product_id, Product.user_id == current_user_id)
+        )
+    ).scalar_one_or_none()
     if not product:
         raise HTTPException(status_code=404, detail="Product not found")
     
@@ -122,12 +128,17 @@ async def get_product(
 async def sync_store_products(
     store_id: int,
     sku_list: Optional[List[str]] = None,
+    current_user_id: int = Depends(get_current_user_id),
     db: Session = Depends(get_db)
 ):
     """Trigger product synchronization for a store"""
     
-    # Verify store exists and is active
-    store = db.execute(select(Store).where(Store.id == store_id)).scalar_one_or_none()
+    # Verify store exists, is active, and belongs to current user
+    store = db.execute(
+        select(Store).where(
+            and_(Store.id == store_id, Store.user_id == current_user_id)
+        )
+    ).scalar_one_or_none()
     if not store:
         raise HTTPException(status_code=404, detail="Store not found")
     
@@ -145,12 +156,17 @@ async def sync_store_products(
 @router.get("/sync/status/{store_id}")
 async def get_sync_status(
     store_id: int,
+    current_user_id: int = Depends(get_current_user_id),
     db: Session = Depends(get_db)
 ):
     """Get synchronization status for a store"""
     
-    # Verify store exists
-    store = db.execute(select(Store).where(Store.id == store_id)).scalar_one_or_none()
+    # Verify store exists and belongs to current user
+    store = db.execute(
+        select(Store).where(
+            and_(Store.id == store_id, Store.user_id == current_user_id)
+        )
+    ).scalar_one_or_none()
     if not store:
         raise HTTPException(status_code=404, detail="Store not found")
     
@@ -165,11 +181,16 @@ async def get_sync_status(
 async def toggle_product_repricing(
     product_id: int,
     enabled: bool = Query(..., description="Enable or disable repricing for this product"),
+    current_user_id: int = Depends(get_current_user_id),
     db: Session = Depends(get_db)
 ):
     """Enable or disable repricing for a specific product"""
     
-    product = db.execute(select(Product).where(Product.id == product_id)).scalar_one_or_none()
+    product = db.execute(
+        select(Product).where(
+            and_(Product.id == product_id, Product.user_id == current_user_id)
+        )
+    ).scalar_one_or_none()
     if not product:
         raise HTTPException(status_code=404, detail="Product not found")
     
@@ -185,13 +206,13 @@ async def toggle_product_repricing(
 
 @router.get("/stats/summary")
 async def get_products_summary(
-    user_id: int = Query(..., description="User ID"),
+    current_user_id: int = Depends(get_current_user_id),
     db: Session = Depends(get_db)
 ):
     """Get summary statistics for user's products"""
     
     products = db.execute(
-        select(Product).where(Product.user_id == user_id)
+        select(Product).where(Product.user_id == current_user_id)
     ).scalars().all()
     
     total_products = len(products)
