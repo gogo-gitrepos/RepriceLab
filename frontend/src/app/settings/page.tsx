@@ -23,10 +23,6 @@ interface AmazonStore {
 
 export default function SettingsPage() {
   const { t } = useI18n();
-  const [minPrice, setMinPrice] = useState(7.0);
-  const [maxFormula, setMaxFormula] = useState('current_price * 1.9');
-  const [strategy, setStrategy] = useState<'aggressive'|'defensive'>('aggressive');
-  const [msg, setMsg] = useState<string| null>(null);
   
   // Amazon store management state
   const [stores, setStores] = useState<AmazonStore[]>([]);
@@ -107,20 +103,10 @@ export default function SettingsPage() {
     }
   };
 
-  const onSave = async (e: React.FormEvent) => {
-    e.preventDefault(); 
-    setMsg(null);
-    try {
-      await apiClient.setRule({ min_price: Number(minPrice), max_price_formula: maxFormula, strategy });
-      setMsg(t('settings.ruleSaved'));
-    } catch (e: any) { 
-      setMsg(e.message); 
-    }
-  };
 
   return (
     <div className="max-w-4xl space-y-6">
-      <h2 className="text-3xl font-bold tracking-tight">{t('settings.title')}</h2>
+      <h2 className="text-3xl font-bold tracking-tight">Account Settings</h2>
       
       {/* Connection Success Alert */}
       {connectionStatus === 'success' && (
@@ -212,54 +198,65 @@ export default function SettingsPage() {
         </CardContent>
       </Card>
       
-      {/* Pricing Rules */}
+      {/* Account Information */}
       <Card>
         <CardHeader>
-          <CardTitle>⚙️ Repricing Rules</CardTitle>
+          <CardTitle>Account Information</CardTitle>
         </CardHeader>
-        <CardContent>
-          <form onSubmit={onSave} className="space-y-6">
-            <div className="space-y-2">
-              <Label htmlFor="minPrice">{t('settings.minPrice')}</Label>
-              <Input 
-                id="minPrice"
-                type="number" 
-                step="0.01" 
-                value={minPrice} 
-                onChange={e=>setMinPrice(parseFloat(e.target.value))} 
-              />
+        <CardContent className="space-y-4">
+          <div className="space-y-2">
+            <Label htmlFor="email">Email Address</Label>
+            <Input 
+              id="email"
+              type="email" 
+              value="user@example.com" 
+              disabled
+              className="bg-gray-50"
+            />
+            <p className="text-xs text-muted-foreground">Contact support to change your email address</p>
+          </div>
+          
+          <div className="space-y-2">
+            <Label htmlFor="plan">Current Plan</Label>
+            <div className="p-3 border rounded-md bg-gray-50">
+              <div className="font-medium">Free Trial</div>
+              <p className="text-sm text-muted-foreground">14 days remaining</p>
             </div>
-            
-            <div className="space-y-2">
-              <Label htmlFor="maxFormula">{t('settings.maxPriceFormula')}</Label>
-              <Input 
-                id="maxFormula"
-                value={maxFormula} 
-                onChange={e=>setMaxFormula(e.target.value)} 
-              />
-              <p className="text-xs text-muted-foreground">
-                {t('settings.formulaExample', { example: 'current_price * 1.9' })}
-              </p>
+          </div>
+          
+          <Button className="w-full">Upgrade Plan</Button>
+        </CardContent>
+      </Card>
+
+      {/* Notification Settings */}
+      <Card>
+        <CardHeader>
+          <CardTitle>Notification Settings</CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <div className="flex items-center justify-between">
+            <div>
+              <div className="font-medium">Email Notifications</div>
+              <p className="text-sm text-muted-foreground">Receive email alerts for important events</p>
             </div>
-            
-            <div className="space-y-2">
-              <Label htmlFor="strategy">{t('settings.strategy')}</Label>
-              <select 
-                id="strategy"
-                className="w-full px-3 py-2 border rounded-md bg-background" 
-                value={strategy} 
-                onChange={e=>setStrategy(e.target.value as any)}
-              >
-                <option value="aggressive">{t('settings.aggressive')}</option>
-                <option value="defensive">{t('settings.defensive')}</option>
-              </select>
+            <input type="checkbox" defaultChecked className="w-4 h-4" />
+          </div>
+          
+          <div className="flex items-center justify-between">
+            <div>
+              <div className="font-medium">Buy Box Loss Alerts</div>
+              <p className="text-sm text-muted-foreground">Get notified when you lose the Buy Box</p>
             </div>
-            
-            <div className="flex items-center gap-4">
-              <Button type="submit">{t('settings.save')}</Button>
-              {msg && <div className="text-sm text-muted-foreground">{msg}</div>}
+            <input type="checkbox" defaultChecked className="w-4 h-4" />
+          </div>
+          
+          <div className="flex items-center justify-between">
+            <div>
+              <div className="font-medium">Daily Reports</div>
+              <p className="text-sm text-muted-foreground">Receive daily performance summaries</p>
             </div>
-          </form>
+            <input type="checkbox" className="w-4 h-4" />
+          </div>
         </CardContent>
       </Card>
     </div>

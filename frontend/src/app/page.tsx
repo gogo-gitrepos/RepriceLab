@@ -123,28 +123,26 @@ export default function DashboardPage() {
         
         <Card>
           <CardContent className="p-4">
-            <div className="flex items-center space-x-3">
-              <div className="w-12 h-12 bg-gray-200 rounded-full flex items-center justify-center">
-                <Users className="w-6 h-6 text-gray-600" />
+            <div className="space-y-4">
+              <div className="flex items-center space-x-3">
+                <div className="w-12 h-12 bg-purple-100 rounded-full flex items-center justify-center">
+                  <Users className="w-6 h-6 text-purple-600" />
+                </div>
+                <div>
+                  <div className="font-medium">Need Help?</div>
+                  <p className="text-sm text-muted-foreground">Our support team is here to help you succeed!</p>
+                </div>
               </div>
-              <div>
-                <div className="font-medium">Your Onboarding Specialist: Colton</div>
-                <p className="text-sm text-muted-foreground">Here to help with your first sale!</p>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-        
-        <Card>
-          <CardContent className="p-4">
-            <div className="space-y-2">
-              <div className="flex items-center text-sm">
-                <MessageCircle className="w-4 h-4 mr-2" />
-                Send a message
-              </div>
-              <div className="flex items-center text-sm">
-                <Phone className="w-4 h-4 mr-2" />
-                Request a call
+              
+              <div className="space-y-2">
+                <Button variant="outline" size="sm" className="w-full justify-start">
+                  <Mail className="w-4 h-4 mr-2" />
+                  Send us an email
+                </Button>
+                <Button variant="outline" size="sm" className="w-full justify-start">
+                  <Phone className="w-4 h-4 mr-2" />
+                  Schedule a call
+                </Button>
               </div>
             </div>
           </CardContent>
