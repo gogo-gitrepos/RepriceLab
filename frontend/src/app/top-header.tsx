@@ -388,7 +388,7 @@ export function TopHeader() {
             className="flex items-center space-x-2 text-white hover:text-white bg-white/20 backdrop-blur-sm rounded-full px-3 py-2 transition-all duration-200 hover:bg-white/30"
           >
             <div className="w-8 h-8 bg-purple-800 rounded-full flex items-center justify-center">
-              <span className="text-white font-bold text-sm">GG</span>
+              <span className="text-white font-bold text-sm">JD</span>
             </div>
             <ChevronDown className="w-4 h-4" />
           </button>
@@ -403,11 +403,11 @@ export function TopHeader() {
                 <div className="p-4 border-b">
                   <div className="flex items-center space-x-3">
                     <div className="w-10 h-10 bg-gray-600 rounded-full flex items-center justify-center">
-                      <span className="text-white font-bold">GG</span>
+                      <span className="text-white font-bold">JD</span>
                     </div>
                     <div>
-                      <p className="font-medium text-gray-900">Gokhan Gozubuyuk</p>
-                      <p className="text-sm text-gray-500">gokhan@repricer.com</p>
+                      <p className="font-medium text-gray-900">John Doe</p>
+                      <p className="text-sm text-gray-500">john@repricer.com</p>
                     </div>
                   </div>
                 </div>
