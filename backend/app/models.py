@@ -38,7 +38,7 @@ class Product(Base):
     __tablename__ = "products"
     id: Mapped[int] = mapped_column(Integer, primary_key=True)
     user_id: Mapped[int] = mapped_column(ForeignKey("users.id"))
-    store_id: Mapped[int] = mapped_column(ForeignKey("stores.id"))
+    store_id: Mapped[int | None] = mapped_column(ForeignKey("stores.id"), nullable=True)
     
     # Amazon Product Information
     sku: Mapped[str] = mapped_column(String(64))
