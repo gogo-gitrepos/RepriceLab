@@ -1,256 +1,267 @@
-```text
-## RepriceLab
+# 🧪 RepriceLab
 
-Amazon satıcıları için Buy Box takibi, rakip analizi ve otomatik repricing yapan SaaS.
-Frontend: Next.js 14 + Tailwind · Backend: FastAPI + SQLAlchemy (SQLite/PostgreSQL)
+> **Amazon Repricing SaaS** — Intelligent Buy Box tracking, competitor analysis, and automated repricing for Amazon sellers.
 
- 🌟 Özellikler
- 📦 Buy Box sahiplik takibi ve geçmişi
- 🏷️ Rakip fiyat/kargo ve satıcı bilgileri
- 🤖 Repricing kuralları (min/max + strateji) ve fiyat önerisi
- 📊 Dashboard (toplam ürün, sahiplik yüzdesi, 7-gün trend)
- 🔔 Bildirim altyapısı (stub e‑posta/push)
- 🚀 Hızlı Başlangıç
+![Next.js](https://img.shields.io/badge/Next.js-14-black?logo=next.js) ![FastAPI](https://img.shields.io/badge/FastAPI-Python-009688?logo=fastapi) ![TypeScript](https://img.shields.io/badge/TypeScript-007ACC?logo=typescript&logoColor=white) ![Tailwind](https://img.shields.io/badge/Tailwind-38B2AC?logo=tailwind-css&logoColor=white)
 
-Aşağıdaki iki yöntemden birini seçin.
+---
 
-Yöntem A — Lokal Geliştirme (SQLite ile)
+## ✨ Features
 
-Gereksinimler: Python 3.11+, Node 18+, Git
+- 📊 **Real-Time Dashboard** — Track total products, Buy Box ownership percentage, and 7-day trends
+- 🏆 **Buy Box Monitoring** — Historical tracking and ownership analysis
+- 💰 **Smart Repricing** — Configurable rules with min/max pricing and strategic algorithms
+- 🔍 **Competitor Intelligence** — Track competitor prices, shipping costs, and seller information
+- 📱 **Multi-Channel Support** — Manage multiple Amazon stores and marketplaces
+- 🔔 **Notifications** — Email and push notification infrastructure
+- 🎨 **Modern UI** — Premium design with gradient backgrounds and smooth animations
 
-# 1) Backend
+---
 
- cd backend
- python -m venv .venv
- . .venv\Scripts\Activate.ps1
- pip install --upgrade pip
- pip install -e .
+## 🚀 Quick Start
 
+### Prerequisites
 
+- **Python 3.11+**
+- **Node.js 18+**
+- **Git**
 
-- backend/.env
+### 1️⃣ Clone & Setup Backend
 
- @"
- DATABASE_URL=sqlite:///./app.db
- CORS_ORIGINS=http://localhost:3000
- "@ | Set-Content -Encoding utf8 .env
+```bash
+# Clone repository
+git clone <your-repo-url>
+cd RepriceLab
 
+# Navigate to backend
+cd backend
 
- - Demo seed (User + Store)
- @'
- from app.database import SessionLocal, init_db
- from app import models
+# Create virtual environment
+python -m venv .venv
+source .venv/bin/activate  # On Windows: .venv\Scripts\activate
 
+# Install dependencies
+pip install --upgrade pip
+pip install -e .
 
- def main():
-     init_db()
-     db = SessionLocal()
-     try:
-         u = models.User(email="demo@example.com"); db.add(u); db.flush()
-         st = models.Store(
-             user_id=u.id, region="NA", selling_partner_id="A1000",
-             marketplace_ids="ATVPDKIKX0DER", lwa_refresh_token="stub_refresh_token"
-         )
-         db.add(st); db.commit()
-         print("Seed OK -> user_id=", u.id)
-     finally:
-         db.close()
+# Create environment file
+echo "DATABASE_URL=sqlite:///./app.db" > .env
+echo "CORS_ORIGINS=http://localhost:5000" >> .env
 
+# Initialize database
+python -c "from app.database import init_db; init_db()"
 
- if __name__ == "__main__":
-     main()
- '@ | Set-Content -Encoding utf8 seed_db.py
+# Start backend server
+python -m uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
+```
 
+### 2️⃣ Setup Frontend
 
-python seed_db.py
-python -m uvicorn app.main:app --reload --port 8000
-
-# 2) Frontend
-
-- Yeni terminal
-
+```bash
+# Open new terminal
 cd frontend
+
+# Install dependencies
 npm install
-$env:NEXT_PUBLIC_API_URL="http://localhost:8000"
+
+# Set API URL
+export NEXT_PUBLIC_API_URL=http://localhost:8000  # On Windows: set NEXT_PUBLIC_API_URL=http://localhost:8000
+
+# Start development server
 npm run dev
+```
 
-- Test:
+### 3️⃣ Access the Application
 
- Swagger: http://localhost:8000/docs → POST /products/sync → GET /products/
+- **Frontend**: [http://localhost:5000](http://localhost:5000)
+- **Backend API**: [http://localhost:8000](http://localhost:8000)
+- **API Documentation**: [http://localhost:8000/docs](http://localhost:8000/docs)
 
- UI: http://localhost:3000 → Dashboard / Ürünler / Settings
+---
 
- macOS/Linux (bash) kısayol: source backend/.venv/bin/activate ile benzer adımları uygulayın.
+## 🏗️ Tech Stack
 
-- Yöntem B — Docker Compose (Backend + Frontend)
+### Frontend
+- **Framework**: Next.js 14 with App Router
+- **Language**: TypeScript
+- **Styling**: Tailwind CSS + shadcn/ui components
+- **State**: React Query for server state management
+- **Icons**: Lucide React
 
- docker-compose.yml (repo kökü):
+### Backend
+- **Framework**: FastAPI
+- **Database**: SQLAlchemy ORM (SQLite/PostgreSQL)
+- **Authentication**: OAuth with Amazon SP-API
+- **Background Jobs**: APScheduler
+- **Validation**: Pydantic
 
- version: "3.9"
- services:
-   backend:
-     build: ./backend
-     container_name: repricelab-backend
-     ports: ["8000:8000"]
-     environment:
-       UVICORN_HOST=0.0.0.0
-       UVICORN_PORT=8000
-     command: ["python","-m","uvicorn","app.main:app","--host","0.0.0.0","--port","8000"]
-     working_dir: /app
+---
 
+## 📁 Project Structure
 
-   frontend:
-     build: ./frontend
-     container_name: repricelab-frontend
-     ports: ["3000:3000"]
-     environment:
-       NEXT_PUBLIC_API_URL=http://backend:8000
-     depends_on: [backend]
-     command: ["npm","run","dev"]
+```
+RepriceLab/
+├── backend/
+│   ├── app/
+│   │   ├── services/          # Business logic (SP-API, repricing, notifications)
+│   │   ├── routers/           # API endpoints
+│   │   ├── models.py          # Database models
+│   │   ├── schemas.py         # Pydantic schemas
+│   │   └── main.py            # FastAPI application
+│   └── pyproject.toml
+│
+├── frontend/
+│   ├── src/
+│   │   ├── app/               # Next.js pages (Dashboard, Products, Settings)
+│   │   ├── components/        # Reusable UI components
+│   │   └── lib/               # Utilities and helpers
+│   ├── package.json
+│   └── tailwind.config.ts
+│
+└── README.md
+```
 
- Çalıştırma:
+---
 
- docker-compose up --build
+## 🔧 Configuration
 
- Backend:  http://localhost:8000/docs
- Frontend: http://localhost:3000
+### Backend Environment Variables
 
- # 🐘 PostgreSQL’e Geçiş
+Create a `.env` file in the `backend/` directory:
 
- - Tek komutla Postgres (Docker)
- 
-docker run --name repricelab-postgres -e POSTGRES_USER=app -e POSTGRES_PASSWORD=app -e POSTGRES_DB=repricelab -p 5432:5432 -d postgres:16
+```env
+DATABASE_URL=sqlite:///./app.db
+CORS_ORIGINS=http://localhost:5000
 
- backend/.env:
+# For PostgreSQL (production):
+# DATABASE_URL=postgresql+psycopg2://user:password@localhost:5432/repricelab
+```
 
- DATABASE_URL=postgresql+psycopg2://app:app@localhost:5432/repricelab
- CORS_ORIGINS=http://localhost:3000
- Compose’a DB eklemek
-   db:
-     image: postgres:16
-     container_name: repricelab-postgres
-     environment:
-       POSTGRES_USER=app
-       POSTGRES_PASSWORD=app
-       POSTGRES_DB=repricelab
-     ports: ["5432:5432"]
-     volumes:
-       pgdata:/var/lib/postgresql/data
-   volumes:
-   pgdata :
+### Frontend Environment Variables
 
-- Backend için DATABASE_URL:
+Create a `.env.local` file in the `frontend/` directory:
 
- postgresql+psycopg2://app:app@db:5432/repricelab
+```env
+NEXT_PUBLIC_API_URL=http://localhost:8000
+```
 
- # ✨ Frontend İyileştirmeleri
+---
 
- Toast (react-hot-toast)
- cd frontend
- npm i react-hot-toast
+## 🐘 Using PostgreSQL
 
- src/app/layout.tsx içine:
-
- import { Toaster } from 'react-hot-toast';
- ...
- <body>
-   ...
-   <Toaster position="top-right" />
- </body>
-
-- Kullanım:
-
- import toast from 'react-hot-toast';
- toast.success('Ürünler senkronize edildi');
- toast.error('Bir hata oluştu');
- 
-- Basit Sparkline (paketsiz)
-
- src/app/page.tsx içine:
-
- function Spark({ points }:{ points: Array<[string, number]> }) {
-   if (!points?.length) return <span>Veri yok</span>;
-   const w=160,h=48,pad=4;
-   const ys = points.map(([,y])=>y);
-   const min = Math.min(...ys), max = Math.max(...ys)||1;
-   const step = (w-2*pad)/(points.length-1);
-   const scaleY = (v:number)=> h-pad - ( (v-min)/(max-min||1) * (h-2*pad) );
-   const d = points.map(([,y],i)=>`${i?'L':'M'} ${pad+i*step} ${scaleY(y)}`).join(' ');
-   return (
-     <svg width={w} height={h}>
-       <path d={d} fill="none" stroke="currentColor" strokeWidth="2" />
-     </svg>
-   );
- }
-
- # 🔌 API Kılavuzu (Özet)
-
- POST /products/sync → Demo ürün ekler (3 kayıt)
-
- GET /products/ → Ürün listesi
-
- GET /metrics/summary → Toplam ürün / Buy Box yüzdesi
-
- POST /pricing/rule → {min_price, max_price_formula, strategy}
-
- GET /pricing/preview/{asin} → Önerilen fiyat
-
- Swagger: http://localhost:8000/docs
-
-
-- # 🧱 Proje Yapısı
+For production, switch to PostgreSQL:
 
 ```bash
- RepriceLab/
- ├─ backend/
- │  ├─ app/
- │  │  ├─ services/ (spapi, repricing, buybox, notify, scheduler)
- │  │  ├─ routers/  (auth, products, pricing, notifications, metrics)
- │  │  ├─ main.py, models.py, schemas.py, config.py, database.py
- │  ├─ pyproject.toml, Dockerfile
- ├─ frontend/
- │  ├─ src/app (Dashboard, Products, Settings, Product Detail)
- │  ├─ public/, Dockerfile, package.json, tailwind
- ├─ scripts/ (normalize_whitespace.py, smoke_backend.py)
- └─ docker-compose.yml
+# Start PostgreSQL with Docker
+docker run --name repricelab-postgres \
+  -e POSTGRES_USER=app \
+  -e POSTGRES_PASSWORD=app \
+  -e POSTGRES_DB=repricelab \
+  -p 5432:5432 -d postgres:16
+
+# Update backend/.env
+DATABASE_URL=postgresql+psycopg2://app:app@localhost:5432/repricelab
+```
+
+---
+
+## 📦 Key API Endpoints
+
+- `POST /products/sync` — Sync products from Amazon SP-API
+- `GET /products/` — List all products
+- `GET /products/{product_id}` — Get product details
+- `GET /metrics/summary` — Dashboard metrics
+- `POST /pricing/rule` — Create/update repricing rules
+- `GET /pricing/preview/{asin}` — Get suggested price
+
+Full API documentation available at `/docs` when server is running.
+
+---
+
+## 🎨 Features Overview
+
+### Dashboard
+- Total product count with visual cards
+- Buy Box ownership percentage tracking
+- 7-day trend analysis
+- Quick access to recent products
+- Safe Mode banner for testing
+
+### Product Management
+- Searchable product table
+- Stock and price monitoring
+- Buy Box ownership status
+- Competitor tracking
+- Detailed product views
+
+### Repricing Engine
+- Min/Max price configuration
+- Formula-based pricing (e.g., `competitor_min * 0.95`)
+- Aggressive/Defensive strategies
+- Real-time price suggestions
+
+---
+
+## 🛠️ Development
+
+### Run Tests
+
 ```bash
+# Backend tests
+cd backend
+pytest
 
+# Frontend build check
+cd frontend
+npm run build
+```
 
-- # 🧪 CI (GitHub Actions)
+### Code Quality
 
- .github/workflows/ci.yml içerir:
+```bash
+# Frontend linting
+npm run lint
 
- backend-test (Python 3.11 → bağımlılıklar → import smoke)
+# Type checking
+npm run type-check
+```
 
- frontend-build (Node 20 → npm ci → build)
+---
 
- docker-compose-test (Compose ile ayağa kaldır, curl ile doğrula)
+## 🚢 Deployment
 
-- # ⚙️ Ortam Değişkenleri
+RepriceLab is ready to deploy on Replit or any cloud platform supporting Python and Node.js.
 
-- Backend .env:
+### Replit Deployment
+1. Click the "Publish" button in Replit
+2. Configure environment variables
+3. Your app will be live with a custom domain
 
- DATABASE_URL=sqlite:///./app.db
- CORS_ORIGINS=http://localhost:3000
+### Manual Deployment
+- Backend: Deploy FastAPI with Gunicorn/Uvicorn
+- Frontend: Deploy Next.js with Vercel/Netlify
+- Database: Use managed PostgreSQL (Railway, Supabase, etc.)
 
- PostgreSQL: postgresql+psycopg2://app:app@localhost:5432/repricelab
+---
 
- Frontend .env.local:
+## 📝 License
 
- NEXT_PUBLIC_API_URL=http://localhost:8000
+MIT License - feel free to use this project for your own Amazon repricing needs!
 
-- # 🆘 Sık Sorunlar
+---
 
-- PowerShell script izni: Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass
+## 🤝 Contributing
 
-- uvicorn not found: venv aktif mi?
+Contributions are welcome! Please feel free to submit a Pull Request.
 
-- Postgres bağlantısı: container/URL doğru mu?
+---
 
-- Frontend 404: NEXT_PUBLIC_API_URL backend’i işaret etmeli
+## 💡 Support
 
-- Push ağ hataları: git config --global http.version HTTP/1.1
+Need help? Check out:
+- **API Documentation**: [http://localhost:8000/docs](http://localhost:8000/docs)
+- **GitHub Issues**: For bug reports and feature requests
 
- # 📜 Lisans
+---
 
- MIT
+Built with ❤️ for Amazon sellers worldwide
