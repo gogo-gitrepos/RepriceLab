@@ -16,7 +16,14 @@ import {
   ChevronRight,
   CheckCircle2,
   Star,
-  ArrowRight
+  ArrowRight,
+  Facebook,
+  Twitter,
+  Youtube,
+  Linkedin,
+  Instagram,
+  Mail,
+  FlaskConical
 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 
@@ -43,19 +50,35 @@ export default function LandingPage() {
       <nav className="relative z-10 px-6 py-6">
         <div className="max-w-7xl mx-auto flex items-center justify-between">
           <div className="flex items-center space-x-3">
-            <div className="w-10 h-10 bg-gradient-to-r from-purple-400 to-pink-400 rounded-xl flex items-center justify-center shadow-2xl">
-              <Zap className="w-6 h-6 text-white" />
+            <div className="relative w-12 h-12 bg-gradient-to-br from-purple-500 via-purple-600 to-indigo-600 rounded-2xl flex items-center justify-center shadow-2xl transform hover:scale-105 transition-transform duration-200">
+              <div className="absolute inset-0 bg-gradient-to-br from-white/20 to-transparent rounded-2xl"></div>
+              <FlaskConical className="w-7 h-7 text-white relative z-10 drop-shadow-lg" />
             </div>
-            <span className="text-2xl font-bold text-white">RepriceLab<span className="text-purple-300">.com</span></span>
+            <span className="text-2xl font-bold text-white tracking-tight">
+              <span className="bg-gradient-to-r from-white via-purple-100 to-white bg-clip-text text-transparent drop-shadow-lg">RepriceLab</span>
+              <span className="text-purple-300">.com</span>
+            </span>
           </div>
           <div className="flex items-center space-x-4">
-            <Button variant="ghost" className="text-white hover:bg-white/10 font-medium">
+            <Button 
+              variant="ghost" 
+              className="text-white hover:bg-white/10 font-medium"
+              onClick={() => router.push('/features')}
+            >
               Features
             </Button>
-            <Button variant="ghost" className="text-white hover:bg-white/10 font-medium">
+            <Button 
+              variant="ghost" 
+              className="text-white hover:bg-white/10 font-medium"
+              onClick={() => router.push('/pricing')}
+            >
               Pricing
             </Button>
-            <Button variant="ghost" className="text-white hover:bg-white/10 font-medium">
+            <Button 
+              variant="ghost" 
+              className="text-white hover:bg-white/10 font-medium"
+              onClick={() => router.push('/contact')}
+            >
               Contact
             </Button>
           </div>
@@ -296,9 +319,106 @@ export default function LandingPage() {
       </div>
 
       {/* Footer */}
-      <footer className="relative z-10 border-t border-white/10 py-8">
-        <div className="max-w-7xl mx-auto px-6 text-center text-purple-200">
-          <p>&copy; 2025 RepriceLab.com. All rights reserved.</p>
+      <footer className="relative z-10 bg-gray-900 border-t border-white/10 mt-20">
+        <div className="max-w-7xl mx-auto px-6 py-16">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-12">
+            {/* Logo and Description */}
+            <div className="lg:col-span-2 space-y-6">
+              <div className="flex items-center space-x-3">
+                <div className="relative w-12 h-12 bg-gradient-to-br from-purple-500 via-purple-600 to-indigo-600 rounded-2xl flex items-center justify-center shadow-2xl">
+                  <div className="absolute inset-0 bg-gradient-to-br from-white/20 to-transparent rounded-2xl"></div>
+                  <FlaskConical className="w-7 h-7 text-white relative z-10 drop-shadow-lg" />
+                </div>
+                <span className="text-xl font-bold text-white">RepriceLab<span className="text-purple-400">.com</span></span>
+              </div>
+              <p className="text-purple-300 text-sm leading-relaxed max-w-sm">
+                Maximize Sales & Profits with the World's #1 Repricer
+              </p>
+              <div className="space-y-3">
+                <p className="text-sm text-purple-400 font-semibold">Want monthly eCommerce tips, trends and news direct to your inbox?</p>
+                <div className="flex gap-2">
+                  <Input 
+                    type="email" 
+                    placeholder="Enter your email" 
+                    className="bg-gray-800 border-gray-700 text-white placeholder:text-gray-500 h-10"
+                  />
+                  <Button className="bg-purple-600 hover:bg-purple-700 h-10 px-6">
+                    Subscribe
+                  </Button>
+                </div>
+              </div>
+            </div>
+
+            {/* Product */}
+            <div>
+              <h3 className="text-white font-bold mb-4">Product</h3>
+              <ul className="space-y-3">
+                <li><a href="#" className="text-purple-300 hover:text-white text-sm transition-colors">Repricing Basics</a></li>
+                <li><a href="#" className="text-purple-300 hover:text-white text-sm transition-colors">Pricing Strategies</a></li>
+                <li><a href="#" className="text-purple-300 hover:text-white text-sm transition-colors">Safe Mode</a></li>
+                <li><a href="#" className="text-purple-300 hover:text-white text-sm transition-colors">Assisted Setup</a></li>
+                <li><a href="#" className="text-purple-300 hover:text-white text-sm transition-colors">Integrations</a></li>
+                <li><a href="#" className="text-purple-300 hover:text-white text-sm transition-colors">Analytics</a></li>
+              </ul>
+            </div>
+
+            {/* Resources */}
+            <div>
+              <h3 className="text-white font-bold mb-4">Resources</h3>
+              <ul className="space-y-3">
+                <li><a href="#" className="text-purple-300 hover:text-white text-sm transition-colors">Customer Stories</a></li>
+                <li><a href="#" className="text-purple-300 hover:text-white text-sm transition-colors">What's New</a></li>
+                <li><a href="#" className="text-purple-300 hover:text-white text-sm transition-colors">eBooks</a></li>
+                <li><a href="#" className="text-purple-300 hover:text-white text-sm transition-colors">Blog</a></li>
+                <li><a href="#" className="text-purple-300 hover:text-white text-sm transition-colors">Webinars</a></li>
+                <li><a href="#" className="text-purple-300 hover:text-white text-sm transition-colors">Help Center</a></li>
+                <li><a href="#" className="text-purple-300 hover:text-white text-sm transition-colors">Partners</a></li>
+              </ul>
+            </div>
+
+            {/* Company */}
+            <div>
+              <h3 className="text-white font-bold mb-4">Company</h3>
+              <ul className="space-y-3">
+                <li><a href="#" className="text-purple-300 hover:text-white text-sm transition-colors">Contact us</a></li>
+                <li><a href="#" className="text-purple-300 hover:text-white text-sm transition-colors">Affiliates</a></li>
+                <li><a href="#" className="text-purple-300 hover:text-white text-sm transition-colors">Careers</a></li>
+              </ul>
+            </div>
+          </div>
+
+          {/* Bottom Footer */}
+          <div className="mt-12 pt-8 border-t border-gray-800">
+            <div className="flex flex-col md:flex-row justify-between items-center gap-6">
+              {/* Social Media */}
+              <div className="flex items-center gap-1">
+                <p className="text-sm text-purple-400 font-semibold mr-3">Follow along with us</p>
+                <a href="#" className="w-10 h-10 bg-gray-800 hover:bg-purple-600 rounded-lg flex items-center justify-center transition-colors">
+                  <Facebook className="w-5 h-5 text-purple-300" />
+                </a>
+                <a href="#" className="w-10 h-10 bg-gray-800 hover:bg-purple-600 rounded-lg flex items-center justify-center transition-colors">
+                  <Twitter className="w-5 h-5 text-purple-300" />
+                </a>
+                <a href="#" className="w-10 h-10 bg-gray-800 hover:bg-purple-600 rounded-lg flex items-center justify-center transition-colors">
+                  <Youtube className="w-5 h-5 text-purple-300" />
+                </a>
+                <a href="#" className="w-10 h-10 bg-gray-800 hover:bg-purple-600 rounded-lg flex items-center justify-center transition-colors">
+                  <Linkedin className="w-5 h-5 text-purple-300" />
+                </a>
+                <a href="#" className="w-10 h-10 bg-gray-800 hover:bg-purple-600 rounded-lg flex items-center justify-center transition-colors">
+                  <Instagram className="w-5 h-5 text-purple-300" />
+                </a>
+              </div>
+
+              {/* Legal Links */}
+              <div className="flex flex-wrap items-center gap-6 text-sm">
+                <a href="#" className="text-purple-300 hover:text-white transition-colors">Privacy Policy</a>
+                <a href="#" className="text-purple-300 hover:text-white transition-colors">Terms and Conditions</a>
+                <a href="#" className="text-purple-300 hover:text-white transition-colors">Accessibility Statement</a>
+                <span className="text-purple-400">© Copyright 2025, All Rights Reserved</span>
+              </div>
+            </div>
+          </div>
         </div>
       </footer>
 
