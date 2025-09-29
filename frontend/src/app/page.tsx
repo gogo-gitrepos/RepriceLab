@@ -44,7 +44,12 @@ export default function DashboardPage() {
     { name: 'TechValue Express', percentage: 25 },
   ];
 
-  const CircularProgress = ({ percentage, size = 120, strokeWidth = 8 }: { percentage: number; size?: number; strokeWidth?: number }) => {
+  const CircularProgress = ({ percentage, size = 120, strokeWidth = 8, showLabel = false }: { 
+    percentage: number; 
+    size?: number; 
+    strokeWidth?: number;
+    showLabel?: boolean;
+  }) => {
     const radius = (size - strokeWidth) / 2;
     const circumference = radius * 2 * Math.PI;
     const strokeDasharray = circumference;
@@ -74,9 +79,11 @@ export default function DashboardPage() {
             className="transition-all duration-1000 ease-out"
           />
         </svg>
-        <div className="absolute flex flex-col items-center">
-          <span className="text-2xl font-bold">{percentage}%</span>
-        </div>
+        {showLabel && (
+          <div className="absolute flex flex-col items-center">
+            <span className="text-2xl font-bold">{percentage}%</span>
+          </div>
+        )}
       </div>
     );
   };
@@ -309,7 +316,7 @@ export default function DashboardPage() {
           </CardHeader>
           <CardContent>
             <div className="flex flex-col items-center">
-              <CircularProgress percentage={Math.round(metrics?.buybox_ownership_pct || 60)} size={120} />
+              <CircularProgress percentage={Math.round(metrics?.buybox_ownership_pct || 60)} size={120} showLabel={true} />
               <div className="mt-4 text-center">
                 <div className="text-sm font-medium">Current Buy Box Rate</div>
                 <div className="text-xs text-muted-foreground mt-1">
