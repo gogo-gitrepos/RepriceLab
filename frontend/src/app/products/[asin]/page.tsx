@@ -1,8 +1,12 @@
 'use client';
 import { useEffect, useState } from 'react';
 import { apiClient, PricingPreview } from '../../../lib/api';
+import { useI18n } from '@/lib/i18n';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
 
 export default function ProductDetail({ params }: { params: { asin: string } }) {
+    const { t } = useI18n();
     const { asin } = params;
     const [preview, setPreview] = useState<PricingPreview | null>(null);
     const [error, setError] = useState<string | null>(null);
@@ -14,42 +18,72 @@ export default function ProductDetail({ params }: { params: { asin: string } }) 
     }, [asin]);
 
     return (
-        <div className="space-y-4">
+        <div className="space-y-6">
             <div className="flex items-center justify-between">
-                <h2 className="text-2xl font-semibold">Ürün: {asin}</h2>
-                <a className="text-sm text-blue-600 hover:underline" href="/products">← Geri</a>
+                <h2 className="text-3xl font-bold tracking-tight">
+                  {t('productDetail.title', { asin })}
+                </h2>
+                <Button variant="link" asChild>
+                  <a href="/products">{t('products.back')}</a>
+                </Button>
             </div>
-            {error && <div className="p-3 bg-red-100 text-red-700 rounded-md">{error}</div>}
-            {!preview && !error && <div>Yükleniyor…</div>}
+            
+            {error && (
+              <Card className="border-destructive bg-destructive/10">
+                <CardContent className="pt-6">
+                  <p className="text-destructive">{error}</p>
+                </CardContent>
+              </Card>
+            )}
+            
+            {!preview && !error && (
+              <div className="text-center py-8">
+                <p className="text-muted-foreground">{t('products.loading')}</p>
+              </div>
+            )}
+            
             {preview && (
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div className="rounded-2xl shadow-sm border bg-white p-4">
-                        <h3 className="font-semibold mb-2">Fiyat Önizleme</h3>
-                        <ul className="space-y-1 text-sm">
-                            <li>
-                                <span className="text-gray-500">Mevcut fiyat:</span>{' '}
-                                <b>{preview.current_price.toFixed(2)}</b>
-                            </li>
-                            <li>
-                                <span className="text-gray-500">Rakip min:</span>{' '}
-                                <b>{preview.competitor_min !== undefined && preview.competitor_min !== null ? preview.competitor_min.toFixed(2) : '-'}</b>
-                            </li>
-                            <li>
-                                <span className="text-gray-500">Min/Max:</span>{' '}
-                                <b>{preview.min_price.toFixed(2)}</b> / <b>{preview.max_price.toFixed(2)}</b>
-                            </li>
-                            <li>
-                                <span className="text-gray-500">Önerilen:</span>{' '}
-                                <b className="text-blue-700">{preview.suggested_price.toFixed(2)}</b>
-                            </li>
-                        </ul>
-                    </div>
-                    <div className="rounded-2xl shadow-sm border bg-white p-4">
-                        <h3 className="font-semibold mb-2">Notlar</h3>
-                        <p className="text-sm text-gray-600">
-                            Bu sayfa demo verilerle SP-API olmadan çalışır. Gerçek entegrasyonda teklif verileri ve Buy Box sahibi backend’den gelir.
-                        </p>
-                    </div>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <Card>
+                        <CardHeader>
+                          <CardTitle>{t('productDetail.pricePreview')}</CardTitle>
+                        </CardHeader>
+                        <CardContent>
+                          <div className="space-y-3">
+                            <div className="flex justify-between">
+                                <span className="text-muted-foreground">{t('productDetail.currentPrice')}</span>
+                                <span className="font-semibold">{preview.current_price.toFixed(2)}</span>
+                            </div>
+                            <div className="flex justify-between">
+                                <span className="text-muted-foreground">{t('productDetail.competitorMin')}</span>
+                                <span className="font-semibold">
+                                  {preview.competitor_min !== undefined && preview.competitor_min !== null ? preview.competitor_min.toFixed(2) : '-'}
+                                </span>
+                            </div>
+                            <div className="flex justify-between">
+                                <span className="text-muted-foreground">{t('productDetail.minMax')}</span>
+                                <span className="font-semibold">
+                                  {preview.min_price.toFixed(2)} / {preview.max_price.toFixed(2)}
+                                </span>
+                            </div>
+                            <div className="flex justify-between">
+                                <span className="text-muted-foreground">{t('productDetail.suggested')}</span>
+                                <span className="font-bold text-primary">{preview.suggested_price.toFixed(2)}</span>
+                            </div>
+                          </div>
+                        </CardContent>
+                    </Card>
+                    
+                    <Card>
+                        <CardHeader>
+                          <CardTitle>{t('productDetail.notes')}</CardTitle>
+                        </CardHeader>
+                        <CardContent>
+                          <p className="text-sm text-muted-foreground">
+                            {t('productDetail.demoNote')}
+                          </p>
+                        </CardContent>
+                    </Card>
                 </div>
             )}
         </div>
