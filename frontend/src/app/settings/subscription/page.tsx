@@ -37,7 +37,7 @@ export default function SubscriptionPage() {
       price: { monthly: 49, yearly: 490 },
       badge: 'Most Popular',
       features: [
-        'Up to 500 products',
+        'Up to 5,000 products',
         'Advanced repricing strategies',
         'Priority email support',
         'Multi-marketplace support',
@@ -57,7 +57,7 @@ export default function SubscriptionPage() {
       price: { monthly: 99, yearly: 990 },
       badge: 'Best Value',
       features: [
-        'Up to 2,000 products',
+        '10,000+ products',
         'AI-powered repricing',
         'Phone + email support',
         'All marketplace integrations',
@@ -220,13 +220,24 @@ export default function SubscriptionPage() {
             </CardHeader>
             
             <CardContent className="pt-0">
-              <Button 
-                className="w-full mb-6" 
-                variant={plan.buttonVariant}
-                disabled={plan.name === 'Free'}
-              >
-                {plan.buttonText}
-              </Button>
+              <div className="space-y-3 mb-6">
+                <Button 
+                  className="w-full" 
+                  variant={plan.buttonVariant}
+                  disabled={plan.name === 'Free'}
+                >
+                  {plan.buttonText}
+                </Button>
+                
+                {(plan.name === 'Plus' || plan.name === 'Pro') && (
+                  <Button 
+                    className="w-full" 
+                    variant="outline"
+                  >
+                    Start Free Trial
+                  </Button>
+                )}
+              </div>
               
               <div className="space-y-3">
                 <h4 className="font-medium text-sm">Everything in {plan.name}:</h4>
@@ -281,8 +292,8 @@ export default function SubscriptionPage() {
                 <tr className="border-b">
                   <td className="py-3 px-4 font-medium">Products</td>
                   <td className="text-center py-3 px-4">10</td>
-                  <td className="text-center py-3 px-4">500</td>
-                  <td className="text-center py-3 px-4">2,000</td>
+                  <td className="text-center py-3 px-4">5,000</td>
+                  <td className="text-center py-3 px-4">10,000+</td>
                   <td className="text-center py-3 px-4">Unlimited</td>
                 </tr>
                 <tr className="border-b">
