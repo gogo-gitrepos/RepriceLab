@@ -117,8 +117,37 @@ export function TopHeader() {
     item.answer.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
+  const LabLogo = () => (
+    <div className="relative w-10 h-10">
+      {/* Laboratory Flask */}
+      <svg 
+        viewBox="0 0 32 32" 
+        className="w-10 h-10 text-white drop-shadow-lg"
+        fill="currentColor"
+      >
+        <path d="M12 4h8v6l6 12H6l6-12V4z" stroke="currentColor" strokeWidth="2" fill="none"/>
+        <path d="M10 4h12" stroke="currentColor" strokeWidth="2"/>
+        <circle cx="16" cy="18" r="6" fill="currentColor" opacity="0.3"/>
+      </svg>
+      {/* R Symbol in the center */}
+      <div className="absolute inset-0 flex items-center justify-center">
+        <span className="text-white font-bold text-lg drop-shadow-md">R</span>
+      </div>
+    </div>
+  );
+
   return (
-    <header className="h-16 bg-purple-600 flex items-center justify-end px-6 border-b relative z-40">
+    <header className="h-16 bg-gradient-to-r from-purple-600 via-purple-700 to-indigo-600 flex items-center justify-between px-6 border-b relative z-40 shadow-lg">
+      {/* Left side - RepriceLab Branding */}
+      <div className="flex items-center space-x-3">
+        <LabLogo />
+        <div className="flex items-center space-x-1">
+          <h1 className="text-xl font-bold text-white drop-shadow-md tracking-tight">RepriceLab</h1>
+          <span className="text-purple-200 text-sm font-medium">.com</span>
+        </div>
+      </div>
+      
+      {/* Right side - Navigation Icons */}
       <div className="flex items-center space-x-4">
         {/* Notification Bell */}
         <div className="relative">
@@ -182,7 +211,7 @@ export function TopHeader() {
           <Button 
             variant="ghost" 
             size="icon" 
-            className="text-white hover:text-white hover:bg-purple-700"
+            className="text-white hover:text-white hover:bg-white/20 backdrop-blur-sm"
             onClick={() => {
               setMessagesOpen(!messagesOpen);
               setNotificationsOpen(false);
@@ -272,7 +301,7 @@ export function TopHeader() {
           <Button 
             variant="ghost" 
             size="icon" 
-            className="text-white hover:text-white hover:bg-purple-700"
+            className="text-white hover:text-white hover:bg-white/20 backdrop-blur-sm"
             onClick={() => {
               setFaqOpen(!faqOpen);
               setNotificationsOpen(false);
@@ -356,7 +385,7 @@ export function TopHeader() {
               setMessagesOpen(false);
               setFaqOpen(false);
             }}
-            className="flex items-center space-x-2 text-white hover:text-white bg-purple-700 rounded-full px-3 py-2 transition-colors"
+            className="flex items-center space-x-2 text-white hover:text-white bg-white/20 backdrop-blur-sm rounded-full px-3 py-2 transition-all duration-200 hover:bg-white/30"
           >
             <div className="w-8 h-8 bg-purple-800 rounded-full flex items-center justify-center">
               <span className="text-white font-bold text-sm">GG</span>

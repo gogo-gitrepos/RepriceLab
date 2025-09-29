@@ -80,33 +80,8 @@ export function NavigationContent() {
     </h3>
   );
 
-  const LabLogo = () => (
-    <div className="relative w-8 h-8">
-      {/* Laboratory Flask */}
-      <svg 
-        viewBox="0 0 32 32" 
-        className="w-8 h-8 text-purple-600"
-        fill="currentColor"
-      >
-        <path d="M12 4h8v6l6 12H6l6-12V4z" stroke="currentColor" strokeWidth="2" fill="none"/>
-        <path d="M10 4h12" stroke="currentColor" strokeWidth="2"/>
-        <circle cx="16" cy="18" r="6" fill="currentColor" opacity="0.2"/>
-      </svg>
-      {/* R Symbol in the center */}
-      <div className="absolute inset-0 flex items-center justify-center">
-        <span className="text-white font-bold text-xs">R</span>
-      </div>
-    </div>
-  );
-
   const NavigationHeader = () => (
     <div className="p-4 border-b">
-      <div className="flex items-center space-x-2 mb-4">
-        <LabLogo />
-        <h1 className="text-lg font-bold text-gray-900">RepriceLab</h1>
-        <span className="text-xs text-gray-500">.com</span>
-      </div>
-      
       {/* Search Bar */}
       <form onSubmit={handleSearch} className="relative">
         <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
