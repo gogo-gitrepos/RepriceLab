@@ -52,7 +52,7 @@ export function NavigationContent() {
   };
 
   const SectionTitle = ({ children }: { children: React.ReactNode }) => (
-    <h3 className="px-3 py-2 text-xs font-semibold text-gray-500 uppercase tracking-wider">
+    <h3 className="px-3 py-2 text-xs font-semibold text-gray-500 tracking-wider">
       {children}
     </h3>
   );
