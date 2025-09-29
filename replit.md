@@ -10,6 +10,22 @@ The application consists of a Next.js frontend with TypeScript and Tailwind CSS,
 
 Preferred communication style: Simple, everyday language.
 
+## Recent Changes
+
+### Phase 2 Complete: Amazon SP-API Integration (September 2025)
+- ✅ **Database Models**: Enhanced Store and Product models with SP-API fields, foreign key relationships for multi-store support
+- ✅ **Amazon OAuth Flow**: Complete seller authentication with secure token exchange and state management
+- ✅ **SP-API Client**: Python SP-API service with proper credential handling and error management  
+- ✅ **API Endpoints**: OAuth initiation, callback handling, store management, and connection testing endpoints
+- ✅ **Frontend Interface**: Professional store management UI in Settings page with Turkish/English support
+- ✅ **Testing**: All API endpoints functional, frontend interface operational
+
+**Next Phase Security Priorities:**
+- Authentication/authorization for all routes (critical IDOR vulnerability fix)
+- Refresh token encryption at rest
+- Multi-region marketplace support (currently hardcoded to US)
+- Production OAuth state persistence (currently in-memory)
+
 ## System Architecture
 
 ### Frontend Architecture
@@ -18,13 +34,15 @@ Preferred communication style: Simple, everyday language.
 - **State Management**: Client-side state with React hooks and API integration
 - **API Communication**: Custom API client with fetch-based requests and error handling
 - **Routing**: File-based routing with dynamic product detail pages
+- **Internationalization**: Complete Turkish/English language switching system
 
 ### Backend Architecture
 - **Framework**: FastAPI for high-performance API development with automatic OpenAPI documentation
 - **Database**: SQLAlchemy ORM with support for both SQLite (development) and PostgreSQL (production)
-- **Authentication**: Placeholder implementation for Amazon OAuth integration
+- **Amazon Integration**: Complete SP-API OAuth flow with token management and multi-store support
 - **Background Processing**: APScheduler for periodic tasks like price monitoring and Buy Box tracking
-- **Data Models**: Structured models for Users, Stores, Products, Price History, and Competitor Offers
+- **Data Models**: Enhanced models for Users, Stores, Products with Amazon SP-API integration
+- **API Security**: Rate limiting, error handling, and structured API responses
 
 ### Core Services
 - **SP-API Integration**: Amazon Seller Partner API client for listing management and competitive pricing data
