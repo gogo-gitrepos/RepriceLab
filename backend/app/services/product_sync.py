@@ -98,12 +98,13 @@ class ProductSyncService:
                             "error": str(e)
                         })
             else:
-                # For demo purposes, we'll simulate syncing a few example SKUs
+                # For demo purposes, create actual demo products that users can see
                 # In production, you'd use Reports API to get all seller SKUs
-                demo_skus = await self._get_demo_skus(store)
+                demo_products = await self._create_demo_products(db, store)
                 
-                sync_results["message"] = f"Demo sync completed. In production, would sync all SKUs from Reports API."
-                sync_results["demo_skus_processed"] = demo_skus
+                sync_results["synced_count"] = len(demo_products)
+                sync_results["products"] = demo_products
+                sync_results["message"] = f"Demo sync completed with {len(demo_products)} demo products. In production, would sync all SKUs from Reports API."
             
             # Update store last sync time
             store.last_sync = datetime.utcnow()
@@ -307,3 +308,137 @@ class ProductSyncService:
             }
         finally:
             db.close()
+    
+    async def _create_demo_products(self, db: Session, store: Store) -> List[Dict[str, Any]]:
+        """Create demo products for testing when SP-API is unavailable"""
+        
+        demo_products_data = [
+            {
+                "sku": f"DEMO-{store.id}-001",
+                "asin": "B08N5WRWNW",
+                "title": "Premium Wireless Bluetooth Headphones - Noise Cancelling",
+                "description": "High-quality wireless headphones with active noise cancellation technology",
+                "brand": "TechPro",
+                "price": 89.99,
+                "stock_qty": 25,
+                "buybox_owning": True,
+                "listing_status": "active"
+            },
+            {
+                "sku": f"DEMO-{store.id}-002", 
+                "asin": "B07XJ8C8F5",
+                "title": "Smart Home WiFi Security Camera - 1080p HD",
+                "description": "Indoor/outdoor security camera with night vision and motion detection",
+                "brand": "SecureHome",
+                "price": 149.99,
+                "stock_qty": 12,
+                "buybox_owning": False,
+                "listing_status": "active"
+            },
+            {
+                "sku": f"DEMO-{store.id}-003",
+                "asin": "B09GK7CQFR", 
+                "title": "Portable Phone Charger 20000mAh Power Bank",
+                "description": "Fast charging portable battery pack with multiple USB ports",
+                "brand": "PowerMax",
+                "price": 34.99,
+                "stock_qty": 45,
+                "buybox_owning": True,
+                "listing_status": "active"
+            },
+            {
+                "sku": f"DEMO-{store.id}-004",
+                "asin": "B08RY8JHQM",
+                "title": "USB-C Multi-Port Adapter Hub - 7-in-1",
+                "description": "Premium aluminum adapter with HDMI, USB 3.0, and SD card slots",
+                "brand": "ConnectPro", 
+                "price": 59.99,
+                "stock_qty": 8,
+                "buybox_owning": False,
+                "listing_status": "active"
+            },
+            {
+                "sku": f"DEMO-{store.id}-005",
+                "asin": "B07ZPKT4VF",
+                "title": "Ergonomic Office Chair - Mesh Back Support",
+                "description": "Comfortable office chair with lumbar support and adjustable height",
+                "brand": "OfficeComfort",
+                "price": 199.99,
+                "stock_qty": 3,
+                "buybox_owning": True,
+                "listing_status": "active"
+            }
+        ]
+        
+        created_products = []
+        
+        for product_data in demo_products_data:
+            try:
+                # Check if demo product already exists
+                existing_product = db.execute(
+                    select(Product).where(
+                        Product.sku == product_data["sku"],
+                        Product.store_id == store.id
+                    )
+                ).scalar_one_or_none()
+                
+                if existing_product:
+                    # Update existing demo product
+                    existing_product.title = product_data["title"]
+                    existing_product.price = product_data["price"]
+                    existing_product.stock_qty = product_data["stock_qty"]
+                    existing_product.buybox_owning = product_data["buybox_owning"]
+                    existing_product.listing_status = product_data["listing_status"]
+                    existing_product.last_synced_at = datetime.utcnow()
+                    existing_product.sync_status = "synced"
+                    existing_product.updated_at = datetime.utcnow()
+                    product = existing_product
+                else:
+                    # Create new demo product
+                    product = Product(
+                        user_id=store.user_id,
+                        store_id=store.id,
+                        sku=product_data["sku"],
+                        asin=product_data["asin"],
+                        title=product_data["title"],
+                        description=product_data["description"],
+                        brand=product_data["brand"],
+                        marketplace_id="ATVPDKIKX0DER",  # US marketplace
+                        product_type="PRODUCT",
+                        condition_type="New",
+                        listing_status=product_data["listing_status"],
+                        fulfillment_channel="FBA",
+                        price=product_data["price"],
+                        currency="USD",
+                        min_price=product_data["price"] * 0.8,  # 20% below current price
+                        max_price=product_data["price"] * 1.5,  # 50% above current price
+                        stock_qty=product_data["stock_qty"],
+                        buybox_owner="Amazon" if not product_data["buybox_owning"] else None,
+                        buybox_owning=product_data["buybox_owning"],
+                        repricing_enabled=True,
+                        last_synced_at=datetime.utcnow(),
+                        sync_status="synced",
+                        created_at=datetime.utcnow(),
+                        updated_at=datetime.utcnow()
+                    )
+                    db.add(product)
+                
+                db.commit()
+                
+                created_products.append({
+                    "id": product.id,
+                    "sku": product.sku,
+                    "asin": product.asin,
+                    "title": product.title,
+                    "price": product.price,
+                    "stock_qty": product.stock_qty,
+                    "buybox_owning": product.buybox_owning,
+                    "sync_status": product.sync_status,
+                    "status": "created" if not existing_product else "updated"
+                })
+                
+            except Exception as e:
+                logger.error(f"Error creating demo product {product_data['sku']}: {e}")
+                continue
+        
+        return created_products
