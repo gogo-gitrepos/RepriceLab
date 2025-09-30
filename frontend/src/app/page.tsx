@@ -37,6 +37,20 @@ export default function LandingPage() {
     router.push('/dashboard');
   };
 
+  const handleGoogleLogin = async () => {
+    try {
+      const response = await fetch('http://localhost:8000/api/auth/google/login');
+      const data = await response.json();
+      
+      if (data.auth_url) {
+        window.location.href = data.auth_url;
+      }
+    } catch (error) {
+      console.error('Failed to initiate Google login:', error);
+      alert('Failed to initiate Google login. Please try again.');
+    }
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-purple-900 via-indigo-900 to-purple-800 relative overflow-hidden">
       {/* Animated background elements */}
@@ -209,6 +223,7 @@ export default function LandingPage() {
                     type="button" 
                     variant="outline" 
                     className="w-full h-12 text-base font-semibold border-2 border-gray-300 hover:bg-gray-50"
+                    onClick={handleGoogleLogin}
                   >
                     <svg className="w-5 h-5 mr-3" viewBox="0 0 24 24">
                       <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
