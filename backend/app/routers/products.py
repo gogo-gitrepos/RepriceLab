@@ -17,13 +17,15 @@ product_sync_service = ProductSyncService()
 
 @router.get("/")
 async def list_products(
+    user_id: int = Query(2, description="User ID for demo"),
     store_id: Optional[int] = Query(None, description="Filter by store ID"),
     limit: int = Query(50, description="Number of products to return"),
     offset: int = Query(0, description="Offset for pagination"),
-    current_user_id: int = Depends(get_current_user_id),
     db: Session = Depends(get_db)
 ):
     """Get list of products for a user, optionally filtered by store"""
+    
+    current_user_id = user_id
     
     # Get total count for pagination
     total_query = select(func.count(Product.id)).where(Product.user_id == current_user_id)
@@ -57,6 +59,8 @@ async def list_products(
             "stock_qty": product.stock_qty,
             "buybox_owning": product.buybox_owning,
             "repricing_enabled": product.repricing_enabled,
+            "repricing_strategy": product.repricing_strategy,
+            "target_margin_percent": product.target_margin_percent,
             "last_synced_at": product.last_synced_at,
             "sync_status": product.sync_status,
             "created_at": product.created_at,

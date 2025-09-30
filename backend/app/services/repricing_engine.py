@@ -182,6 +182,17 @@ class RepricingEngine:
             CompetitorOffer.ts >= recent_time
         ).all()
         
+        # If no CompetitorOffer data, create mock competitor from product data
+        if not competitors and product.lowest_competitor_price:
+            # Create a mock competitor for calculation purposes
+            mock_competitor = type('obj', (object,), {
+                'price': product.lowest_competitor_price,
+                'shipping': 0.0,
+                'is_buybox': True,
+                'seller_name': 'Competitor'
+            })()
+            competitors = [mock_competitor]
+        
         # Calculate optimal price
         result = self.calculate_optimal_price(
             product,
