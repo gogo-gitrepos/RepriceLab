@@ -139,33 +139,33 @@ export function TopHeader() {
   );
 
   return (
-    <header className="h-16 bg-gradient-to-r from-purple-600 via-purple-700 to-indigo-600 flex items-center justify-between px-6 border-b relative z-40 shadow-lg">
+    <header className="h-14 sm:h-16 bg-gradient-to-r from-purple-600 via-purple-700 to-indigo-600 flex items-center justify-between px-3 sm:px-4 md:px-6 border-b relative z-40 shadow-lg">
       {/* Left side - RepriceLab Branding */}
-      <div className="flex items-center space-x-3">
+      <div className="flex items-center space-x-2 sm:space-x-3">
         <LabLogo />
         <div className="flex items-center space-x-1">
-          <h1 className="text-xl font-bold text-white drop-shadow-md tracking-tight">RepriceLab</h1>
-          <span className="text-purple-200 text-sm font-medium">.com</span>
+          <h1 className="text-base sm:text-lg md:text-xl font-bold text-white drop-shadow-md tracking-tight">RepriceLab</h1>
+          <span className="text-purple-200 text-xs sm:text-sm font-medium">.com</span>
         </div>
       </div>
       
       {/* Right side - Navigation Icons */}
-      <div className="flex items-center space-x-4">
+      <div className="flex items-center space-x-1 sm:space-x-2 md:space-x-4">
         {/* Notification Bell */}
         <div className="relative">
           <Button 
             variant="ghost" 
             size="icon" 
-            className="text-white hover:text-white hover:bg-purple-700"
+            className="text-white hover:text-white hover:bg-purple-700 h-8 w-8 sm:h-10 sm:w-10"
             onClick={() => {
               setNotificationsOpen(!notificationsOpen);
               setMessagesOpen(false);
               setFaqOpen(false);
             }}
           >
-            <Bell className="w-5 h-5" />
+            <Bell className="w-4 h-4 sm:w-5 sm:h-5" />
             {notifications.some(n => !n.read) && (
-              <span className="absolute -top-1 -right-1 w-3 h-3 bg-red-500 rounded-full"></span>
+              <span className="absolute -top-0.5 -right-0.5 sm:-top-1 sm:-right-1 w-2 h-2 sm:w-3 sm:h-3 bg-red-500 rounded-full"></span>
             )}
           </Button>
 
@@ -175,7 +175,7 @@ export function TopHeader() {
                 className="fixed inset-0 z-10" 
                 onClick={() => setNotificationsOpen(false)}
               />
-              <div className="absolute right-0 mt-2 w-80 bg-white rounded-lg shadow-lg border z-20">
+              <div className="absolute right-0 mt-2 w-[calc(100vw-2rem)] sm:w-80 max-w-md bg-white rounded-lg shadow-lg border z-20">
                 <div className="p-4 border-b">
                   <h3 className="font-semibold text-gray-900">Notifications</h3>
                 </div>
@@ -209,20 +209,20 @@ export function TopHeader() {
         </div>
 
         {/* Message Icon */}
-        <div className="relative">
+        <div className="relative hidden sm:block">
           <Button 
             variant="ghost" 
             size="icon" 
-            className="text-white hover:text-white hover:bg-white/20 backdrop-blur-sm"
+            className="text-white hover:text-white hover:bg-white/20 backdrop-blur-sm h-8 w-8 sm:h-10 sm:w-10"
             onClick={() => {
               setMessagesOpen(!messagesOpen);
               setNotificationsOpen(false);
               setFaqOpen(false);
             }}
           >
-            <MessageSquare className="w-5 h-5" />
+            <MessageSquare className="w-4 h-4 sm:w-5 sm:h-5" />
             {conversations.some(c => c.unread) && (
-              <span className="absolute -top-1 -right-1 w-3 h-3 bg-red-500 rounded-full"></span>
+              <span className="absolute -top-0.5 -right-0.5 sm:-top-1 sm:-right-1 w-2 h-2 sm:w-3 sm:h-3 bg-red-500 rounded-full"></span>
             )}
           </Button>
 
@@ -299,18 +299,18 @@ export function TopHeader() {
         </div>
 
         {/* Help/FAQ Icon */}
-        <div className="relative">
+        <div className="relative hidden lg:block">
           <Button 
             variant="ghost" 
             size="icon" 
-            className="text-white hover:text-white hover:bg-white/20 backdrop-blur-sm"
+            className="text-white hover:text-white hover:bg-white/20 backdrop-blur-sm h-8 w-8 sm:h-10 sm:w-10"
             onClick={() => {
               setFaqOpen(!faqOpen);
               setNotificationsOpen(false);
               setMessagesOpen(false);
             }}
           >
-            <HelpCircle className="w-5 h-5" />
+            <HelpCircle className="w-4 h-4 sm:w-5 sm:h-5" />
           </Button>
 
           {faqOpen && (
@@ -319,7 +319,7 @@ export function TopHeader() {
                 className="fixed inset-0 z-10" 
                 onClick={() => setFaqOpen(false)}
               />
-              <div className="absolute right-0 mt-2 w-96 bg-white rounded-lg shadow-lg border z-20">
+              <div className="absolute right-0 mt-2 w-[calc(100vw-2rem)] sm:w-96 max-w-lg bg-white rounded-lg shadow-lg border z-20">
                 <div className="p-4 border-b">
                   <div className="flex justify-between items-center">
                     <h3 className="font-semibold text-gray-900">Frequently Asked Questions</h3>
@@ -387,12 +387,12 @@ export function TopHeader() {
               setMessagesOpen(false);
               setFaqOpen(false);
             }}
-            className="flex items-center space-x-2 text-white hover:text-white bg-white/20 backdrop-blur-sm rounded-full px-3 py-2 transition-all duration-200 hover:bg-white/30"
+            className="flex items-center space-x-1 sm:space-x-2 text-white hover:text-white bg-white/20 backdrop-blur-sm rounded-full px-2 sm:px-3 py-1.5 sm:py-2 transition-all duration-200 hover:bg-white/30"
           >
-            <div className="w-8 h-8 bg-purple-800 rounded-full flex items-center justify-center">
-              <span className="text-white font-bold text-sm">JD</span>
+            <div className="w-6 h-6 sm:w-8 sm:h-8 bg-purple-800 rounded-full flex items-center justify-center">
+              <span className="text-white font-bold text-xs sm:text-sm">JD</span>
             </div>
-            <ChevronDown className="w-4 h-4" />
+            <ChevronDown className="w-3 h-3 sm:w-4 sm:h-4" />
           </button>
 
           {profileDropdownOpen && (
@@ -401,7 +401,7 @@ export function TopHeader() {
                 className="fixed inset-0 z-10" 
                 onClick={() => setProfileDropdownOpen(false)}
               />
-              <div className="absolute right-0 mt-2 w-64 bg-white rounded-lg shadow-lg border z-20">
+              <div className="absolute right-0 mt-2 w-56 sm:w-64 bg-white rounded-lg shadow-lg border z-20">
                 <div className="p-4 border-b">
                   <div className="flex items-center space-x-3">
                     <div className="w-10 h-10 bg-gray-600 rounded-full flex items-center justify-center">
