@@ -420,7 +420,7 @@ export default function LandingPage() {
                 <a href="/legal/privacy" className="text-purple-300 hover:text-white transition-colors">Privacy Policy</a>
                 <a href="/legal/terms" className="text-purple-300 hover:text-white transition-colors">Terms and Conditions</a>
                 <a href="/legal/accessibility" className="text-purple-300 hover:text-white transition-colors">Accessibility Statement</a>
-                <span className="text-purple-400">© Copyright 2025, All Rights Reserved</span>
+                <span className="text-purple-400">© Copyright 2025 Codexia LLC, All Rights Reserved</span>
               </div>
             </div>
           </div>
