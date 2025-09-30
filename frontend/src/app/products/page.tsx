@@ -194,7 +194,7 @@ export default function ProductsPage() {
           </p>
         </div>
         <div className="flex items-center gap-2 w-full sm:w-auto">
-          <Search className="h-3 h-3 sm:h-4 sm:w-4 text-muted-foreground" />
+          <Search className="h-3 w-3 sm:h-4 sm:w-4 text-muted-foreground" />
           <Input
             placeholder={t('products.search')}
             value={searchTerm}
@@ -261,7 +261,7 @@ export default function ProductsPage() {
       <Card>
         <CardHeader className="p-4 sm:p-6">
           <CardTitle className="flex items-center gap-2 text-base sm:text-lg">
-            <RotateCw className="h-4 h-4 sm:h-5 sm:w-5" />
+            <RotateCw className="h-4 w-4 sm:h-5 sm:w-5" />
             Product Synchronization
           </CardTitle>
         </CardHeader>
@@ -289,7 +289,7 @@ export default function ProductsPage() {
                 disabled={syncing || !selectedStore}
                 className="flex-1 sm:flex-none flex items-center justify-center gap-2 text-sm sm:text-base"
               >
-                <RotateCw className={`h-3 h-3 sm:h-4 sm:w-4 ${syncing ? 'animate-spin' : ''}`} />
+                <RotateCw className={`h-3 w-3 sm:h-4 sm:w-4 ${syncing ? 'animate-spin' : ''}`} />
                 <span className="hidden sm:inline">{syncing ? 'Syncing...' : 'Sync Products'}</span>
                 <span className="sm:hidden">{syncing ? 'Sync...' : 'Sync'}</span>
               </Button>
@@ -299,7 +299,7 @@ export default function ProductsPage() {
                 disabled={loading}
                 className="flex-1 sm:flex-none flex items-center justify-center gap-2 text-sm sm:text-base"
               >
-                <Eye className="h-3 h-3 sm:h-4 sm:w-4" />
+                <Eye className="h-3 w-3 sm:h-4 sm:w-4" />
                 <span className="hidden sm:inline">Refresh</span>
                 <span className="sm:hidden">Reload</span>
               </Button>

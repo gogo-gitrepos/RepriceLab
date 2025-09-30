@@ -100,22 +100,22 @@ export default function SubscriptionPage() {
   };
 
   return (
-    <div className="space-y-6">
-      <div className="flex items-center space-x-3">
-        <CreditCard className="w-6 h-6" />
-        <h1 className="text-3xl font-bold">Subscription</h1>
+    <div className="space-y-4 sm:space-y-6">
+      <div className="flex items-center space-x-2 sm:space-x-3">
+        <CreditCard className="w-5 h-5 sm:w-6 sm:h-6" />
+        <h1 className="text-2xl sm:text-3xl font-bold">Subscription</h1>
       </div>
       
       {/* Current Plan Info */}
       <Card className="bg-gradient-to-r from-purple-50 to-purple-100 border-purple-200">
-        <CardContent className="p-6">
-          <div className="flex items-center justify-between">
+        <CardContent className="p-4 sm:p-6">
+          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 sm:gap-0">
             <div>
-              <h3 className="text-lg font-medium">Your Current Plan</h3>
-              <p className="text-purple-700">Free Trial - 14 days remaining</p>
-              <p className="text-sm text-purple-600 mt-1">Upgrade now to unlock all features and continue your repricing success!</p>
+              <h3 className="text-base sm:text-lg font-medium">Your Current Plan</h3>
+              <p className="text-sm sm:text-base text-purple-700">Free Trial - 14 days remaining</p>
+              <p className="text-xs sm:text-sm text-purple-600 mt-1">Upgrade now to unlock all features and continue your repricing success!</p>
             </div>
-            <Button className="bg-purple-600 hover:bg-purple-700">
+            <Button className="w-full sm:w-auto bg-purple-600 hover:bg-purple-700 text-sm sm:text-base">
               Upgrade Now
             </Button>
           </div>
@@ -127,7 +127,7 @@ export default function SubscriptionPage() {
         <div className="bg-gray-100 p-1 rounded-lg flex">
           <button
             onClick={() => setBillingCycle('monthly')}
-            className={`px-4 py-2 rounded-md text-sm font-medium transition-colors ${
+            className={`px-4 sm:px-5 py-2.5 sm:py-2 min-h-10 rounded-md text-sm font-medium transition-colors ${
               billingCycle === 'monthly'
                 ? 'bg-white text-gray-900 shadow-sm'
                 : 'text-gray-600'
@@ -137,7 +137,7 @@ export default function SubscriptionPage() {
           </button>
           <button
             onClick={() => setBillingCycle('yearly')}
-            className={`px-4 py-2 rounded-md text-sm font-medium transition-colors ${
+            className={`px-4 sm:px-5 py-2.5 sm:py-2 min-h-10 rounded-md text-sm font-medium transition-colors ${
               billingCycle === 'yearly'
                 ? 'bg-white text-gray-900 shadow-sm'
                 : 'text-gray-600'
@@ -149,23 +149,23 @@ export default function SubscriptionPage() {
       </div>
 
       {/* Pricing Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
         {plans.map((plan) => (
           <Card 
             key={plan.name} 
             className={`relative cursor-pointer transition-all duration-300 ${
               selectedPlan === plan.name
-                ? 'scale-105 shadow-2xl ring-4 ring-purple-500/50'
+                ? 'lg:scale-105 shadow-2xl ring-4 ring-purple-500/50'
                 : plan.popular 
-                  ? 'border-2 border-blue-500 shadow-lg hover:scale-105' 
-                  : 'border hover:scale-105'
+                  ? 'border-2 border-blue-500 shadow-lg lg:hover:scale-105' 
+                  : 'border lg:hover:scale-105'
             }`}
             onClick={() => setSelectedPlan(plan.name)}
           >
             {plan.badge && (
               <div className="absolute -top-3 left-1/2 transform -translate-x-1/2">
                 <Badge 
-                  className={`px-3 py-1 ${
+                  className={`px-2 sm:px-3 py-0.5 sm:py-1 text-xs sm:text-sm ${
                     plan.popular 
                       ? 'bg-blue-500 text-white' 
                       : 'bg-gray-800 text-white'
@@ -176,34 +176,34 @@ export default function SubscriptionPage() {
               </div>
             )}
             
-            <CardHeader className="text-center pb-4">
+            <CardHeader className="text-center pb-3 sm:pb-4 p-4 sm:p-6">
               <div className="flex justify-center mb-2">
                 {getPlanIcon(plan.name)}
               </div>
-              <CardTitle className="text-xl">{plan.name}</CardTitle>
-              <CardDescription>{plan.description}</CardDescription>
+              <CardTitle className="text-lg sm:text-xl">{plan.name}</CardTitle>
+              <CardDescription className="text-sm">{plan.description}</CardDescription>
               
-              <div className="pt-4">
-                <div className="text-3xl font-bold">
+              <div className="pt-3 sm:pt-4">
+                <div className="text-2xl sm:text-3xl font-bold">
                   ${plan.price[billingCycle]}
                   {plan.price[billingCycle] > 0 && (
-                    <span className="text-lg text-muted-foreground font-normal">
+                    <span className="text-base sm:text-lg text-muted-foreground font-normal">
                       /{billingCycle === 'monthly' ? 'mo' : 'yr'}
                     </span>
                   )}
                 </div>
                 {billingCycle === 'yearly' && plan.price.yearly > 0 && (
-                  <p className="text-sm text-muted-foreground">
+                  <p className="text-xs sm:text-sm text-muted-foreground">
                     ${Math.round(plan.price.yearly / 12)}/month billed annually
                   </p>
                 )}
               </div>
             </CardHeader>
             
-            <CardContent className="pt-0">
-              <div className="space-y-3 mb-6">
+            <CardContent className="pt-0 p-4 sm:p-6">
+              <div className="space-y-2 sm:space-y-3 mb-4 sm:mb-6">
                 <Button 
-                  className={`w-full ${
+                  className={`w-full text-sm sm:text-base ${
                     selectedPlan === plan.name 
                       ? 'bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white' 
                       : ''
@@ -216,7 +216,7 @@ export default function SubscriptionPage() {
                 
                 {(plan.name === 'Plus' || plan.name === 'Pro') && (
                   <Button 
-                    className="w-full" 
+                    className="w-full text-sm sm:text-base" 
                     variant="outline"
                   >
                     Start Free Trial
