@@ -185,72 +185,72 @@ export default function ProductsPage() {
   };
 
   return (
-    <div className="space-y-6">
-      <div className="flex items-center justify-between">
+    <div className="space-y-4 sm:space-y-6">
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
         <div>
-          <h2 className="text-3xl font-bold tracking-tight">📦 {t('products.title')}</h2>
-          <p className="text-muted-foreground">
+          <h2 className="text-2xl sm:text-3xl font-bold tracking-tight">📦 {t('products.title')}</h2>
+          <p className="text-sm sm:text-base text-muted-foreground">
             Manage your Amazon product listings and repricing settings
           </p>
         </div>
-        <div className="flex items-center gap-2">
-          <Search className="h-4 w-4 text-muted-foreground" />
+        <div className="flex items-center gap-2 w-full sm:w-auto">
+          <Search className="h-3 h-3 sm:h-4 sm:w-4 text-muted-foreground" />
           <Input
             placeholder={t('products.search')}
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="w-64"
+            className="w-full sm:w-48 md:w-64"
           />
         </div>
       </div>
 
       {/* Stats Cards */}
       {stats && (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
           <Card>
-            <CardContent className="p-4">
+            <CardContent className="p-3 sm:p-4">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm font-medium text-muted-foreground">Total Products</p>
-                  <p className="text-2xl font-bold">{stats.total_products}</p>
+                  <p className="text-xs sm:text-sm font-medium text-muted-foreground">Total Products</p>
+                  <p className="text-xl sm:text-2xl font-bold">{stats.total_products}</p>
                 </div>
-                <Package className="h-8 w-8 text-blue-600" />
+                <Package className="h-6 w-6 sm:h-8 sm:w-8 text-blue-600" />
               </div>
             </CardContent>
           </Card>
           
           <Card>
-            <CardContent className="p-4">
+            <CardContent className="p-3 sm:p-4">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm font-medium text-muted-foreground">Buy Box Win Rate</p>
-                  <p className="text-2xl font-bold">{stats.buybox_win_rate}%</p>
+                  <p className="text-xs sm:text-sm font-medium text-muted-foreground">Buy Box Win Rate</p>
+                  <p className="text-xl sm:text-2xl font-bold">{stats.buybox_win_rate}%</p>
                 </div>
-                <TrendingUp className="h-8 w-8 text-green-600" />
+                <TrendingUp className="h-6 w-6 sm:h-8 sm:w-8 text-green-600" />
               </div>
             </CardContent>
           </Card>
           
           <Card>
-            <CardContent className="p-4">
+            <CardContent className="p-3 sm:p-4">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm font-medium text-muted-foreground">Repricing Coverage</p>
-                  <p className="text-2xl font-bold">{stats.repricing_coverage}%</p>
+                  <p className="text-xs sm:text-sm font-medium text-muted-foreground">Repricing Coverage</p>
+                  <p className="text-xl sm:text-2xl font-bold">{stats.repricing_coverage}%</p>
                 </div>
-                <BarChart3 className="h-8 w-8 text-purple-600" />
+                <BarChart3 className="h-6 w-6 sm:h-8 sm:w-8 text-purple-600" />
               </div>
             </CardContent>
           </Card>
           
           <Card>
-            <CardContent className="p-4">
+            <CardContent className="p-3 sm:p-4">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm font-medium text-muted-foreground">Inventory Value</p>
-                  <p className="text-2xl font-bold">${stats.total_inventory_value.toLocaleString()}</p>
+                  <p className="text-xs sm:text-sm font-medium text-muted-foreground">Inventory Value</p>
+                  <p className="text-xl sm:text-2xl font-bold">${stats.total_inventory_value.toLocaleString()}</p>
                 </div>
-                <DollarSign className="h-8 w-8 text-orange-600" />
+                <DollarSign className="h-6 w-6 sm:h-8 sm:w-8 text-orange-600" />
               </div>
             </CardContent>
           </Card>
@@ -259,19 +259,19 @@ export default function ProductsPage() {
 
       {/* Control Panel */}
       <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <RotateCw className="h-5 w-5" />
+        <CardHeader className="p-4 sm:p-6">
+          <CardTitle className="flex items-center gap-2 text-base sm:text-lg">
+            <RotateCw className="h-4 h-4 sm:h-5 sm:w-5" />
             Product Synchronization
           </CardTitle>
         </CardHeader>
-        <CardContent className="space-y-4">
-          <div className="flex items-center gap-4">
+        <CardContent className="space-y-3 sm:space-y-4 p-4 sm:p-6">
+          <div className="flex flex-col sm:flex-row items-stretch sm:items-end gap-3 sm:gap-4">
             <div className="flex-1">
-              <Label htmlFor="store-select">Select Store</Label>
+              <Label htmlFor="store-select" className="text-sm">Select Store</Label>
               <select
                 id="store-select"
-                className="w-full px-3 py-2 border rounded-md bg-background"
+                className="w-full px-3 py-2 border rounded-md bg-background text-sm sm:text-base"
                 value={selectedStore || ''}
                 onChange={(e) => setSelectedStore(Number(e.target.value))}
               >
@@ -287,19 +287,21 @@ export default function ProductsPage() {
               <Button
                 onClick={syncProducts}
                 disabled={syncing || !selectedStore}
-                className="flex items-center gap-2"
+                className="flex-1 sm:flex-none flex items-center justify-center gap-2 text-sm sm:text-base"
               >
-                <RotateCw className={`h-4 w-4 ${syncing ? 'animate-spin' : ''}`} />
-                {syncing ? 'Syncing...' : 'Sync Products'}
+                <RotateCw className={`h-3 h-3 sm:h-4 sm:w-4 ${syncing ? 'animate-spin' : ''}`} />
+                <span className="hidden sm:inline">{syncing ? 'Syncing...' : 'Sync Products'}</span>
+                <span className="sm:hidden">{syncing ? 'Sync...' : 'Sync'}</span>
               </Button>
               <Button
                 variant="outline"
                 onClick={loadProducts}
                 disabled={loading}
-                className="flex items-center gap-2"
+                className="flex-1 sm:flex-none flex items-center justify-center gap-2 text-sm sm:text-base"
               >
-                <Eye className="h-4 w-4" />
-                Refresh
+                <Eye className="h-3 h-3 sm:h-4 sm:w-4" />
+                <span className="hidden sm:inline">Refresh</span>
+                <span className="sm:hidden">Reload</span>
               </Button>
             </div>
           </div>
@@ -308,16 +310,17 @@ export default function ProductsPage() {
 
       {/* Product Table */}
       <Card>
-        <CardHeader>
-          <CardTitle>Product Listings ({filteredProducts.length})</CardTitle>
+        <CardHeader className="p-4 sm:p-6">
+          <CardTitle className="text-base sm:text-lg">Product Listings ({filteredProducts.length})</CardTitle>
         </CardHeader>
-        <CardContent>
+        <CardContent className="p-0 sm:p-6">
           {loading ? (
-            <div className="text-center py-8">
+            <div className="text-center py-8 px-4">
               <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto"></div>
-              <p className="mt-2 text-muted-foreground">Loading products...</p>
+              <p className="mt-2 text-sm sm:text-base text-muted-foreground">Loading products...</p>
             </div>
           ) : (
+            <div className="overflow-x-auto">
             <Table>
               <TableHeader>
                 <TableRow>
@@ -404,6 +407,7 @@ export default function ProductsPage() {
                 )}
               </TableBody>
             </Table>
+            </div>
           )}
         </CardContent>
       </Card>

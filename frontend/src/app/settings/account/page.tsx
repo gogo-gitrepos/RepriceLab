@@ -105,14 +105,14 @@ export default function SettingsPage() {
 
 
   return (
-    <div className="max-w-4xl space-y-6">
-      <h2 className="text-3xl font-bold tracking-tight">Account Settings</h2>
+    <div className="max-w-4xl space-y-4 sm:space-y-6">
+      <h2 className="text-2xl sm:text-3xl font-bold tracking-tight">Account Settings</h2>
       
       {/* Connection Success Alert */}
       {connectionStatus === 'success' && (
-        <div className="p-4 border border-green-200 bg-green-50 rounded-lg flex items-center gap-2">
-          <CheckCircle className="h-4 w-4 text-green-600" />
-          <div className="text-green-800">
+        <div className="p-3 sm:p-4 border border-green-200 bg-green-50 rounded-lg flex items-center gap-2">
+          <CheckCircle className="h-4 w-4 text-green-600 flex-shrink-0" />
+          <div className="text-sm sm:text-base text-green-800">
             🎉 Amazon store connected successfully! You can now manage your products and pricing.
           </div>
         </div>
@@ -120,9 +120,9 @@ export default function SettingsPage() {
 
       {/* Amazon Store Management */}
       <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <Store className="h-5 w-5" />
+        <CardHeader className="p-4 sm:p-6">
+          <CardTitle className="flex items-center gap-2 text-base sm:text-lg">
+            <Store className="h-4 h-4 sm:h-5 sm:w-5" />
             Amazon Store Connections
           </CardTitle>
         </CardHeader>
