@@ -107,7 +107,11 @@ class Product(Base):
     
     # Repricing Settings
     repricing_enabled: Mapped[bool] = mapped_column(Boolean, default=False)
+    repricing_strategy: Mapped[str] = mapped_column(String(32), default="win_buybox")  # win_buybox, maximize_profit, boost_sales
+    target_margin_percent: Mapped[float | None] = mapped_column(Float, nullable=True, default=15.0)
     last_repriced_at: Mapped[datetime | None] = mapped_column(DateTime, nullable=True)
+    competitor_count: Mapped[int] = mapped_column(Integer, default=0)
+    lowest_competitor_price: Mapped[float | None] = mapped_column(Float, nullable=True)
     
     # Timestamps
     created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)

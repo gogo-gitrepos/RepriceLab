@@ -3,7 +3,7 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from .config import settings
 from .database import init_db
-from .routers import auth, pricing, notifications, metrics, amazon_auth, products, google_auth
+from .routers import auth, pricing, notifications, metrics, amazon_auth, products, google_auth, repricing
 from .services.scheduler import start_scheduler
 
 def create_app() -> FastAPI:
@@ -23,6 +23,7 @@ def create_app() -> FastAPI:
     app.include_router(amazon_auth.router)
     app.include_router(products.router)
     app.include_router(google_auth.router)
+    app.include_router(repricing.router)
     if settings.scheduler_enabled:
         start_scheduler()
     return app
