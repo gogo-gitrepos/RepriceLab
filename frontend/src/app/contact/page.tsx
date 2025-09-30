@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { ArrowLeft, Mail, Phone, MapPin, Send } from 'lucide-react';
+import { ArrowLeft, Mail, Send } from 'lucide-react';
 
 export default function ContactPage() {
   const router = useRouter();
@@ -154,35 +154,6 @@ export default function ContactPage() {
                 </p>
                 <p className="text-purple-200">
                   sales@repricelab.com
-                </p>
-              </CardHeader>
-            </Card>
-
-            <Card className="bg-white/10 backdrop-blur-sm border-white/20">
-              <CardHeader>
-                <div className="w-14 h-14 bg-gradient-to-r from-green-500 to-green-600 rounded-xl flex items-center justify-center mb-4 shadow-lg">
-                  <Phone className="w-7 h-7 text-white" />
-                </div>
-                <CardTitle className="text-white text-xl">Call Us</CardTitle>
-                <p className="text-purple-200 mt-2">
-                  +1 (555) 123-4567
-                </p>
-                <p className="text-purple-200 text-sm">
-                  Mon-Fri 9am-6pm EST
-                </p>
-              </CardHeader>
-            </Card>
-
-            <Card className="bg-white/10 backdrop-blur-sm border-white/20">
-              <CardHeader>
-                <div className="w-14 h-14 bg-gradient-to-r from-purple-500 to-purple-600 rounded-xl flex items-center justify-center mb-4 shadow-lg">
-                  <MapPin className="w-7 h-7 text-white" />
-                </div>
-                <CardTitle className="text-white text-xl">Visit Us</CardTitle>
-                <p className="text-purple-200 mt-2">
-                  123 Business Street<br />
-                  San Francisco, CA 94102<br />
-                  United States
                 </p>
               </CardHeader>
             </Card>

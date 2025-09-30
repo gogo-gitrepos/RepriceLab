@@ -313,6 +313,7 @@ export default function LandingPage() {
             <Button 
               size="lg" 
               className="h-14 px-8 text-lg font-semibold bg-white text-purple-900 hover:bg-gray-100 shadow-xl border-2 border-white"
+              onClick={() => router.push('/contact')}
             >
               Book a Demo
             </Button>
