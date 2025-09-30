@@ -305,7 +305,7 @@ export default function LandingPage() {
             <Button 
               size="lg" 
               className="h-14 px-8 text-lg font-semibold bg-white text-purple-900 hover:bg-gray-100 shadow-xl"
-              onClick={() => router.push('/dashboard')}
+              onClick={() => router.push('/pricing')}
             >
               Start Free Trial
               <ChevronRight className="w-5 h-5 ml-2" />
@@ -358,12 +358,12 @@ export default function LandingPage() {
             <div>
               <h3 className="text-white font-bold mb-4">Product</h3>
               <ul className="space-y-3">
-                <li><a href="#" className="text-purple-300 hover:text-white text-sm transition-colors">Repricing Basics</a></li>
-                <li><a href="#" className="text-purple-300 hover:text-white text-sm transition-colors">Pricing Strategies</a></li>
-                <li><a href="#" className="text-purple-300 hover:text-white text-sm transition-colors">Safe Mode</a></li>
-                <li><a href="#" className="text-purple-300 hover:text-white text-sm transition-colors">Assisted Setup</a></li>
-                <li><a href="#" className="text-purple-300 hover:text-white text-sm transition-colors">Integrations</a></li>
-                <li><a href="#" className="text-purple-300 hover:text-white text-sm transition-colors">Analytics</a></li>
+                <li><a href="/product/repricing-basics" className="text-purple-300 hover:text-white text-sm transition-colors">Repricing Basics</a></li>
+                <li><a href="/product/pricing-strategies" className="text-purple-300 hover:text-white text-sm transition-colors">Pricing Strategies</a></li>
+                <li><a href="/product/safe-mode" className="text-purple-300 hover:text-white text-sm transition-colors">Safe Mode</a></li>
+                <li><a href="/product/assisted-setup" className="text-purple-300 hover:text-white text-sm transition-colors">Assisted Setup</a></li>
+                <li><a href="/product/integrations" className="text-purple-300 hover:text-white text-sm transition-colors">Integrations</a></li>
+                <li><a href="/product/analytics" className="text-purple-300 hover:text-white text-sm transition-colors">Analytics</a></li>
               </ul>
             </div>
 
@@ -371,13 +371,13 @@ export default function LandingPage() {
             <div>
               <h3 className="text-white font-bold mb-4">Resources</h3>
               <ul className="space-y-3">
-                <li><a href="#" className="text-purple-300 hover:text-white text-sm transition-colors">Customer Stories</a></li>
-                <li><a href="#" className="text-purple-300 hover:text-white text-sm transition-colors">What's New</a></li>
-                <li><a href="#" className="text-purple-300 hover:text-white text-sm transition-colors">eBooks</a></li>
-                <li><a href="#" className="text-purple-300 hover:text-white text-sm transition-colors">Blog</a></li>
-                <li><a href="#" className="text-purple-300 hover:text-white text-sm transition-colors">Webinars</a></li>
-                <li><a href="#" className="text-purple-300 hover:text-white text-sm transition-colors">Help Center</a></li>
-                <li><a href="#" className="text-purple-300 hover:text-white text-sm transition-colors">Partners</a></li>
+                <li><a href="/resources/customer-stories" className="text-purple-300 hover:text-white text-sm transition-colors">Customer Stories</a></li>
+                <li><a href="/resources/whats-new" className="text-purple-300 hover:text-white text-sm transition-colors">What's New</a></li>
+                <li><a href="/resources/ebooks" className="text-purple-300 hover:text-white text-sm transition-colors">eBooks</a></li>
+                <li><a href="/resources/blog" className="text-purple-300 hover:text-white text-sm transition-colors">Blog</a></li>
+                <li><a href="/resources/webinars" className="text-purple-300 hover:text-white text-sm transition-colors">Webinars</a></li>
+                <li><a href="/resources/help-center" className="text-purple-300 hover:text-white text-sm transition-colors">Help Center</a></li>
+                <li><a href="/resources/partners" className="text-purple-300 hover:text-white text-sm transition-colors">Partners</a></li>
               </ul>
             </div>
 
@@ -385,9 +385,9 @@ export default function LandingPage() {
             <div>
               <h3 className="text-white font-bold mb-4">Company</h3>
               <ul className="space-y-3">
-                <li><a href="#" className="text-purple-300 hover:text-white text-sm transition-colors">Contact us</a></li>
-                <li><a href="#" className="text-purple-300 hover:text-white text-sm transition-colors">Affiliates</a></li>
-                <li><a href="#" className="text-purple-300 hover:text-white text-sm transition-colors">Careers</a></li>
+                <li><a href="/contact" className="text-purple-300 hover:text-white text-sm transition-colors">Contact us</a></li>
+                <li><a href="/company/affiliates" className="text-purple-300 hover:text-white text-sm transition-colors">Affiliates</a></li>
+                <li><a href="/company/careers" className="text-purple-300 hover:text-white text-sm transition-colors">Careers</a></li>
               </ul>
             </div>
           </div>
@@ -417,9 +417,9 @@ export default function LandingPage() {
 
               {/* Legal Links */}
               <div className="flex flex-wrap items-center gap-6 text-sm">
-                <a href="#" className="text-purple-300 hover:text-white transition-colors">Privacy Policy</a>
-                <a href="#" className="text-purple-300 hover:text-white transition-colors">Terms and Conditions</a>
-                <a href="#" className="text-purple-300 hover:text-white transition-colors">Accessibility Statement</a>
+                <a href="/legal/privacy" className="text-purple-300 hover:text-white transition-colors">Privacy Policy</a>
+                <a href="/legal/terms" className="text-purple-300 hover:text-white transition-colors">Terms and Conditions</a>
+                <a href="/legal/accessibility" className="text-purple-300 hover:text-white transition-colors">Accessibility Statement</a>
                 <span className="text-purple-400">© Copyright 2025, All Rights Reserved</span>
               </div>
             </div>

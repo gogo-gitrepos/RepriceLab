@@ -1,10 +1,12 @@
 'use client';
 
 import { useState } from 'react';
+import { useRouter } from 'next/navigation';
 import { Bell, MessageSquare, HelpCircle, ChevronDown, Settings, CreditCard, LogOut, Package, Star, Monitor, X, Send, Search } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
 export function TopHeader() {
+  const router = useRouter();
   const [profileDropdownOpen, setProfileDropdownOpen] = useState(false);
   const [notificationsOpen, setNotificationsOpen] = useState(false);
   const [messagesOpen, setMessagesOpen] = useState(false);
@@ -452,7 +454,10 @@ export function TopHeader() {
                 </div>
 
                 <div className="border-t py-2">
-                  <button className="flex items-center w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-50">
+                  <button 
+                    onClick={() => router.push('/')}
+                    className="flex items-center w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-50"
+                  >
                     <LogOut className="w-4 h-4 mr-3" />
                     Logout
                   </button>

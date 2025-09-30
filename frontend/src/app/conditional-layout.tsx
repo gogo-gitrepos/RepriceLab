@@ -5,7 +5,15 @@ import { TopHeader } from './top-header';
 
 export function ConditionalLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
-  const isPublicPage = pathname === '/' || pathname === '/login' || pathname === '/features' || pathname === '/pricing' || pathname === '/contact';
+  const isPublicPage = pathname === '/' || 
+                       pathname === '/login' || 
+                       pathname === '/features' || 
+                       pathname === '/pricing' || 
+                       pathname === '/contact' ||
+                       pathname.startsWith('/product/') ||
+                       pathname.startsWith('/resources/') ||
+                       pathname.startsWith('/company/') ||
+                       pathname.startsWith('/legal/');
 
   if (isPublicPage) {
     return <>{children}</>;
