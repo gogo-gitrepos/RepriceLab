@@ -1,31 +1,96 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { apiClient } from '../../lib/api';
 import { useI18n } from '@/lib/i18n';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
-import { Settings, Zap, TrendingUp, Shield, Target } from 'lucide-react';
+import { Settings, Zap, TrendingUp, Shield, Target, Trophy, DollarSign } from 'lucide-react';
+
+interface Product {
+  id: number;
+  sku: string;
+  title: string;
+  repricing_enabled: boolean;
+  repricing_strategy: string;
+  target_margin_percent: number;
+}
 
 export default function RepricingRulesPage() {
   const { t } = useI18n();
   const [minPrice, setMinPrice] = useState(7.0);
   const [maxFormula, setMaxFormula] = useState('current_price * 1.9');
-  const [strategy, setStrategy] = useState<'aggressive'|'defensive'>('aggressive');
+  const [strategy, setStrategy] = useState<'win_buybox'|'maximize_profit'|'boost_sales'>('win_buybox');
+  const [targetMargin, setTargetMargin] = useState(15.0);
+  const [products, setProducts] = useState<Product[]>([]);
   const [msg, setMsg] = useState<string| null>(null);
+  const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    loadProducts();
+  }, []);
+
+  const loadProducts = async () => {
+    try {
+      const response = await fetch('http://localhost:8000/api/products?user_id=2');
+      const data = await response.json();
+      setProducts(data.products || []);
+      
+      // Set strategy from first product if available
+      if (data.products && data.products.length > 0 && data.products[0].repricing_strategy) {
+        setStrategy(data.products[0].repricing_strategy);
+        setTargetMargin(data.products[0].target_margin_percent || 15.0);
+      }
+    } catch (error) {
+      console.error('Failed to load products:', error);
+    }
+  };
 
   const onSave = async (e: React.FormEvent) => {
     e.preventDefault(); 
     setMsg(null);
+    setLoading(true);
+    
     try {
-      await apiClient.setRule({ min_price: Number(minPrice), max_price_formula: maxFormula, strategy });
-      setMsg(t('settings.ruleSaved'));
+      const productIds = products.map(p => p.id);
+      
+      // Use new repricing API
+      const response = await fetch('http://localhost:8000/api/repricing/set-strategy', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          product_ids: productIds,
+          strategy: strategy,
+          enabled: true,
+          target_margin_percent: targetMargin
+        })
+      });
+      
+      if (response.ok) {
+        await loadProducts();
+        setMsg('✅ Rules saved successfully! All products updated.');
+      } else {
+        setMsg('Failed to save rules. Please try again.');
+      }
     } catch (e: any) { 
-      setMsg(e.message); 
+      setMsg('Error: ' + e.message); 
+    } finally {
+      setLoading(false);
     }
   };
+
+  const getStrategyStats = () => {
+    const activeCount = products.filter(p => p.repricing_enabled).length;
+    return {
+      active: activeCount,
+      total: products.length,
+      strategy: strategy
+    };
+  };
+
+  const stats = getStrategyStats();
 
   return (
     <div className="space-y-6">
@@ -43,8 +108,8 @@ export default function RepricingRulesPage() {
                 <Zap className="w-5 h-5 text-blue-600" />
               </div>
               <div>
-                <div className="font-medium">Active Rules</div>
-                <p className="text-sm text-muted-foreground">1 rule configured</p>
+                <div className="font-medium">Active Products</div>
+                <p className="text-sm text-muted-foreground">{stats.active} of {stats.total} products</p>
               </div>
             </div>
           </CardContent>
@@ -58,7 +123,7 @@ export default function RepricingRulesPage() {
               </div>
               <div>
                 <div className="font-medium">Products Monitored</div>
-                <p className="text-sm text-muted-foreground">5 products</p>
+                <p className="text-sm text-muted-foreground">{products.length} products</p>
               </div>
             </div>
           </CardContent>
@@ -71,8 +136,8 @@ export default function RepricingRulesPage() {
                 <Target className="w-5 h-5 text-purple-600" />
               </div>
               <div>
-                <div className="font-medium">Strategy</div>
-                <p className="text-sm text-muted-foreground capitalize">{strategy}</p>
+                <div className="font-medium">Current Strategy</div>
+                <p className="text-sm text-muted-foreground capitalize">{strategy.replace('_', ' ')}</p>
               </div>
             </div>
           </CardContent>
@@ -84,122 +149,229 @@ export default function RepricingRulesPage() {
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <Settings className="w-5 h-5" />
-            Pricing Rules Configuration
+            Repricing Strategy Configuration
           </CardTitle>
           <CardDescription>
-            Set up intelligent repricing strategies to maintain competitive pricing and maximize Buy Box ownership.
+            Choose your repricing strategy - changes apply to all products instantly
           </CardDescription>
         </CardHeader>
         <CardContent>
           <form onSubmit={onSave} className="space-y-6">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div className="space-y-2">
-                <Label htmlFor="minPrice">{t('settings.minPrice')}</Label>
-                <Input 
-                  id="minPrice"
-                  type="number" 
-                  step="0.01" 
-                  value={minPrice} 
-                  onChange={e=>setMinPrice(parseFloat(e.target.value))} 
-                />
-                <p className="text-xs text-muted-foreground">Set the lowest price you're willing to sell at</p>
-              </div>
-              
-              <div className="space-y-2">
-                <Label htmlFor="maxFormula">{t('settings.maxPriceFormula')}</Label>
-                <Input 
-                  id="maxFormula"
-                  value={maxFormula} 
-                  onChange={e=>setMaxFormula(e.target.value)} 
-                />
-                <p className="text-xs text-muted-foreground">
-                  {t('settings.formulaExample', { example: 'current_price * 1.9' })}
-                </p>
-              </div>
-            </div>
-            
             <div className="space-y-4">
-              <Label htmlFor="strategy">{t('settings.strategy')}</Label>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <Label htmlFor="strategy">Select Repricing Strategy</Label>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                {/* Win Buy Box Strategy */}
                 <Card 
-                  className={`cursor-pointer border-2 transition-colors ${strategy === 'aggressive' ? 'border-blue-500 bg-blue-50' : 'border-gray-200'}`}
-                  onClick={() => setStrategy('aggressive')}
+                  className={`cursor-pointer border-2 transition-all duration-200 ${
+                    strategy === 'win_buybox' 
+                      ? 'border-yellow-500 bg-yellow-50 ring-2 ring-yellow-200 shadow-lg' 
+                      : 'border-gray-200 hover:border-yellow-300'
+                  }`}
+                  onClick={() => setStrategy('win_buybox')}
                 >
                   <CardContent className="p-4">
-                    <div className="flex items-center space-x-3">
-                      <div className="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center">
-                        <Zap className="w-5 h-5 text-blue-600" />
+                    <div className="flex flex-col space-y-3">
+                      <div className="flex items-center justify-between">
+                        <Trophy className="w-8 h-8 text-yellow-500" />
+                        {strategy === 'win_buybox' && (
+                          <div className="w-6 h-6 bg-yellow-500 rounded-full flex items-center justify-center">
+                            <span className="text-white text-xs">✓</span>
+                          </div>
+                        )}
                       </div>
                       <div>
-                        <div className="font-medium">Aggressive</div>
-                        <p className="text-sm text-muted-foreground">Compete aggressively for Buy Box</p>
+                        <div className="font-bold text-lg">Win Buy Box</div>
+                        <p className="text-sm text-muted-foreground mt-1">
+                          Aggressively win Buy Box with smart pricing
+                        </p>
+                      </div>
+                      <div className="pt-2 border-t border-gray-200 text-xs space-y-1">
+                        <div className="flex justify-between">
+                          <span className="text-muted-foreground">Price below:</span>
+                          <span className="font-semibold">$0.01</span>
+                        </div>
+                        <div className="flex justify-between">
+                          <span className="text-muted-foreground">Min profit:</span>
+                          <span className="font-semibold text-green-600">10%</span>
+                        </div>
                       </div>
                     </div>
                   </CardContent>
                 </Card>
                 
+                {/* Maximize Profit Strategy */}
                 <Card 
-                  className={`cursor-pointer border-2 transition-colors ${strategy === 'defensive' ? 'border-green-500 bg-green-50' : 'border-gray-200'}`}
-                  onClick={() => setStrategy('defensive')}
+                  className={`cursor-pointer border-2 transition-all duration-200 ${
+                    strategy === 'maximize_profit' 
+                      ? 'border-green-500 bg-green-50 ring-2 ring-green-200 shadow-lg' 
+                      : 'border-gray-200 hover:border-green-300'
+                  }`}
+                  onClick={() => setStrategy('maximize_profit')}
                 >
                   <CardContent className="p-4">
-                    <div className="flex items-center space-x-3">
-                      <div className="w-10 h-10 bg-green-100 rounded-lg flex items-center justify-center">
-                        <Shield className="w-5 h-5 text-green-600" />
+                    <div className="flex flex-col space-y-3">
+                      <div className="flex items-center justify-between">
+                        <DollarSign className="w-8 h-8 text-green-500" />
+                        {strategy === 'maximize_profit' && (
+                          <div className="w-6 h-6 bg-green-500 rounded-full flex items-center justify-center">
+                            <span className="text-white text-xs">✓</span>
+                          </div>
+                        )}
                       </div>
                       <div>
-                        <div className="font-medium">Defensive</div>
-                        <p className="text-sm text-muted-foreground">Maintain margins while staying competitive</p>
+                        <div className="font-bold text-lg">Maximize Profit</div>
+                        <p className="text-sm text-muted-foreground mt-1">
+                          Balance profit margins with Buy Box wins
+                        </p>
+                      </div>
+                      <div className="pt-2 border-t border-gray-200 text-xs space-y-1">
+                        <div className="flex justify-between">
+                          <span className="text-muted-foreground">Price below:</span>
+                          <span className="font-semibold">$0.05</span>
+                        </div>
+                        <div className="flex justify-between">
+                          <span className="text-muted-foreground">Min profit:</span>
+                          <span className="font-semibold text-green-600">15%</span>
+                        </div>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+
+                {/* Boost Sales Strategy */}
+                <Card 
+                  className={`cursor-pointer border-2 transition-all duration-200 ${
+                    strategy === 'boost_sales' 
+                      ? 'border-blue-500 bg-blue-50 ring-2 ring-blue-200 shadow-lg' 
+                      : 'border-gray-200 hover:border-blue-300'
+                  }`}
+                  onClick={() => setStrategy('boost_sales')}
+                >
+                  <CardContent className="p-4">
+                    <div className="flex flex-col space-y-3">
+                      <div className="flex items-center justify-between">
+                        <TrendingUp className="w-8 h-8 text-blue-500" />
+                        {strategy === 'boost_sales' && (
+                          <div className="w-6 h-6 bg-blue-500 rounded-full flex items-center justify-center">
+                            <span className="text-white text-xs">✓</span>
+                          </div>
+                        )}
+                      </div>
+                      <div>
+                        <div className="font-bold text-lg">Boost Sales</div>
+                        <p className="text-sm text-muted-foreground mt-1">
+                          Drive high sales velocity with competitive pricing
+                        </p>
+                      </div>
+                      <div className="pt-2 border-t border-gray-200 text-xs space-y-1">
+                        <div className="flex justify-between">
+                          <span className="text-muted-foreground">Price below:</span>
+                          <span className="font-semibold">$0.10</span>
+                        </div>
+                        <div className="flex justify-between">
+                          <span className="text-muted-foreground">Min profit:</span>
+                          <span className="font-semibold text-green-600">8%</span>
+                        </div>
                       </div>
                     </div>
                   </CardContent>
                 </Card>
               </div>
             </div>
+
+            {/* Target Margin */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div className="space-y-2">
+                <Label htmlFor="targetMargin">Target Profit Margin (%)</Label>
+                <Input 
+                  id="targetMargin"
+                  type="number" 
+                  step="0.1" 
+                  value={targetMargin} 
+                  onChange={e=>setTargetMargin(parseFloat(e.target.value))} 
+                />
+                <p className="text-xs text-muted-foreground">
+                  Minimum profit margin to maintain while repricing
+                </p>
+              </div>
+            </div>
             
             <div className="flex items-center gap-4 pt-4 border-t">
-              <Button type="submit" className="px-8">
-                {t('settings.save')} Rules
+              <Button 
+                type="submit" 
+                className="px-8 bg-gradient-to-r from-purple-600 to-indigo-600"
+                disabled={loading}
+              >
+                {loading ? 'Saving...' : 'Save Rules & Apply to All Products'}
               </Button>
-              {msg && <div className="text-sm text-green-600">{msg}</div>}
+              {msg && (
+                <div className={`text-sm ${msg.includes('✅') ? 'text-green-600' : 'text-red-600'}`}>
+                  {msg}
+                </div>
+              )}
             </div>
           </form>
         </CardContent>
       </Card>
 
-      {/* Advanced Settings */}
+      {/* Products List */}
       <Card>
         <CardHeader>
-          <CardTitle>Advanced Settings</CardTitle>
-          <CardDescription>Fine-tune your repricing behavior</CardDescription>
+          <CardTitle>Products Using This Strategy</CardTitle>
+          <CardDescription>
+            {stats.active} products have repricing enabled with "{strategy.replace('_', ' ')}" strategy
+          </CardDescription>
         </CardHeader>
-        <CardContent className="space-y-4">
-          <div className="flex items-center justify-between">
-            <div>
-              <div className="font-medium">Auto-repricing frequency</div>
-              <p className="text-sm text-muted-foreground">How often to check and update prices</p>
-            </div>
-            <select className="px-3 py-2 border rounded-md bg-background">
-              <option value="15">Every 15 minutes</option>
-              <option value="30">Every 30 minutes</option>
-              <option value="60">Every hour</option>
-            </select>
+        <CardContent>
+          <div className="space-y-2">
+            {products.length === 0 ? (
+              <div className="text-center py-8 text-muted-foreground">
+                No products found. Add products to start repricing.
+              </div>
+            ) : (
+              products.map(product => (
+                <div 
+                  key={product.id}
+                  className="flex items-center justify-between p-3 border rounded-lg hover:bg-gray-50"
+                >
+                  <div className="flex-1">
+                    <div className="font-medium">{product.title}</div>
+                    <div className="text-sm text-muted-foreground">SKU: {product.sku}</div>
+                  </div>
+                  <div className="flex items-center gap-4">
+                    <div className="text-sm">
+                      {product.repricing_enabled ? (
+                        <span className="text-green-600 font-medium">✓ Active</span>
+                      ) : (
+                        <span className="text-gray-400">Inactive</span>
+                      )}
+                    </div>
+                    <div className="text-sm text-muted-foreground capitalize">
+                      {product.repricing_strategy?.replace('_', ' ')}
+                    </div>
+                  </div>
+                </div>
+              ))
+            )}
           </div>
-          
-          <div className="flex items-center justify-between">
-            <div>
-              <div className="font-medium">Pause repricing during weekends</div>
-              <p className="text-sm text-muted-foreground">Reduce activity during low-traffic periods</p>
+        </CardContent>
+      </Card>
+
+      {/* Info Card */}
+      <Card className="bg-blue-50 border-blue-200">
+        <CardContent className="p-4">
+          <div className="flex items-start gap-3">
+            <div className="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center flex-shrink-0">
+              <Zap className="w-4 h-4 text-blue-600" />
             </div>
-            <input type="checkbox" className="w-4 h-4" />
-          </div>
-          
-          <div className="flex items-center justify-between">
             <div>
-              <div className="font-medium">Emergency stop threshold</div>
-              <p className="text-sm text-muted-foreground">Stop repricing if losing Buy Box for X consecutive times</p>
+              <h3 className="font-medium text-blue-900 mb-1">How It Works</h3>
+              <p className="text-sm text-blue-800">
+                When you save a strategy here, it applies to all your products instantly. 
+                The same strategy will be shown in the Smart Repricing page. 
+                Our algorithm continuously monitors competitors and adjusts your prices automatically based on your chosen strategy.
+              </p>
             </div>
-            <Input type="number" value="5" className="w-20" />
           </div>
         </CardContent>
       </Card>

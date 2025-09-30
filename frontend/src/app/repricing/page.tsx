@@ -34,7 +34,20 @@ export default function RepricingPage() {
   useEffect(() => {
     loadStrategies();
     loadStats();
+    loadCurrentStrategy();
   }, []);
+
+  const loadCurrentStrategy = async () => {
+    try {
+      const response = await fetch('http://localhost:8000/api/products?user_id=2');
+      const data = await response.json();
+      if (data.products && data.products.length > 0 && data.products[0].repricing_strategy) {
+        setSelectedStrategy(data.products[0].repricing_strategy);
+      }
+    } catch (error) {
+      console.error('Failed to load current strategy:', error);
+    }
+  };
 
   const loadStrategies = async () => {
     try {
