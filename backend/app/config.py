@@ -9,6 +9,9 @@ class Settings(BaseSettings):
     # Amazon SP-API
     lwa_client_id: str = "changeme"
     lwa_client_secret: str = "changeme"
+    
+    # Google OAuth
+    google_redirect_uri: str = "http://localhost:5000/auth/google/callback"
 
     # Notifications
     vapid_private_key: str | None = None

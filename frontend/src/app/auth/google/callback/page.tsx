@@ -30,7 +30,8 @@ export default function GoogleCallbackPage() {
       }
 
       try {
-        const response = await fetch('http://localhost:8000/api/auth/google/callback', {
+        const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
+        const response = await fetch(`${apiUrl}/api/auth/google/callback`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',

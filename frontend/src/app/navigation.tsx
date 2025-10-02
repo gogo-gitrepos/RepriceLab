@@ -85,7 +85,7 @@ export function NavigationContent() {
       <nav className="space-y-6">
         {/* Dashboard */}
         <div>
-          <MenuItem href="/" icon={LayoutDashboard}>
+          <MenuItem href="/dashboard" icon={LayoutDashboard}>
             Dashboard
           </MenuItem>
         </div>
