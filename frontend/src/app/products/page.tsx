@@ -85,8 +85,13 @@ export default function ProductsPage() {
 
   useEffect(() => {
     loadStores();
-    loadProducts();
-    loadStats();
+  }, []);
+
+  useEffect(() => {
+    if (selectedStore !== null) {
+      loadProducts();
+      loadStats();
+    }
   }, [selectedStore]);
 
   const loadStores = async () => {
@@ -264,9 +269,9 @@ export default function ProductsPage() {
   };
 
   const filteredProducts = products.filter(product => {
-    const matchesSearch = product.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      product.sku.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      product.asin.toLowerCase().includes(searchTerm.toLowerCase());
+    const matchesSearch = product.title?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      product.sku?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      product.asin?.toLowerCase().includes(searchTerm.toLowerCase());
     
     const matchesRepricing = repricingFilter === 'all' ? true :
       repricingFilter === 'active' ? product.repricing_enabled :
