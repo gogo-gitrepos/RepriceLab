@@ -12,6 +12,25 @@ Preferred communication style: Simple, everyday language.
 
 ## Recent Changes
 
+### Phase 5 Complete: Navigation & Settings Restructure (October 2025)
+- ✅ **Navigation Cleanup**: Removed Feedback section entirely (Overview, Negative Feedback pages)
+- ✅ **Settings Streamlined**: Removed Channels and Company Settings from Settings dropdown
+- ✅ **Account Settings Redesign**: 
+  - Removed Amazon Store Connections (moved to Multichannel page)
+  - Added Personal Information section (Email, First Name, Last Name)
+  - Added Change Password functionality
+  - Integrated Company Information (from removed Company Settings)
+- ✅ **Products Page Enhancement**:
+  - Bulk Actions dropdown with Assign Strategy, Download CSV, Delete Selected
+  - Repricing Status filter (All Products / Active / Paused)
+  - Premium checkbox styling (gray unchecked → green checked)
+- ✅ **Database Schema**: Added missing User model columns (name, google_id, picture, created_at)
+
+**Navigation Structure:**
+- REPRICING: Products, Multichannel, Repricing Rules, Automations, Import
+- INSIGHTS: Orders, Repricing Activity, Competitors, Reports
+- SYSTEM: Settings (Account, Users, Subscription), App Store
+
 ### Phase 4 Complete: Premium Landing Page & Marketing Pages (September 2025)
 - ✅ **Landing Page**: Created premium landing/login page with repricer.com-inspired design
 - ✅ **Logo Enhancement**: Upgraded to FlaskConical icon with 3D gradient effects, rock-solid appearance
