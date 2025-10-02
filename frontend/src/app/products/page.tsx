@@ -115,8 +115,8 @@ export default function ProductsPage() {
       const storeParam = selectedStore ? `&store_id=${selectedStore}` : '';
       const response = await fetch(`/api/products/?user_id=${userId}${storeParam}&limit=50`);
       const data = await response.json();
-      if (response.ok) {
-        setProducts(data.products || []);
+      if (response.ok && data.products) {
+        setProducts(data.products);
       }
     } catch (error) {
       console.error("Failed to load products:", error);

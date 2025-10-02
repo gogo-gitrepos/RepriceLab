@@ -177,7 +177,8 @@ export default function LandingPage() {
                       placeholder="john@repricer.com"
                       value={email}
                       onChange={(e) => setEmail(e.target.value)}
-                      className="h-10 sm:h-12 text-sm sm:text-base border-gray-300 focus:border-purple-500 focus:ring-purple-500 !bg-white"
+                      className="h-10 sm:h-12 text-sm sm:text-base border-gray-300 focus:border-purple-500 focus:ring-purple-500 bg-white [&:-webkit-autofill]:!bg-white [&:-webkit-autofill:hover]:!bg-white [&:-webkit-autofill:focus]:!bg-white"
+                      style={{ backgroundColor: 'white' }}
                       required
                     />
                   </div>
@@ -197,7 +198,8 @@ export default function LandingPage() {
                       placeholder="Enter your password"
                       value={password}
                       onChange={(e) => setPassword(e.target.value)}
-                      className="h-10 sm:h-12 text-sm sm:text-base border-gray-300 focus:border-purple-500 focus:ring-purple-500 !bg-white"
+                      className="h-10 sm:h-12 text-sm sm:text-base border-gray-300 focus:border-purple-500 focus:ring-purple-500 bg-white [&:-webkit-autofill]:!bg-white [&:-webkit-autofill:hover]:!bg-white [&:-webkit-autofill:focus]:!bg-white"
+                      style={{ backgroundColor: 'white' }}
                       required
                     />
                   </div>
