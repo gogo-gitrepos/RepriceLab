@@ -385,49 +385,6 @@ export default function RepricingRulesPage() {
         </CardContent>
       </Card>
 
-      {/* Products List */}
-      <Card>
-        <CardHeader>
-          <CardTitle>Products Using This Strategy</CardTitle>
-          <CardDescription>
-            {stats?.active_repricing || 0} products have repricing enabled with "{strategy.replace('_', ' ')}" strategy
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <div className="space-y-2">
-            {products.length === 0 ? (
-              <div className="text-center py-8 text-muted-foreground">
-                No products found. Add products to start repricing.
-              </div>
-            ) : (
-              products.map(product => (
-                <div 
-                  key={product.id}
-                  className="flex items-center justify-between p-3 border rounded-lg hover:bg-gray-50"
-                >
-                  <div className="flex-1">
-                    <div className="font-medium">{product.title}</div>
-                    <div className="text-sm text-muted-foreground">SKU: {product.sku}</div>
-                  </div>
-                  <div className="flex items-center gap-4">
-                    <div className="text-sm">
-                      {product.repricing_enabled ? (
-                        <span className="text-green-600 font-medium">✓ Active</span>
-                      ) : (
-                        <span className="text-gray-400">Inactive</span>
-                      )}
-                    </div>
-                    <div className="text-sm text-muted-foreground capitalize">
-                      {product.repricing_strategy?.replace('_', ' ')}
-                    </div>
-                  </div>
-                </div>
-              ))
-            )}
-          </div>
-        </CardContent>
-      </Card>
-
       {/* Info Card */}
       <Card className="bg-blue-50 border-blue-200">
         <CardContent className="p-4">
