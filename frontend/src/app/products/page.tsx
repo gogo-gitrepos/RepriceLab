@@ -288,56 +288,11 @@ export default function ProductsPage() {
 
   return (
     <div className="space-y-4 sm:space-y-6">
-      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-        <div>
-          <h2 className="text-2xl sm:text-3xl font-bold tracking-tight">📦 {t('products.title')}</h2>
-          <p className="text-sm sm:text-base text-muted-foreground">
-            Manage your Amazon product listings and repricing settings
-          </p>
-        </div>
-        <div className="flex items-center gap-2 w-full sm:w-auto">
-          <div className="relative">
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => setShowFilterDropdown(!showFilterDropdown)}
-              className="flex items-center gap-2"
-            >
-              <Filter className="h-4 w-4" />
-              {repricingFilter === 'all' ? 'All Products' : repricingFilter === 'active' ? 'Active' : 'Paused'}
-              <ChevronDown className="h-3 w-3" />
-            </Button>
-            {showFilterDropdown && (
-              <div className="absolute right-0 top-full mt-1 w-40 bg-white border rounded-md shadow-lg z-10">
-                <button
-                  onClick={() => { setRepricingFilter('all'); setShowFilterDropdown(false); }}
-                  className={`w-full px-4 py-2 text-left text-sm hover:bg-gray-50 ${repricingFilter === 'all' ? 'bg-purple-50 text-purple-700 font-medium' : ''}`}
-                >
-                  All Products
-                </button>
-                <button
-                  onClick={() => { setRepricingFilter('active'); setShowFilterDropdown(false); }}
-                  className={`w-full px-4 py-2 text-left text-sm hover:bg-gray-50 ${repricingFilter === 'active' ? 'bg-purple-50 text-purple-700 font-medium' : ''}`}
-                >
-                  Active
-                </button>
-                <button
-                  onClick={() => { setRepricingFilter('paused'); setShowFilterDropdown(false); }}
-                  className={`w-full px-4 py-2 text-left text-sm hover:bg-gray-50 ${repricingFilter === 'paused' ? 'bg-purple-50 text-purple-700 font-medium' : ''}`}
-                >
-                  Paused
-                </button>
-              </div>
-            )}
-          </div>
-          <Search className="h-3 w-3 sm:h-4 sm:w-4 text-muted-foreground" />
-          <Input
-            placeholder={t('products.search')}
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            className="w-full sm:w-48 md:w-64"
-          />
-        </div>
+      <div>
+        <h2 className="text-2xl sm:text-3xl font-bold tracking-tight">📦 {t('products.title')}</h2>
+        <p className="text-sm sm:text-base text-muted-foreground">
+          Manage your Amazon product listings and repricing settings
+        </p>
       </div>
 
       {/* Stats Cards */}
@@ -450,6 +405,137 @@ export default function ProductsPage() {
         <CardHeader className="p-4 sm:p-6">
           <CardTitle className="text-base sm:text-lg">Product Listings ({filteredProducts.length})</CardTitle>
         </CardHeader>
+        
+        {/* Filter, Search and Bulk Actions Bar */}
+        <div className="px-4 sm:px-6 pb-4 flex flex-wrap items-center gap-3">
+          {/* Filter Dropdown */}
+          <div className="relative">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => setShowFilterDropdown(!showFilterDropdown)}
+              className="flex items-center gap-2"
+            >
+              <Filter className="h-4 w-4" />
+              {repricingFilter === 'all' ? 'All Products' : repricingFilter === 'active' ? 'Active' : 'Paused'}
+              <ChevronDown className="h-3 w-3" />
+            </Button>
+            {showFilterDropdown && (
+              <div className="absolute left-0 top-full mt-1 w-40 bg-white border rounded-md shadow-lg z-10">
+                <button
+                  onClick={() => { setRepricingFilter('all'); setShowFilterDropdown(false); }}
+                  className={`w-full px-4 py-2 text-left text-sm hover:bg-gray-50 ${repricingFilter === 'all' ? 'bg-purple-50 text-purple-700 font-medium' : ''}`}
+                >
+                  All Products
+                </button>
+                <button
+                  onClick={() => { setRepricingFilter('active'); setShowFilterDropdown(false); }}
+                  className={`w-full px-4 py-2 text-left text-sm hover:bg-gray-50 ${repricingFilter === 'active' ? 'bg-purple-50 text-purple-700 font-medium' : ''}`}
+                >
+                  Active
+                </button>
+                <button
+                  onClick={() => { setRepricingFilter('paused'); setShowFilterDropdown(false); }}
+                  className={`w-full px-4 py-2 text-left text-sm hover:bg-gray-50 ${repricingFilter === 'paused' ? 'bg-purple-50 text-purple-700 font-medium' : ''}`}
+                >
+                  Paused
+                </button>
+              </div>
+            )}
+          </div>
+
+          {/* Search Bar */}
+          <div className="relative flex-1 min-w-[200px]">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+            <Input
+              placeholder={t('products.search')}
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="pl-9"
+            />
+          </div>
+
+          {/* Bulk Actions Button - Always Visible */}
+          <div className="relative">
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => setShowBulkDropdown(!showBulkDropdown)}
+              className="h-9 px-4 flex items-center gap-2 bg-purple-600 hover:bg-purple-700 text-white"
+            >
+              <span className="text-sm font-semibold">Bulk Actions</span>
+              {selectedProducts.size > 0 && (
+                <Badge className="bg-purple-800 text-white">{selectedProducts.size}</Badge>
+              )}
+              <ChevronDown className="h-4 w-4" />
+            </Button>
+            {showBulkDropdown && (
+              <div className="absolute right-0 top-full mt-1 w-56 bg-white border rounded-md shadow-lg z-20">
+                <div className="p-2 border-b">
+                  <p className="text-xs font-semibold text-gray-600">BULK ACTIONS</p>
+                </div>
+                <div className="p-2 space-y-1">
+                  <div className="space-y-2">
+                    <label className="text-xs font-medium text-gray-600">Assign Strategy:</label>
+                    <select
+                      value={bulkStrategy}
+                      onChange={(e) => setBulkStrategy(e.target.value as any)}
+                      className="w-full px-2 py-1 border rounded text-sm"
+                    >
+                      <option value="win_buybox">Win Buy Box</option>
+                      <option value="maximize_profit">Maximize Profit</option>
+                      <option value="boost_sales">Boost Sales</option>
+                    </select>
+                    <button
+                      onClick={() => { 
+                        if (selectedProducts.size === 0) {
+                          alert('Please select products first');
+                          return;
+                        }
+                        bulkAssignStrategy(); 
+                        setShowBulkDropdown(false); 
+                      }}
+                      className="w-full px-3 py-2 text-sm bg-purple-600 text-white rounded hover:bg-purple-700 flex items-center justify-center gap-2"
+                    >
+                      <Zap className="w-4 h-4" />
+                      Apply Strategy
+                    </button>
+                  </div>
+                  <hr className="my-2" />
+                  <button
+                    onClick={() => { 
+                      if (selectedProducts.size === 0) {
+                        alert('Please select products first');
+                        return;
+                      }
+                      bulkDownloadCSV(); 
+                      setShowBulkDropdown(false); 
+                    }}
+                    className="w-full px-3 py-2 text-sm hover:bg-gray-50 rounded flex items-center gap-2"
+                  >
+                    <Download className="w-4 h-4" />
+                    Download CSV
+                  </button>
+                  <button
+                    onClick={() => { 
+                      if (selectedProducts.size === 0) {
+                        alert('Please select products first');
+                        return;
+                      }
+                      bulkDelete(); 
+                      setShowBulkDropdown(false); 
+                    }}
+                    className="w-full px-3 py-2 text-sm text-red-600 hover:bg-red-50 rounded flex items-center gap-2"
+                  >
+                    <Trash2 className="w-4 h-4" />
+                    Delete Selected
+                  </button>
+                </div>
+              </div>
+            )}
+          </div>
+        </div>
+
         <CardContent className="p-0 sm:p-6">
           {loading ? (
             <div className="text-center py-8 px-4">
@@ -462,77 +548,19 @@ export default function ProductsPage() {
               <TableHeader>
                 <TableRow>
                   <TableHead className="w-20">
-                    <div className="flex items-center gap-2">
-                      <label className="relative inline-flex items-center cursor-pointer">
-                        <input
-                          type="checkbox"
-                          checked={selectedProducts.size === filteredProducts.length && filteredProducts.length > 0}
-                          onChange={toggleSelectAll}
-                          className="peer sr-only"
-                        />
-                        <div className="w-5 h-5 border-2 border-gray-300 rounded peer-checked:bg-green-500 peer-checked:border-green-500 flex items-center justify-center transition-all">
-                          <svg className="w-3 h-3 text-white opacity-0 peer-checked:opacity-100 transition-opacity" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
-                          </svg>
-                        </div>
-                      </label>
-                      {selectedProducts.size > 0 && (
-                        <div className="relative">
-                          <Button
-                            variant="ghost"
-                            size="sm"
-                            onClick={() => setShowBulkDropdown(!showBulkDropdown)}
-                            className="h-8 px-2 flex items-center gap-1 bg-purple-50 hover:bg-purple-100 text-purple-700"
-                          >
-                            <span className="text-xs font-semibold">{selectedProducts.size}</span>
-                            <ChevronDown className="h-3 w-3" />
-                          </Button>
-                          {showBulkDropdown && (
-                            <div className="absolute left-0 top-full mt-1 w-56 bg-white border rounded-md shadow-lg z-20">
-                              <div className="p-2 border-b">
-                                <p className="text-xs font-semibold text-gray-600">BULK ACTIONS</p>
-                              </div>
-                              <div className="p-2 space-y-1">
-                                <div className="space-y-2">
-                                  <label className="text-xs font-medium text-gray-600">Assign Strategy:</label>
-                                  <select
-                                    value={bulkStrategy}
-                                    onChange={(e) => setBulkStrategy(e.target.value as any)}
-                                    className="w-full px-2 py-1 border rounded text-sm"
-                                  >
-                                    <option value="win_buybox">Win Buy Box</option>
-                                    <option value="maximize_profit">Maximize Profit</option>
-                                    <option value="boost_sales">Boost Sales</option>
-                                  </select>
-                                  <button
-                                    onClick={() => { bulkAssignStrategy(); setShowBulkDropdown(false); }}
-                                    className="w-full px-3 py-2 text-sm bg-purple-600 text-white rounded hover:bg-purple-700 flex items-center justify-center gap-2"
-                                  >
-                                    <Zap className="w-4 h-4" />
-                                    Apply Strategy
-                                  </button>
-                                </div>
-                                <hr className="my-2" />
-                                <button
-                                  onClick={() => { bulkDownloadCSV(); setShowBulkDropdown(false); }}
-                                  className="w-full px-3 py-2 text-sm hover:bg-gray-50 rounded flex items-center gap-2"
-                                >
-                                  <Download className="w-4 h-4" />
-                                  Download CSV
-                                </button>
-                                <button
-                                  onClick={() => { bulkDelete(); setShowBulkDropdown(false); }}
-                                  className="w-full px-3 py-2 text-sm text-red-600 hover:bg-red-50 rounded flex items-center gap-2"
-                                >
-                                  <Trash2 className="w-4 h-4" />
-                                  Delete Selected
-                                </button>
-                              </div>
-                            </div>
-                          )}
-                        </div>
-                      )}
-                    </div>
+                    <label className="relative inline-flex items-center cursor-pointer">
+                      <input
+                        type="checkbox"
+                        checked={selectedProducts.size === filteredProducts.length && filteredProducts.length > 0}
+                        onChange={toggleSelectAll}
+                        className="peer sr-only"
+                      />
+                      <div className="w-5 h-5 border-2 border-gray-300 rounded peer-checked:bg-green-500 peer-checked:border-green-500 flex items-center justify-center transition-all">
+                        <svg className="w-3 h-3 text-white opacity-0 peer-checked:opacity-100 transition-opacity" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
+                        </svg>
+                      </div>
+                    </label>
                   </TableHead>
                   <TableHead>{t('products.sku')}</TableHead>
                   <TableHead>{t('products.asin')}</TableHead>
