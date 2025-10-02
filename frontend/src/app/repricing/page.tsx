@@ -39,7 +39,7 @@ export default function RepricingPage() {
 
   const loadCurrentStrategy = async () => {
     try {
-      const response = await fetch('http://localhost:8000/api/products?user_id=2');
+      const response = await fetch('/api/products?user_id=2');
       const data = await response.json();
       if (data.products && data.products.length > 0 && data.products[0].repricing_strategy) {
         setSelectedStrategy(data.products[0].repricing_strategy);
@@ -51,7 +51,7 @@ export default function RepricingPage() {
 
   const loadStrategies = async () => {
     try {
-      const response = await fetch('http://localhost:8000/api/repricing/strategies');
+      const response = await fetch('/api/repricing/strategies');
       const data = await response.json();
       setStrategies(data.strategies || []);
       setSelectedStrategy(data.default);
@@ -62,7 +62,7 @@ export default function RepricingPage() {
 
   const loadStats = async () => {
     try {
-      const response = await fetch('http://localhost:8000/api/repricing/dashboard-stats?user_id=2');
+      const response = await fetch('/api/repricing/dashboard-stats?user_id=2');
       const data = await response.json();
       setStats(data);
     } catch (error) {
@@ -74,12 +74,12 @@ export default function RepricingPage() {
     setLoading(true);
     try {
       // Get all products first
-      const productsResponse = await fetch('http://localhost:8000/api/products?user_id=2');
+      const productsResponse = await fetch('/api/products?user_id=2');
       const productsData = await productsResponse.json();
       const productIds = productsData.products.map((p: any) => p.id);
 
       // Set strategy for all products
-      const response = await fetch('http://localhost:8000/api/repricing/set-strategy', {
+      const response = await fetch('/api/repricing/set-strategy', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -106,7 +106,7 @@ export default function RepricingPage() {
   const flashReprice = async () => {
     setRepricing(true);
     try {
-      const response = await fetch('http://localhost:8000/api/repricing/reprice-now?user_id=2', {
+      const response = await fetch('/api/repricing/reprice-now?user_id=2', {
         method: 'POST'
       });
       const data = await response.json();

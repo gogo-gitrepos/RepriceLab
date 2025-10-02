@@ -1,6 +1,6 @@
 'use client';
 
-const BASE = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
+const BASE = '';
 
 async function api<T>(path: string, init?: RequestInit): Promise<T> {
     const res = await fetch(`${BASE}${path}`, {
@@ -46,10 +46,10 @@ export type PricingPreview = {
 };
 
 export const apiClient = {
-    getMetrics: () => api<MetricsSummary>('/metrics/summary'),
-    getProducts: () => api<Product[]>('/products/'),
-    syncProducts: () => api<{ synced: number }>('/products/sync', { method: 'POST' }),
-    getPreview: (asin: string) => api<PricingPreview>(`/pricing/preview/${asin}`),
+    getMetrics: () => api<MetricsSummary>('/api/metrics/summary'),
+    getProducts: () => api<Product[]>('/api/products/'),
+    syncProducts: () => api<{ synced: number }>('/api/products/sync', { method: 'POST' }),
+    getPreview: (asin: string) => api<PricingPreview>(`/api/pricing/preview/${asin}`),
     setRule: (body: { min_price: number; max_price_formula: string; strategy: string }) =>
-        api<{ ok: boolean }>('/pricing/rule', { method: 'POST', body: JSON.stringify(body) }),
+        api<{ ok: boolean }>('/api/pricing/rule', { method: 'POST', body: JSON.stringify(body) }),
 };

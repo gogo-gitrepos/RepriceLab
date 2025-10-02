@@ -39,8 +39,7 @@ export default function LandingPage() {
 
   const handleGoogleLogin = async () => {
     try {
-      const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
-      const response = await fetch(`${apiUrl}/api/auth/google/login`);
+      const response = await fetch('/api/auth/google/login');
       const data = await response.json();
       
       if (data.auth_url) {

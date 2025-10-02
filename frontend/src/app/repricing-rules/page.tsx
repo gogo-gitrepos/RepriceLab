@@ -34,8 +34,7 @@ export default function RepricingRulesPage() {
 
   const loadProducts = async () => {
     try {
-      const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
-      const response = await fetch(`${apiUrl}/api/products?user_id=2`);
+      const response = await fetch('/api/products?user_id=2');
       const data = await response.json();
       setProducts(data.products || []);
       
@@ -56,10 +55,9 @@ export default function RepricingRulesPage() {
     
     try {
       const productIds = products.map(p => p.id);
-      const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
       
       // Use new repricing API
-      const response = await fetch(`${apiUrl}/api/repricing/set-strategy`, {
+      const response = await fetch('/api/repricing/set-strategy', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
