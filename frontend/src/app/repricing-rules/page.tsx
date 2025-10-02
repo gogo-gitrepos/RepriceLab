@@ -1,13 +1,12 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { apiClient } from '../../lib/api';
 import { useI18n } from '@/lib/i18n';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
-import { Settings, Zap, TrendingUp, Shield, Target, Trophy, DollarSign } from 'lucide-react';
+import { Settings, Zap, TrendingUp, Shield, Target, Trophy, DollarSign, Users, Sparkles } from 'lucide-react';
 
 interface Product {
   id: number;
@@ -18,6 +17,15 @@ interface Product {
   target_margin_percent: number;
 }
 
+interface DashboardStats {
+  total_products: number;
+  active_repricing: number;
+  buybox_winning: number;
+  buybox_win_rate: number;
+  strategy_breakdown: Record<string, number>;
+  avg_competitor_count: number;
+}
+
 export default function RepricingRulesPage() {
   const { t } = useI18n();
   const [minPrice, setMinPrice] = useState(7.0);
@@ -25,11 +33,14 @@ export default function RepricingRulesPage() {
   const [strategy, setStrategy] = useState<'win_buybox'|'maximize_profit'|'boost_sales'>('win_buybox');
   const [targetMargin, setTargetMargin] = useState(15.0);
   const [products, setProducts] = useState<Product[]>([]);
+  const [stats, setStats] = useState<DashboardStats | null>(null);
   const [msg, setMsg] = useState<string| null>(null);
   const [loading, setLoading] = useState(false);
+  const [repricing, setRepricing] = useState(false);
 
   useEffect(() => {
     loadProducts();
+    loadStats();
   }, []);
 
   const loadProducts = async () => {
@@ -45,6 +56,16 @@ export default function RepricingRulesPage() {
       }
     } catch (error) {
       console.error('Failed to load products:', error);
+    }
+  };
+
+  const loadStats = async () => {
+    try {
+      const response = await fetch('/api/repricing/dashboard-stats?user_id=2');
+      const data = await response.json();
+      setStats(data);
+    } catch (error) {
+      console.error('Failed to load stats:', error);
     }
   };
 
@@ -70,6 +91,7 @@ export default function RepricingRulesPage() {
       
       if (response.ok) {
         await loadProducts();
+        await loadStats();
         setMsg('✅ Rules saved successfully! All products updated.');
       } else {
         setMsg('Failed to save rules. Please try again.');
@@ -81,68 +103,117 @@ export default function RepricingRulesPage() {
     }
   };
 
-  const getStrategyStats = () => {
-    const activeCount = products.filter(p => p.repricing_enabled).length;
-    return {
-      active: activeCount,
-      total: products.length,
-      strategy: strategy
-    };
+  const flashReprice = async () => {
+    setRepricing(true);
+    try {
+      const response = await fetch('/api/repricing/reprice-now?user_id=2', {
+        method: 'POST'
+      });
+      const data = await response.json();
+      
+      if (data.success) {
+        await loadStats();
+        await loadProducts();
+        setMsg(`⚡ Flash Reprice Complete! ${data.repriced_count} products repriced, ${data.skipped_count} unchanged.`);
+      }
+    } catch (error) {
+      console.error('Flash reprice failed:', error);
+      setMsg('Flash reprice failed. Please try again.');
+    } finally {
+      setRepricing(false);
+    }
   };
 
-  const stats = getStrategyStats();
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center space-x-3">
-        <Settings className="w-6 h-6" />
-        <h1 className="text-3xl font-bold">Repricing Rules</h1>
+      <div>
+        <h1 className="text-3xl font-bold flex items-center gap-3">
+          <Sparkles className="w-8 h-8 text-purple-600" />
+          Repricing Rules
+        </h1>
+        <p className="text-muted-foreground mt-2">
+          Configure your repricing strategy and monitor performance
+        </p>
       </div>
       
-      {/* Overview Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <Card>
-          <CardContent className="p-4">
-            <div className="flex items-center space-x-3">
-              <div className="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center">
-                <Zap className="w-5 h-5 text-blue-600" />
+      {/* Dashboard Stats */}
+      {stats && (
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+          <Card>
+            <CardContent className="p-6">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-sm text-muted-foreground">Buy Box Win Rate</p>
+                  <p className="text-3xl font-bold text-green-600">{stats.buybox_win_rate}%</p>
+                </div>
+                <Trophy className="w-10 h-10 text-yellow-500" />
               </div>
-              <div>
-                <div className="font-medium">Active Products</div>
-                <p className="text-sm text-muted-foreground">{stats.active} of {stats.total} products</p>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardContent className="p-6">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-sm text-muted-foreground">Active Repricing</p>
+                  <p className="text-3xl font-bold">{stats.active_repricing}</p>
+                </div>
+                <Zap className="w-10 h-10 text-purple-500" />
               </div>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardContent className="p-6">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-sm text-muted-foreground">Products Winning</p>
+                  <p className="text-3xl font-bold text-blue-600">{stats.buybox_winning}</p>
+                </div>
+                <Target className="w-10 h-10 text-blue-500" />
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardContent className="p-6">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-sm text-muted-foreground">Avg Competitors</p>
+                  <p className="text-3xl font-bold">{stats.avg_competitor_count}</p>
+                </div>
+                <Users className="w-10 h-10 text-orange-500" />
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+      )}
+
+      {/* Flash Reprice Button */}
+      <Card className="bg-gradient-to-r from-purple-500 to-indigo-600 border-0 text-white">
+        <CardContent className="p-6">
+          <div className="flex items-center justify-between">
+            <div>
+              <h3 className="text-xl font-bold mb-2 flex items-center gap-2">
+                <Zap className="w-6 h-6" />
+                Flash Reprice
+              </h3>
+              <p className="text-purple-100">
+                Instantly update all product prices based on latest competitor data
+              </p>
             </div>
-          </CardContent>
-        </Card>
-        
-        <Card>
-          <CardContent className="p-4">
-            <div className="flex items-center space-x-3">
-              <div className="w-10 h-10 bg-green-100 rounded-lg flex items-center justify-center">
-                <TrendingUp className="w-5 h-5 text-green-600" />
-              </div>
-              <div>
-                <div className="font-medium">Products Monitored</div>
-                <p className="text-sm text-muted-foreground">{products.length} products</p>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-        
-        <Card>
-          <CardContent className="p-4">
-            <div className="flex items-center space-x-3">
-              <div className="w-10 h-10 bg-purple-100 rounded-lg flex items-center justify-center">
-                <Target className="w-5 h-5 text-purple-600" />
-              </div>
-              <div>
-                <div className="font-medium">Current Strategy</div>
-                <p className="text-sm text-muted-foreground capitalize">{strategy.replace('_', ' ')}</p>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-      </div>
+            <Button 
+              size="lg"
+              onClick={flashReprice}
+              disabled={repricing || !stats?.active_repricing}
+              className="bg-white text-purple-600 hover:bg-gray-100 font-bold px-8"
+            >
+              {repricing ? 'Repricing...' : 'Reprice Now ⚡'}
+            </Button>
+          </div>
+        </CardContent>
+      </Card>
 
       {/* Main Repricing Rules Configuration */}
       <Card>
@@ -319,7 +390,7 @@ export default function RepricingRulesPage() {
         <CardHeader>
           <CardTitle>Products Using This Strategy</CardTitle>
           <CardDescription>
-            {stats.active} products have repricing enabled with "{strategy.replace('_', ' ')}" strategy
+            {stats?.active_repricing || 0} products have repricing enabled with "{strategy.replace('_', ' ')}" strategy
           </CardDescription>
         </CardHeader>
         <CardContent>

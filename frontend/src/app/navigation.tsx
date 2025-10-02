@@ -94,14 +94,11 @@ export function NavigationContent() {
         <div>
           <SectionTitle>ReprIcIng</SectionTitle>
           <div className="space-y-1">
-            <MenuItem href="/repricing" icon={Zap}>
-              Smart Repricing
+            <MenuItem href="/repricing-rules" icon={Zap}>
+              Repricing Rules
             </MenuItem>
             <MenuItem href="/products" icon={Package}>
               Products
-            </MenuItem>
-            <MenuItem href="/repricing-rules" icon={Settings}>
-              Repricing Rules
             </MenuItem>
             <MenuItem href="/multichannel" icon={Radio}>
               Multichannel
