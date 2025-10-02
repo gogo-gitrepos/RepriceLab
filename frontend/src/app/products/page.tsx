@@ -20,7 +20,9 @@ import {
   BarChart3,
   Trash2,
   Download,
-  Zap
+  Zap,
+  ChevronDown,
+  Filter
 } from 'lucide-react';
 
 interface Product {
@@ -74,6 +76,9 @@ export default function ProductsPage() {
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedProducts, setSelectedProducts] = useState<Set<number>>(new Set());
   const [bulkStrategy, setBulkStrategy] = useState<'win_buybox'|'maximize_profit'|'boost_sales'>('win_buybox');
+  const [repricingFilter, setRepricingFilter] = useState<'all'|'active'|'paused'>('all');
+  const [showBulkDropdown, setShowBulkDropdown] = useState(false);
+  const [showFilterDropdown, setShowFilterDropdown] = useState(false);
 
   // Demo user ID (in production, get from auth context)
   const userId = 2;
@@ -258,11 +263,17 @@ export default function ProductsPage() {
     }
   };
 
-  const filteredProducts = products.filter(product =>
-    product.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    product.sku.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    product.asin.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  const filteredProducts = products.filter(product => {
+    const matchesSearch = product.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      product.sku.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      product.asin.toLowerCase().includes(searchTerm.toLowerCase());
+    
+    const matchesRepricing = repricingFilter === 'all' ? true :
+      repricingFilter === 'active' ? product.repricing_enabled :
+      repricingFilter === 'paused' ? !product.repricing_enabled : true;
+    
+    return matchesSearch && matchesRepricing;
+  });
 
   const getStatusColor = (status: string) => {
     switch (status) {
@@ -285,6 +296,40 @@ export default function ProductsPage() {
           </p>
         </div>
         <div className="flex items-center gap-2 w-full sm:w-auto">
+          <div className="relative">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => setShowFilterDropdown(!showFilterDropdown)}
+              className="flex items-center gap-2"
+            >
+              <Filter className="h-4 w-4" />
+              {repricingFilter === 'all' ? 'All Products' : repricingFilter === 'active' ? 'Active' : 'Paused'}
+              <ChevronDown className="h-3 w-3" />
+            </Button>
+            {showFilterDropdown && (
+              <div className="absolute right-0 top-full mt-1 w-40 bg-white border rounded-md shadow-lg z-10">
+                <button
+                  onClick={() => { setRepricingFilter('all'); setShowFilterDropdown(false); }}
+                  className={`w-full px-4 py-2 text-left text-sm hover:bg-gray-50 ${repricingFilter === 'all' ? 'bg-purple-50 text-purple-700 font-medium' : ''}`}
+                >
+                  All Products
+                </button>
+                <button
+                  onClick={() => { setRepricingFilter('active'); setShowFilterDropdown(false); }}
+                  className={`w-full px-4 py-2 text-left text-sm hover:bg-gray-50 ${repricingFilter === 'active' ? 'bg-purple-50 text-purple-700 font-medium' : ''}`}
+                >
+                  Active
+                </button>
+                <button
+                  onClick={() => { setRepricingFilter('paused'); setShowFilterDropdown(false); }}
+                  className={`w-full px-4 py-2 text-left text-sm hover:bg-gray-50 ${repricingFilter === 'paused' ? 'bg-purple-50 text-purple-700 font-medium' : ''}`}
+                >
+                  Paused
+                </button>
+              </div>
+            )}
+          </div>
           <Search className="h-3 w-3 sm:h-4 sm:w-4 text-muted-foreground" />
           <Input
             placeholder={t('products.search')}
@@ -399,63 +444,6 @@ export default function ProductsPage() {
         </CardContent>
       </Card>
 
-      {/* Bulk Actions Bar */}
-      {selectedProducts.size > 0 && (
-        <Card className="bg-purple-50 border-purple-200">
-          <CardContent className="p-4">
-            <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
-              <div className="flex items-center gap-2">
-                <Package className="w-5 h-5 text-purple-600" />
-                <span className="font-semibold text-purple-900">
-                  {selectedProducts.size} product{selectedProducts.size > 1 ? 's' : ''} selected
-                </span>
-              </div>
-              
-              <div className="flex flex-wrap gap-2 sm:ml-auto">
-                <select
-                  value={bulkStrategy}
-                  onChange={(e) => setBulkStrategy(e.target.value as any)}
-                  className="px-3 py-2 border rounded-md bg-white text-sm"
-                >
-                  <option value="win_buybox">Win Buy Box</option>
-                  <option value="maximize_profit">Maximize Profit</option>
-                  <option value="boost_sales">Boost Sales</option>
-                </select>
-                
-                <Button
-                  onClick={bulkAssignStrategy}
-                  variant="outline"
-                  size="sm"
-                  className="flex items-center gap-2"
-                >
-                  <Zap className="w-4 h-4" />
-                  Assign Strategy
-                </Button>
-                
-                <Button
-                  onClick={bulkDownloadCSV}
-                  variant="outline"
-                  size="sm"
-                  className="flex items-center gap-2"
-                >
-                  <Download className="w-4 h-4" />
-                  Download
-                </Button>
-                
-                <Button
-                  onClick={bulkDelete}
-                  variant="destructive"
-                  size="sm"
-                  className="flex items-center gap-2"
-                >
-                  <Trash2 className="w-4 h-4" />
-                  Delete
-                </Button>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-      )}
 
       {/* Product Table */}
       <Card>
@@ -473,13 +461,78 @@ export default function ProductsPage() {
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead className="w-12">
-                    <input
-                      type="checkbox"
-                      checked={selectedProducts.size === filteredProducts.length && filteredProducts.length > 0}
-                      onChange={toggleSelectAll}
-                      className="w-4 h-4 cursor-pointer"
-                    />
+                  <TableHead className="w-20">
+                    <div className="flex items-center gap-2">
+                      <label className="relative inline-flex items-center cursor-pointer">
+                        <input
+                          type="checkbox"
+                          checked={selectedProducts.size === filteredProducts.length && filteredProducts.length > 0}
+                          onChange={toggleSelectAll}
+                          className="peer sr-only"
+                        />
+                        <div className="w-5 h-5 border-2 border-gray-300 rounded peer-checked:bg-green-500 peer-checked:border-green-500 flex items-center justify-center transition-all">
+                          <svg className="w-3 h-3 text-white opacity-0 peer-checked:opacity-100 transition-opacity" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
+                          </svg>
+                        </div>
+                      </label>
+                      {selectedProducts.size > 0 && (
+                        <div className="relative">
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => setShowBulkDropdown(!showBulkDropdown)}
+                            className="h-8 px-2 flex items-center gap-1 bg-purple-50 hover:bg-purple-100 text-purple-700"
+                          >
+                            <span className="text-xs font-semibold">{selectedProducts.size}</span>
+                            <ChevronDown className="h-3 w-3" />
+                          </Button>
+                          {showBulkDropdown && (
+                            <div className="absolute left-0 top-full mt-1 w-56 bg-white border rounded-md shadow-lg z-20">
+                              <div className="p-2 border-b">
+                                <p className="text-xs font-semibold text-gray-600">BULK ACTIONS</p>
+                              </div>
+                              <div className="p-2 space-y-1">
+                                <div className="space-y-2">
+                                  <label className="text-xs font-medium text-gray-600">Assign Strategy:</label>
+                                  <select
+                                    value={bulkStrategy}
+                                    onChange={(e) => setBulkStrategy(e.target.value as any)}
+                                    className="w-full px-2 py-1 border rounded text-sm"
+                                  >
+                                    <option value="win_buybox">Win Buy Box</option>
+                                    <option value="maximize_profit">Maximize Profit</option>
+                                    <option value="boost_sales">Boost Sales</option>
+                                  </select>
+                                  <button
+                                    onClick={() => { bulkAssignStrategy(); setShowBulkDropdown(false); }}
+                                    className="w-full px-3 py-2 text-sm bg-purple-600 text-white rounded hover:bg-purple-700 flex items-center justify-center gap-2"
+                                  >
+                                    <Zap className="w-4 h-4" />
+                                    Apply Strategy
+                                  </button>
+                                </div>
+                                <hr className="my-2" />
+                                <button
+                                  onClick={() => { bulkDownloadCSV(); setShowBulkDropdown(false); }}
+                                  className="w-full px-3 py-2 text-sm hover:bg-gray-50 rounded flex items-center gap-2"
+                                >
+                                  <Download className="w-4 h-4" />
+                                  Download CSV
+                                </button>
+                                <button
+                                  onClick={() => { bulkDelete(); setShowBulkDropdown(false); }}
+                                  className="w-full px-3 py-2 text-sm text-red-600 hover:bg-red-50 rounded flex items-center gap-2"
+                                >
+                                  <Trash2 className="w-4 h-4" />
+                                  Delete Selected
+                                </button>
+                              </div>
+                            </div>
+                          )}
+                        </div>
+                      )}
+                    </div>
                   </TableHead>
                   <TableHead>{t('products.sku')}</TableHead>
                   <TableHead>{t('products.asin')}</TableHead>
@@ -496,12 +549,19 @@ export default function ProductsPage() {
                 {filteredProducts.map((product) => (
                   <TableRow key={product.id}>
                     <TableCell>
-                      <input
-                        type="checkbox"
-                        checked={selectedProducts.has(product.id)}
-                        onChange={() => toggleSelectProduct(product.id)}
-                        className="w-4 h-4 cursor-pointer"
-                      />
+                      <label className="relative inline-flex items-center cursor-pointer">
+                        <input
+                          type="checkbox"
+                          checked={selectedProducts.has(product.id)}
+                          onChange={() => toggleSelectProduct(product.id)}
+                          className="peer sr-only"
+                        />
+                        <div className="w-5 h-5 border-2 border-gray-300 rounded peer-checked:bg-green-500 peer-checked:border-green-500 flex items-center justify-center transition-all">
+                          <svg className="w-3 h-3 text-white opacity-0 peer-checked:opacity-100 transition-opacity" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
+                          </svg>
+                        </div>
+                      </label>
                     </TableCell>
                     <TableCell className="font-medium">{product.sku}</TableCell>
                     <TableCell>
