@@ -368,7 +368,6 @@ export default function RepricingRulesPage() {
               <h3 className="font-medium text-blue-900 mb-1">How It Works</h3>
               <p className="text-sm text-blue-800">
                 When you save a strategy here, it applies to all your products instantly. 
-                The same strategy will be shown in the Smart Repricing page. 
                 Our algorithm continuously monitors competitors and adjusts your prices automatically based on your chosen strategy.
               </p>
             </div>
