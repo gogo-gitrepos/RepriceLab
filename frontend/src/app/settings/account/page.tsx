@@ -1,207 +1,71 @@
 'use client';
 
-import { useState, useEffect } from 'react';
-import { apiClient } from '@/lib/api';
-import { useI18n } from '@/lib/i18n';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { useState } from 'react';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
-import { Badge } from '@/components/ui/badge';
-import { CheckCircle, Store, Plus, Trash2, TestTube } from 'lucide-react';
+import { Label } from '@/components/ui/label';
+import { User, Lock, Building2 } from 'lucide-react';
 
-interface AmazonStore {
-  id: number;
-  store_name: string;
-  selling_partner_id: string;
-  region: string;
-  marketplace_ids: string[];
-  last_sync: string;
-  created_at: string;
-  is_active: boolean;
-}
+const Textarea = ({ className, ...props }: React.TextareaHTMLAttributes<HTMLTextAreaElement>) => (
+  <textarea className={`w-full px-3 py-2 border rounded-md bg-background ${className || ''}`} {...props} />
+);
 
-export default function SettingsPage() {
-  const { t } = useI18n();
-  
-  // Amazon store management state
-  const [stores, setStores] = useState<AmazonStore[]>([]);
-  const [loading, setLoading] = useState(false);
-  const [connectionStatus, setConnectionStatus] = useState<string | null>(null);
+export default function AccountSettingsPage() {
+  const [userInfo, setUserInfo] = useState({
+    email: 'user@example.com',
+    firstName: 'John',
+    lastName: 'Doe'
+  });
 
-  // Demo user ID (in production, get from auth context)
-  const userId = 2;
+  const [passwordData, setPasswordData] = useState({
+    currentPassword: '',
+    newPassword: '',
+    confirmPassword: ''
+  });
 
-  useEffect(() => {
-    loadStores();
-    
-    // Check for connection success in URL params
-    const urlParams = new URLSearchParams(window.location.search);
-    if (urlParams.get('connected') === 'success') {
-      setConnectionStatus('success');
-      setTimeout(() => setConnectionStatus(null), 5000);
-      loadStores(); // Refresh stores list
-    }
-  }, []);
+  const [companyInfo, setCompanyInfo] = useState({
+    name: 'Your Company Name',
+    address: '123 Business St, City, State 12345',
+    phone: '+1 (555) 123-4567',
+    website: 'https://yourcompany.com',
+    description: 'Your company description...',
+    taxId: 'TAX123456789',
+    employees: '10-50'
+  });
 
-  const loadStores = async () => {
-    try {
-      const response = await fetch(`http://localhost:8000/api/auth/amazon/stores?user_id=${userId}`);
-      const data = await response.json();
-      if (response.ok) {
-        setStores(data.stores || []);
-      }
-    } catch (error) {
-      console.error("Failed to load stores:", error);
-    }
+  const handleSaveUserInfo = () => {
+    console.log('Saving user info:', userInfo);
   };
 
-  const connectAmazonStore = async () => {
-    try {
-      setLoading(true);
-      const response = await fetch(`http://localhost:8000/api/auth/amazon/connect?user_id=${userId}`);
-      const data = await response.json();
-      
-      if (response.ok && data.authorization_url) {
-        // Redirect to Amazon OAuth
-        window.location.href = data.authorization_url;
-      } else {
-        console.error("Failed to initiate Amazon connection:", data.detail);
-      }
-    } catch (error) {
-      console.error("Error connecting Amazon store:", error);
-    } finally {
-      setLoading(false);
+  const handleChangePassword = () => {
+    if (passwordData.newPassword !== passwordData.confirmPassword) {
+      alert('New passwords do not match');
+      return;
     }
+    console.log('Changing password');
+    setPasswordData({ currentPassword: '', newPassword: '', confirmPassword: '' });
   };
 
-  const disconnectStore = async (storeId: number) => {
-    try {
-      const response = await fetch(`http://localhost:8000/api/auth/amazon/disconnect/${storeId}`, {
-        method: 'POST'
-      });
-      
-      if (response.ok) {
-        loadStores(); // Refresh stores list
-      }
-    } catch (error) {
-      console.error("Failed to disconnect store:", error);
-    }
+  const handleSaveCompanyInfo = () => {
+    console.log('Saving company info:', companyInfo);
   };
-
-  const testConnection = async (storeId: number) => {
-    try {
-      const response = await fetch(`http://localhost:8000/api/auth/amazon/test-connection/${storeId}`, {
-        method: 'POST'
-      });
-      const data = await response.json();
-      
-      alert(data.success ? "✅ Connection successful!" : `❌ Connection failed: ${data.message}`);
-    } catch (error) {
-      console.error("Failed to test connection:", error);
-      alert("❌ Test connection failed");
-    }
-  };
-
 
   return (
-    <div className="max-w-4xl space-y-4 sm:space-y-6">
-      <h2 className="text-2xl sm:text-3xl font-bold tracking-tight">Account Settings</h2>
-      
-      {/* Connection Success Alert */}
-      {connectionStatus === 'success' && (
-        <div className="p-3 sm:p-4 border border-green-200 bg-green-50 rounded-lg flex items-center gap-2">
-          <CheckCircle className="h-4 w-4 text-green-600 flex-shrink-0" />
-          <div className="text-sm sm:text-base text-green-800">
-            🎉 Amazon store connected successfully! You can now manage your products and pricing.
-          </div>
-        </div>
-      )}
+    <div className="max-w-4xl space-y-6">
+      <div>
+        <h2 className="text-3xl font-bold tracking-tight">Account Settings</h2>
+        <p className="text-muted-foreground">Manage your account and company information</p>
+      </div>
 
-      {/* Amazon Store Management */}
-      <Card>
-        <CardHeader className="p-4 sm:p-6">
-          <CardTitle className="flex items-center gap-2 text-base sm:text-lg">
-            <Store className="h-4 w-4 sm:h-5 sm:w-5" />
-            Amazon Store Connections
-          </CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-sm text-muted-foreground">
-                Connect your Amazon Seller Central account to enable automatic repricing
-              </p>
-            </div>
-            <Button onClick={connectAmazonStore} disabled={loading} className="flex items-center gap-2">
-              <Plus className="h-4 w-4" />
-              {loading ? "Connecting..." : "Connect Amazon Store"}
-            </Button>
-          </div>
-
-          {stores.length > 0 && (
-            <div className="space-y-3">
-              <div className="border-t pt-4">
-                <h4 className="font-medium mb-3">Connected Stores ({stores.length})</h4>
-                {stores.map((store) => (
-                  <div
-                    key={store.id}
-                    className="flex items-center justify-between p-3 border rounded-lg bg-slate-50"
-                  >
-                    <div className="space-y-1">
-                      <div className="flex items-center gap-2">
-                        <h5 className="font-medium">{store.store_name}</h5>
-                        <Badge variant={store.is_active ? "default" : "secondary"}>
-                          {store.is_active ? "Active" : "Inactive"}
-                        </Badge>
-                      </div>
-                      <p className="text-sm text-muted-foreground">
-                        🔗 Partner ID: {store.selling_partner_id} • 🌍 Region: {store.region}
-                      </p>
-                      <p className="text-xs text-muted-foreground">
-                        📅 Last synced: {new Date(store.last_sync).toLocaleString()}
-                      </p>
-                    </div>
-                    <div className="flex gap-2">
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={() => testConnection(store.id)}
-                        className="flex items-center gap-1"
-                      >
-                        <TestTube className="h-3 w-3" />
-                        Test
-                      </Button>
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={() => disconnectStore(store.id)}
-                        className="text-red-600 hover:text-red-700 flex items-center gap-1"
-                      >
-                        <Trash2 className="h-3 w-3" />
-                        Remove
-                      </Button>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-          )}
-
-          {stores.length === 0 && (
-            <div className="text-center py-8 text-muted-foreground border rounded-lg bg-slate-50">
-              <Store className="h-12 w-12 mx-auto mb-4 opacity-50" />
-              <p className="font-medium">No Amazon stores connected yet</p>
-              <p className="text-sm">Connect your first store to start automatic repricing</p>
-            </div>
-          )}
-        </CardContent>
-      </Card>
-      
-      {/* Account Information */}
+      {/* Personal Information */}
       <Card>
         <CardHeader>
-          <CardTitle>Account Information</CardTitle>
+          <CardTitle className="flex items-center gap-2">
+            <User className="h-5 w-5" />
+            Personal Information
+          </CardTitle>
+          <CardDescription>Update your personal details</CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="space-y-2">
@@ -209,53 +73,206 @@ export default function SettingsPage() {
             <Input 
               id="email"
               type="email" 
-              value="user@example.com" 
-              disabled
-              className="bg-gray-50"
+              value={userInfo.email}
+              onChange={(e) => setUserInfo({...userInfo, email: e.target.value})}
             />
-            <p className="text-xs text-muted-foreground">Contact support to change your email address</p>
           </div>
-          
-          <div className="space-y-2">
-            <Label htmlFor="plan">Current Plan</Label>
-            <div className="p-3 border rounded-md bg-gray-50">
-              <div className="font-medium">Free Trial</div>
-              <p className="text-sm text-muted-foreground">14 days remaining</p>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="space-y-2">
+              <Label htmlFor="firstName">First Name</Label>
+              <Input 
+                id="firstName"
+                value={userInfo.firstName}
+                onChange={(e) => setUserInfo({...userInfo, firstName: e.target.value})}
+              />
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="lastName">Last Name</Label>
+              <Input 
+                id="lastName"
+                value={userInfo.lastName}
+                onChange={(e) => setUserInfo({...userInfo, lastName: e.target.value})}
+              />
             </div>
           </div>
           
-          <Button className="w-full">Upgrade Plan</Button>
+          <div className="flex justify-end pt-2">
+            <Button onClick={handleSaveUserInfo}>Save Changes</Button>
+          </div>
         </CardContent>
       </Card>
 
-      {/* Notification Settings */}
+      {/* Password Management */}
       <Card>
         <CardHeader>
-          <CardTitle>Notification Settings</CardTitle>
+          <CardTitle className="flex items-center gap-2">
+            <Lock className="h-5 w-5" />
+            Change Password
+          </CardTitle>
+          <CardDescription>Update your password to keep your account secure</CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
-          <div className="flex items-center justify-between">
-            <div>
-              <div className="font-medium">Email Notifications</div>
-              <p className="text-sm text-muted-foreground">Receive email alerts for important events</p>
-            </div>
-            <input type="checkbox" defaultChecked className="w-4 h-4" />
+          <div className="space-y-2">
+            <Label htmlFor="currentPassword">Current Password</Label>
+            <Input 
+              id="currentPassword"
+              type="password" 
+              value={passwordData.currentPassword}
+              onChange={(e) => setPasswordData({...passwordData, currentPassword: e.target.value})}
+              placeholder="Enter current password"
+            />
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="newPassword">New Password</Label>
+            <Input 
+              id="newPassword"
+              type="password" 
+              value={passwordData.newPassword}
+              onChange={(e) => setPasswordData({...passwordData, newPassword: e.target.value})}
+              placeholder="Enter new password"
+            />
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="confirmPassword">Confirm New Password</Label>
+            <Input 
+              id="confirmPassword"
+              type="password" 
+              value={passwordData.confirmPassword}
+              onChange={(e) => setPasswordData({...passwordData, confirmPassword: e.target.value})}
+              placeholder="Confirm new password"
+            />
           </div>
           
-          <div className="flex items-center justify-between">
-            <div>
-              <div className="font-medium">Buy Box Loss Alerts</div>
-              <p className="text-sm text-muted-foreground">Get notified when you lose the Buy Box</p>
+          <div className="flex justify-end pt-2">
+            <Button onClick={handleChangePassword}>Update Password</Button>
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Company Information */}
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <Building2 className="h-5 w-5" />
+            Company Information
+          </CardTitle>
+          <CardDescription>Manage your business information and legal details</CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="space-y-2">
+              <Label htmlFor="companyName">Company Name</Label>
+              <Input 
+                id="companyName"
+                value={companyInfo.name}
+                onChange={(e) => setCompanyInfo({...companyInfo, name: e.target.value})}
+              />
             </div>
-            <input type="checkbox" defaultChecked className="w-4 h-4" />
+            
+            <div className="space-y-2">
+              <Label htmlFor="taxId">Tax ID / EIN</Label>
+              <Input 
+                id="taxId"
+                value={companyInfo.taxId}
+                onChange={(e) => setCompanyInfo({...companyInfo, taxId: e.target.value})}
+              />
+            </div>
           </div>
           
-          <div className="flex items-center justify-between">
-            <div>
-              <div className="font-medium">Daily Reports</div>
-              <p className="text-sm text-muted-foreground">Receive daily performance summaries</p>
+          <div className="space-y-2">
+            <Label htmlFor="address">Business Address</Label>
+            <Textarea 
+              id="address"
+              value={companyInfo.address}
+              onChange={(e) => setCompanyInfo({...companyInfo, address: e.target.value})}
+              rows={3}
+            />
+          </div>
+          
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="space-y-2">
+              <Label htmlFor="phone">Phone Number</Label>
+              <Input 
+                id="phone"
+                type="tel"
+                value={companyInfo.phone}
+                onChange={(e) => setCompanyInfo({...companyInfo, phone: e.target.value})}
+              />
             </div>
-            <input type="checkbox" className="w-4 h-4" />
+            
+            <div className="space-y-2">
+              <Label htmlFor="website">Website</Label>
+              <Input 
+                id="website"
+                type="url"
+                value={companyInfo.website}
+                onChange={(e) => setCompanyInfo({...companyInfo, website: e.target.value})}
+              />
+            </div>
+          </div>
+          
+          <div className="space-y-2">
+            <Label htmlFor="description">Company Description</Label>
+            <Textarea 
+              id="description"
+              value={companyInfo.description}
+              onChange={(e) => setCompanyInfo({...companyInfo, description: e.target.value})}
+              rows={4}
+              placeholder="Describe your business..."
+            />
+          </div>
+          
+          <div className="space-y-2">
+            <Label htmlFor="employees">Number of Employees</Label>
+            <select 
+              id="employees"
+              value={companyInfo.employees}
+              onChange={(e) => setCompanyInfo({...companyInfo, employees: e.target.value})}
+              className="w-full px-3 py-2 border rounded-md bg-background"
+            >
+              <option value="1">Just me</option>
+              <option value="2-5">2-5 employees</option>
+              <option value="6-10">6-10 employees</option>
+              <option value="10-50">10-50 employees</option>
+              <option value="50-200">50-200 employees</option>
+              <option value="200+">200+ employees</option>
+            </select>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="space-y-2">
+              <Label htmlFor="timezone">Timezone</Label>
+              <select 
+                id="timezone"
+                className="w-full px-3 py-2 border rounded-md bg-background"
+              >
+                <option value="UTC-8">Pacific Time (UTC-8)</option>
+                <option value="UTC-5">Eastern Time (UTC-5)</option>
+                <option value="UTC">UTC</option>
+                <option value="UTC+1">Central European Time (UTC+1)</option>
+              </select>
+            </div>
+            
+            <div className="space-y-2">
+              <Label htmlFor="currency">Default Currency</Label>
+              <select 
+                id="currency"
+                className="w-full px-3 py-2 border rounded-md bg-background"
+              >
+                <option value="USD">USD - US Dollar</option>
+                <option value="EUR">EUR - Euro</option>
+                <option value="GBP">GBP - British Pound</option>
+                <option value="CAD">CAD - Canadian Dollar</option>
+              </select>
+            </div>
+          </div>
+          
+          <div className="flex justify-end pt-2">
+            <Button onClick={handleSaveCompanyInfo}>Save Changes</Button>
           </div>
         </CardContent>
       </Card>

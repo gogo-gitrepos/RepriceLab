@@ -112,19 +112,6 @@ export function NavigationContent() {
           </div>
         </div>
 
-        {/* Feedback Section */}
-        <div>
-          <SectionTitle>Feedback</SectionTitle>
-          <div className="space-y-1">
-            <MenuItem href="/feedback/overview" icon={Star}>
-              Overview
-            </MenuItem>
-            <MenuItem href="/feedback/negative" icon={AlertTriangle}>
-              Negative Feedback
-            </MenuItem>
-          </div>
-        </div>
-
         {/* Insights Section */}
         <div>
           <SectionTitle>InsIghts</SectionTitle>
@@ -174,14 +161,8 @@ export function NavigationContent() {
                   <DropdownMenuItem href="/settings/account" icon={Cog}>
                     Account Settings
                   </DropdownMenuItem>
-                  <DropdownMenuItem href="/settings/company" icon={Building2}>
-                    Company Settings
-                  </DropdownMenuItem>
                   <DropdownMenuItem href="/settings/users" icon={UserPlus}>
                     Users
-                  </DropdownMenuItem>
-                  <DropdownMenuItem href="/settings/channels" icon={Radio}>
-                    Channels
                   </DropdownMenuItem>
                   <DropdownMenuItem href="/settings/subscription" icon={CreditCard}>
                     Subscription
