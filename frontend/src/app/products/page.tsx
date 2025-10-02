@@ -480,7 +480,7 @@ export default function ProductsPage() {
                     <select
                       value={bulkStrategy}
                       onChange={(e) => setBulkStrategy(e.target.value as any)}
-                      className="w-full px-2 py-1 border rounded text-sm"
+                      className="w-full px-2 py-1 border rounded text-sm bg-white"
                     >
                       <option value="win_buybox">Win Buy Box</option>
                       <option value="maximize_profit">Maximize Profit</option>
