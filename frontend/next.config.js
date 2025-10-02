@@ -17,10 +17,15 @@ const nextConfig = {
     ];
   },
   async rewrites() {
+    // In Replit, backend runs on localhost:8000, accessible via server-side rewrites
+    const backendUrl = 'http://localhost:8000';
+    
+    console.log('[Next.js Config] Backend URL:', backendUrl);
+    
     return [
       {
         source: '/api/:path*',
-        destination: 'http://localhost:8000/api/:path*',
+        destination: `${backendUrl}/api/:path*`,
       },
     ];
   },
