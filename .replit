@@ -71,10 +71,6 @@ externalPort = 3002
 localPort = 41807
 externalPort = 3003
 
-[[ports]]
-localPort = 46089
-externalPort = 4200
-
 [deployment]
 deploymentTarget = "autoscale"
 run = ["bash", "-c", "cd backend && python -m uvicorn app.main:app --host 0.0.0.0 --port 8000 & cd frontend && npm start -- -p 5000"]
