@@ -548,17 +548,11 @@ export default function ProductsPage() {
               <p className="mt-2 text-sm sm:text-base text-muted-foreground">Loading products...</p>
             </div>
           ) : (
-            <>
-              {filteredProducts.length > 0 && (
-                <div className="p-4 bg-blue-50 border border-blue-200 text-blue-800 font-semibold">
-                  ✅ {filteredProducts.length} products loaded successfully
-                </div>
-              )}
-              <div className="overflow-x-auto">
-            <table className="w-full caption-bottom text-sm border">
-              <thead className="[&_tr]:border-b">
-                <tr className="border-b transition-colors hover:bg-muted/50">
-                  <th className="h-12 px-4 text-left align-middle font-medium text-muted-foreground w-20">
+            <div className="overflow-x-auto">
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead className="w-20">
                     <label className="relative inline-flex items-center cursor-pointer">
                       <input
                         type="checkbox"
@@ -585,7 +579,6 @@ export default function ProductsPage() {
                 </TableRow>
               </TableHeader>
               <TableBody>
-                <tr><td colSpan={10} className="p-4 bg-yellow-100">DEBUG: About to render {filteredProducts.length} rows</td></tr>
                 {filteredProducts.map((product) => (
                   <TableRow key={product.id}>
                     <TableCell>
@@ -672,7 +665,6 @@ export default function ProductsPage() {
               </TableBody>
             </Table>
             </div>
-            </>
           )}
         </CardContent>
       </Card>
