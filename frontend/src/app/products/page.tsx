@@ -17,7 +17,10 @@ import {
   ToggleRight,
   TrendingUp,
   DollarSign,
-  BarChart3
+  BarChart3,
+  Trash2,
+  Download,
+  Zap
 } from 'lucide-react';
 
 interface Product {
@@ -34,6 +37,7 @@ interface Product {
   stock_qty: number;
   buybox_owning: boolean;
   repricing_enabled: boolean;
+  repricing_strategy?: string;
   last_synced_at: string;
   sync_status: string;
   created_at: string;
@@ -68,6 +72,8 @@ export default function ProductsPage() {
   const [loading, setLoading] = useState(false);
   const [syncing, setSyncing] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
+  const [selectedProducts, setSelectedProducts] = useState<Set<number>>(new Set());
+  const [bulkStrategy, setBulkStrategy] = useState<'win_buybox'|'maximize_profit'|'boost_sales'>('win_buybox');
 
   // Demo user ID (in production, get from auth context)
   const userId = 2;
@@ -80,7 +86,7 @@ export default function ProductsPage() {
 
   const loadStores = async () => {
     try {
-      const response = await fetch(`http://localhost:8000/api/auth/amazon/stores`);
+      const response = await fetch(`/api/auth/amazon/stores`);
       const data = await response.json();
       if (response.ok) {
         setStores(data.stores || []);
@@ -97,7 +103,7 @@ export default function ProductsPage() {
     try {
       setLoading(true);
       const storeParam = selectedStore ? `&store_id=${selectedStore}` : '';
-      const response = await fetch(`http://localhost:8000/api/products/?${storeParam ? storeParam.substring(1) + '&' : ''}limit=50`);
+      const response = await fetch(`/api/products/?${storeParam ? storeParam.substring(1) + '&' : ''}limit=50`);
       const data = await response.json();
       if (response.ok) {
         setProducts(data.products || []);
@@ -111,7 +117,7 @@ export default function ProductsPage() {
 
   const loadStats = async () => {
     try {
-      const response = await fetch(`http://localhost:8000/api/products/stats/summary`);
+      const response = await fetch(`/api/products/stats/summary`);
       const data = await response.json();
       if (response.ok) {
         setStats(data);
@@ -129,7 +135,7 @@ export default function ProductsPage() {
 
     try {
       setSyncing(true);
-      const response = await fetch(`http://localhost:8000/api/products/sync/${selectedStore}`, {
+      const response = await fetch(`/api/products/sync/${selectedStore}`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' }
       });
@@ -152,7 +158,7 @@ export default function ProductsPage() {
 
   const toggleRepricing = async (productId: number, enabled: boolean) => {
     try {
-      const response = await fetch(`http://localhost:8000/api/products/${productId}/repricing/toggle?enabled=${enabled}`, {
+      const response = await fetch(`/api/products/${productId}/repricing/toggle?enabled=${enabled}`, {
         method: 'POST'
       });
       
@@ -164,6 +170,91 @@ export default function ProductsPage() {
       }
     } catch (error) {
       console.error("Failed to toggle repricing:", error);
+    }
+  };
+
+  const toggleSelectProduct = (productId: number) => {
+    const newSelected = new Set(selectedProducts);
+    if (newSelected.has(productId)) {
+      newSelected.delete(productId);
+    } else {
+      newSelected.add(productId);
+    }
+    setSelectedProducts(newSelected);
+  };
+
+  const toggleSelectAll = () => {
+    if (selectedProducts.size === filteredProducts.length) {
+      setSelectedProducts(new Set());
+    } else {
+      setSelectedProducts(new Set(filteredProducts.map(p => p.id)));
+    }
+  };
+
+  const bulkDelete = async () => {
+    if (selectedProducts.size === 0) return;
+    if (!confirm(`Are you sure you want to delete ${selectedProducts.size} products?`)) return;
+
+    try {
+      const promises = Array.from(selectedProducts).map(id =>
+        fetch(`/api/products/${id}`, { method: 'DELETE' })
+      );
+      await Promise.all(promises);
+      setSelectedProducts(new Set());
+      loadProducts();
+      loadStats();
+      alert(`✅ Successfully deleted ${selectedProducts.size} products`);
+    } catch (error) {
+      console.error('Bulk delete failed:', error);
+      alert('❌ Bulk delete failed');
+    }
+  };
+
+  const bulkDownloadCSV = () => {
+    if (selectedProducts.size === 0) return;
+
+    const selected = products.filter(p => selectedProducts.has(p.id));
+    const csvHeader = 'SKU,ASIN,Title,Price,Currency,Stock,Buy Box,Repricing,Strategy\n';
+    const csvRows = selected.map(p => 
+      `${p.sku},${p.asin},"${p.title}",${p.price},${p.currency},${p.stock_qty},${p.buybox_owning},${p.repricing_enabled},${p.repricing_strategy || 'none'}`
+    ).join('\n');
+    
+    const csv = csvHeader + csvRows;
+    const blob = new Blob([csv], { type: 'text/csv' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `products_${new Date().toISOString().split('T')[0]}.csv`;
+    a.click();
+    URL.revokeObjectURL(url);
+  };
+
+  const bulkAssignStrategy = async () => {
+    if (selectedProducts.size === 0) return;
+
+    try {
+      const response = await fetch('/api/repricing/set-strategy', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          product_ids: Array.from(selectedProducts),
+          strategy: bulkStrategy,
+          enabled: true,
+          target_margin_percent: 15
+        })
+      });
+
+      if (response.ok) {
+        setSelectedProducts(new Set());
+        loadProducts();
+        loadStats();
+        alert(`✅ Successfully assigned "${bulkStrategy.replace('_', ' ')}" strategy to ${selectedProducts.size} products`);
+      } else {
+        alert('❌ Failed to assign strategy');
+      }
+    } catch (error) {
+      console.error('Bulk assign strategy failed:', error);
+      alert('❌ Bulk assign strategy failed');
     }
   };
 
@@ -308,6 +399,64 @@ export default function ProductsPage() {
         </CardContent>
       </Card>
 
+      {/* Bulk Actions Bar */}
+      {selectedProducts.size > 0 && (
+        <Card className="bg-purple-50 border-purple-200">
+          <CardContent className="p-4">
+            <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
+              <div className="flex items-center gap-2">
+                <Package className="w-5 h-5 text-purple-600" />
+                <span className="font-semibold text-purple-900">
+                  {selectedProducts.size} product{selectedProducts.size > 1 ? 's' : ''} selected
+                </span>
+              </div>
+              
+              <div className="flex flex-wrap gap-2 sm:ml-auto">
+                <select
+                  value={bulkStrategy}
+                  onChange={(e) => setBulkStrategy(e.target.value as any)}
+                  className="px-3 py-2 border rounded-md bg-white text-sm"
+                >
+                  <option value="win_buybox">Win Buy Box</option>
+                  <option value="maximize_profit">Maximize Profit</option>
+                  <option value="boost_sales">Boost Sales</option>
+                </select>
+                
+                <Button
+                  onClick={bulkAssignStrategy}
+                  variant="outline"
+                  size="sm"
+                  className="flex items-center gap-2"
+                >
+                  <Zap className="w-4 h-4" />
+                  Assign Strategy
+                </Button>
+                
+                <Button
+                  onClick={bulkDownloadCSV}
+                  variant="outline"
+                  size="sm"
+                  className="flex items-center gap-2"
+                >
+                  <Download className="w-4 h-4" />
+                  Download
+                </Button>
+                
+                <Button
+                  onClick={bulkDelete}
+                  variant="destructive"
+                  size="sm"
+                  className="flex items-center gap-2"
+                >
+                  <Trash2 className="w-4 h-4" />
+                  Delete
+                </Button>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      )}
+
       {/* Product Table */}
       <Card>
         <CardHeader className="p-4 sm:p-6">
@@ -324,13 +473,21 @@ export default function ProductsPage() {
             <Table>
               <TableHeader>
                 <TableRow>
+                  <TableHead className="w-12">
+                    <input
+                      type="checkbox"
+                      checked={selectedProducts.size === filteredProducts.length && filteredProducts.length > 0}
+                      onChange={toggleSelectAll}
+                      className="w-4 h-4 cursor-pointer"
+                    />
+                  </TableHead>
                   <TableHead>{t('products.sku')}</TableHead>
                   <TableHead>{t('products.asin')}</TableHead>
                   <TableHead>{t('products.title_field')}</TableHead>
                   <TableHead className="text-right">{t('products.price')}</TableHead>
                   <TableHead>{t('products.buyboxOwner')}</TableHead>
                   <TableHead className="text-center">{t('products.stock')}</TableHead>
-                  <TableHead className="text-center">Status</TableHead>
+                  <TableHead className="text-center">Strategy</TableHead>
                   <TableHead className="text-center">Repricing</TableHead>
                   <TableHead className="text-center">Actions</TableHead>
                 </TableRow>
@@ -338,6 +495,14 @@ export default function ProductsPage() {
               <TableBody>
                 {filteredProducts.map((product) => (
                   <TableRow key={product.id}>
+                    <TableCell>
+                      <input
+                        type="checkbox"
+                        checked={selectedProducts.has(product.id)}
+                        onChange={() => toggleSelectProduct(product.id)}
+                        className="w-4 h-4 cursor-pointer"
+                      />
+                    </TableCell>
                     <TableCell className="font-medium">{product.sku}</TableCell>
                     <TableCell>
                       <Button variant="link" className="h-auto p-0" asChild>
@@ -357,14 +522,13 @@ export default function ProductsPage() {
                     </TableCell>
                     <TableCell className="text-center">{product.stock_qty}</TableCell>
                     <TableCell className="text-center">
-                      <div className="flex gap-1">
-                        <Badge className={getStatusColor(product.listing_status)}>
-                          {product.listing_status}
+                      {product.repricing_strategy ? (
+                        <Badge variant="outline" className="capitalize">
+                          {product.repricing_strategy.replace('_', ' ')}
                         </Badge>
-                        <Badge className={getStatusColor(product.sync_status)}>
-                          {product.sync_status}
-                        </Badge>
-                      </div>
+                      ) : (
+                        <span className="text-muted-foreground text-sm">None</span>
+                      )}
                     </TableCell>
                     <TableCell className="text-center">
                       <Button
@@ -389,7 +553,7 @@ export default function ProductsPage() {
                 ))}
                 {filteredProducts.length === 0 && (
                   <TableRow>
-                    <TableCell colSpan={9} className="h-24 text-center">
+                    <TableCell colSpan={10} className="h-24 text-center">
                       <div className="flex flex-col items-center gap-2">
                         <Package className="h-12 w-12 opacity-50" />
                         <p className="font-medium">
