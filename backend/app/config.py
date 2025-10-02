@@ -3,7 +3,7 @@ from pydantic_settings import BaseSettings
 
 class Settings(BaseSettings):
     database_url: str = "postgresql+psycopg2://app:app@localhost:5432/app"
-    cors_origins: str = "http://localhost:3000"
+    cors_origins: str = "http://localhost:5000,http://localhost:3000,https://*.replit.dev"
     app_base_url: str = "http://localhost:8000"
 
     # Amazon SP-API
