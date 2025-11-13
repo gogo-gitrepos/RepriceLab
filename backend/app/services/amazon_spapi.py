@@ -8,8 +8,8 @@ import logging
 logger = logging.getLogger(__name__)
 
 try:
-    from sp_api.api import Orders, Reports, Feeds, ListingsItems, CatalogItems, ProductPricing
-    from sp_api.base import SellingApiException
+    from sp_api.api import Orders, Reports, Feeds, ListingsItems, CatalogItems, Products
+    from sp_api.base import SellingApiException, Marketplaces
     SPAPI_AVAILABLE = True
 except ImportError as e:
     logger.warning(f"SP-API package not properly installed: {e}")
@@ -55,7 +55,7 @@ class AmazonSPAPIClient:
             self.feeds_api = Feeds(credentials=self.credentials)
             self.listings_api = ListingsItems(credentials=self.credentials)
             self.catalog_api = CatalogItems(credentials=self.credentials)
-            self.pricing_api = ProductPricing(credentials=self.credentials)
+            self.products_api = Products(credentials=self.credentials)
         except Exception as e:
             logger.error(f"Failed to initialize SP-API clients: {e}")
             raise
@@ -141,7 +141,7 @@ class AmazonSPAPIClient:
                 "error": str(e)
             }
     
-    async def get_product_pricing(self, asin: str, marketplace_id: str) -> Dict[str, Any]:
+    async def get_product_pricing(self, asin: str, marketplace_id: str, item_condition: str = "New") -> Dict[str, Any]:
         """Get competitive pricing for a product"""
         if not SPAPI_AVAILABLE:
             return {
@@ -150,9 +150,10 @@ class AmazonSPAPIClient:
             }
             
         try:
-            response = self.pricing_api.get_competitive_pricing(
-                marketplace_id=marketplace_id,
-                asins=[asin]
+            response = self.products_api.get_product_pricing_for_asins(
+                asin_list=[asin],
+                item_condition=item_condition,
+                MarketplaceId=marketplace_id
             )
             
             if hasattr(response, 'payload') and response.payload:
