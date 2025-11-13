@@ -15,6 +15,35 @@ except ImportError as e:
     logger.warning(f"SP-API package not properly installed: {e}")
     SPAPI_AVAILABLE = False
 
+# Marketplace ID to currency mapping
+MARKETPLACE_CURRENCY = {
+    "ATVPDKIKX0DER": "USD",  # US
+    "A2EUQ1WTGCTBG2": "CAD",  # CA
+    "A1AM78C64UM0Y8": "MXN",  # MX
+    "A2Q3Y263D00KWC": "BRL",  # BR
+    "A1F83G8C2ARO7P": "GBP",  # UK
+    "A13V1IB3VIYZZH": "EUR",  # FR
+    "A1PA6795UKMFR9": "EUR",  # DE
+    "APJ6JRA9NG5V4": "EUR",  # IT
+    "A1RKKUPIHCS9HS": "EUR",  # ES
+    "AMEN7PMS3EDWL": "EUR",  # BE
+    "A1805IZSGTT6HS": "EUR",  # NL
+    "A2NODRKZP88ZB9": "SEK",  # SE
+    "A1C3SOZRARQ6R3": "PLN",  # PL
+    "ARBP9OOSHTCHU": "EGP",  # EG
+    "A33AVAJ2PDY3EV": "TRY",  # TR
+    "A17E79C6D8DWNP": "SAR",  # SA
+    "A2VIGQ35RCS4UG": "AED",  # AE
+    "A21TJRUUN4KGV": "INR",  # IN
+    "A19VAU5U5O7RUS": "SGD",  # SG
+    "A39IBJ37TRP1C6": "AUD",  # AU
+    "A1VC38T7YXB528": "JPY",  # JP
+}
+
+def get_marketplace_currency(marketplace_id: str) -> str:
+    """Get currency code for a marketplace ID"""
+    return MARKETPLACE_CURRENCY.get(marketplace_id, "USD")
+
 class AmazonSPAPIClient:
     """Amazon SP-API client for RepriceLab"""
     
@@ -37,16 +66,33 @@ class AmazonSPAPIClient:
         self.region = region
         
         # Credentials dictionary format for python-amazon-sp-api
+        # AWS credentials are REQUIRED for production SP-API calls
+        # Without them, SP-API will fail authentication
+        aws_access_key = os.getenv('AWS_ACCESS_KEY_ID')
+        aws_secret_key = os.getenv('AWS_SECRET_ACCESS_KEY')
+        role_arn = os.getenv('AWS_ROLE_ARN')
+        
         self.credentials = {
             'refresh_token': refresh_token,
             'lwa_app_id': client_id,
             'lwa_client_secret': client_secret,
-            # For simplified OAuth flow, AWS credentials can be optional
-            # Add these if using full AWS IAM role-based auth:
-            # 'aws_secret_key': 'your_aws_secret_key',
-            # 'aws_access_key': 'your_aws_access_key', 
-            # 'role_arn': 'arn:aws:iam::123456789012:role/YourSPAPIRole'
         }
+        
+        # Add AWS credentials if available (required for production)
+        if aws_access_key and aws_secret_key:
+            self.credentials['aws_access_key'] = aws_access_key
+            self.credentials['aws_secret_key'] = aws_secret_key
+            if role_arn:
+                self.credentials['role_arn'] = role_arn
+            logger.info("AWS IAM credentials loaded for SP-API authentication")
+        else:
+            logger.warning(
+                "AWS credentials not found! SP-API calls will fail. "
+                "Set AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY, and AWS_ROLE_ARN for production. "
+                "Falling back to mock client for demo mode."
+            )
+            # Raise exception to trigger fallback to mock client
+            raise RuntimeError("AWS credentials required for real SP-API calls")
         
         # Initialize API clients
         try:
@@ -207,6 +253,130 @@ class AmazonSPAPIClient:
                 "success": False,
                 "error": str(e)
             }
+    
+    async def update_price(self, sku: str, seller_id: str, marketplace_id: str, new_price: float) -> Dict[str, Any]:
+        """
+        Update product price using Listings API
+        
+        Args:
+            sku: Product SKU
+            seller_id: Seller Partner ID
+            marketplace_id: Amazon marketplace ID
+            new_price: New price to set
+            
+        Returns:
+            Dict with success status and message
+        """
+        if not SPAPI_AVAILABLE:
+            logger.warning(f"SP-API not available, simulating price update for SKU {sku} to ${new_price:.2f}")
+            return {
+                "success": True,
+                "message": f"Simulated price update (SP-API not configured)",
+                "sku": sku,
+                "new_price": new_price
+            }
+        
+        try:
+            # Use Listings API to update price
+            # Correct format per Amazon SP-API documentation
+            # Derive correct currency from marketplace ID
+            currency = get_marketplace_currency(marketplace_id)
+            
+            body = {
+                "productType": "PRODUCT",
+                "patches": [
+                    {
+                        "op": "replace",
+                        "path": "/attributes/purchasableOffer",  # camelCase per Amazon SP-API spec
+                        "value": [
+                            {
+                                "audience": "ALL",  # B2C offer (standard customers)
+                                "marketplaceId": marketplace_id,  # camelCase
+                                "currency": currency,
+                                "ourPrice": [  # camelCase
+                                    {
+                                        "schedule": [
+                                            {
+                                                "valueWithTax": new_price  # camelCase
+                                            }
+                                        ]
+                                    }
+                                ]
+                            }
+                        ]
+                    }
+                ]
+            }
+            
+            response = self.listings_api.patch_listings_item(
+                sellerId=seller_id,
+                sku=sku,
+                marketplaceIds=[marketplace_id],
+                body=body
+            )
+            
+            # python-amazon-sp-api returns ApiResponse with payload
+            # Check response.payload for status (not top-level response.status)
+            payload = getattr(response, 'payload', {})
+            errors = getattr(response, 'errors', [])
+            
+            if not payload and not errors:
+                logger.warning(f"Empty response from SP-API for SKU {sku}")
+                return {
+                    "success": False,
+                    "error": "Empty response from Amazon SP-API",
+                    "sku": sku
+                }
+            
+            # Check if errors present
+            if errors:
+                error_msg = '; '.join([str(e) for e in errors])
+                logger.error(f"SP-API errors for SKU {sku}: {error_msg}")
+                return {
+                    "success": False,
+                    "error": error_msg,
+                    "sku": sku,
+                    "errors": errors
+                }
+            
+            # Extract status from payload
+            status = payload.get('status') if isinstance(payload, dict) else None
+            submission_id = payload.get('submissionId') if isinstance(payload, dict) else None
+            issues = payload.get('issues', []) if isinstance(payload, dict) else []
+            
+            if status == 'ACCEPTED':
+                logger.info(f"Successfully updated price for SKU {sku} to ${new_price:.2f} ({currency}) | Submission ID: {submission_id}")
+                return {
+                    "success": True,
+                    "message": f"Price updated successfully",
+                    "sku": sku,
+                    "new_price": new_price,
+                    "submission_id": submission_id
+                }
+            else:
+                # Build error message from issues
+                error_msg = f"Status: {status}"
+                if issues:
+                    error_details = [f"{issue.get('severity', 'ERROR')}: {issue.get('message', 'Unknown')}" for issue in issues]
+                    error_msg = f"{error_msg} | Issues: {'; '.join(error_details)}"
+                
+                logger.error(f"Failed to update price for SKU {sku}: {error_msg}")
+                return {
+                    "success": False,
+                    "error": error_msg,
+                    "sku": sku,
+                    "status": status,
+                    "issues": issues
+                }
+                
+        except Exception as e:
+            logger.error(f"Failed to update price for SKU {sku}: {e}")
+            # Don't fail hard - log and continue
+            return {
+                "success": False,
+                "error": str(e),
+                "sku": sku
+            }
 
 class AmazonOAuthFlow:
     """Handle Amazon OAuth flow for SP-API"""
@@ -299,15 +469,23 @@ def get_spapi_config():
 
 def create_spapi_client(refresh_token: str, region: str = "NA") -> Optional[AmazonSPAPIClient]:
     """Create SP-API client with stored credentials"""
-    config = get_spapi_config()
-    
-    if not all([config["client_id"], config["client_secret"]]):
-        logger.error("Missing SP-API credentials in environment")
+    try:
+        config = get_spapi_config()
+        
+        if not all([config["client_id"], config["client_secret"]]):
+            logger.warning("Missing SP-API credentials in environment")
+            return None
+        
+        if not SPAPI_AVAILABLE:
+            logger.warning("SP-API package not available")
+            return None
+        
+        return AmazonSPAPIClient(
+            client_id=config["client_id"],
+            client_secret=config["client_secret"], 
+            refresh_token=refresh_token,
+            region=region
+        )
+    except Exception as e:
+        logger.error(f"Failed to create SP-API client: {e}")
         return None
-    
-    return AmazonSPAPIClient(
-        client_id=config["client_id"],
-        client_secret=config["client_secret"], 
-        refresh_token=refresh_token,
-        region=region
-    )

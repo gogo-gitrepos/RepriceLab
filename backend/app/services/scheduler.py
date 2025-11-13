@@ -4,12 +4,78 @@ from sqlalchemy.orm import Session
 from sqlalchemy import text
 from ..database import SessionLocal
 from ..models import Product, PriceHistory, CompetitorOffer, Store, PricingRule, Notification, User
-from .spapi import SPAPIClient
+from .spapi import SPAPIClient as MockSPAPIClient
+from .amazon_spapi import create_spapi_client, AmazonSPAPIClient
 from .buybox import determine_buybox
 from .repricing import eval_max_price, suggest_price
 from .notify import send_email, send_push
+from .repricing_engine import RepricingEngine
 import json
 import asyncio
+import logging
+
+logger = logging.getLogger(__name__)
+
+
+def _parse_sp_api_pricing_to_offers(pricing_data: dict, marketplace_id: str) -> list:
+    """
+    Parse real SP-API pricing response into offer format for scheduler
+    
+    SP-API returns competitive pricing in a different format than our mock client.
+    This function normalizes it to the format expected by the rest of the code.
+    """
+    offers = []
+    
+    try:
+        # SP-API get_product_pricing_for_asins returns pricing data
+        if not pricing_data or not pricing_data.get("success"):
+            return []
+        
+        payload = pricing_data.get("pricing", [])
+        if not payload:
+            return []
+        
+        # Parse competitive offers from SP-API response
+        # Format varies but typically includes competitive pricing info
+        for asin_data in payload:
+            product = asin_data.get("Product", {})
+            competitive_pricing = product.get("CompetitivePricing", {})
+            competitive_prices = competitive_pricing.get("CompetitivePrices", [])
+            offers_list = product.get("Offers", [])
+            
+            # Parse competitive prices
+            for comp_price in competitive_prices:
+                price_data = comp_price.get("Price", {})
+                landed_price = price_data.get("LandedPrice", {})
+                listing_price = price_data.get("ListingPrice", {})
+                
+                price_amount = float(landed_price.get("Amount", 0) or listing_price.get("Amount", 0))
+                
+                offers.append({
+                    "seller_id": comp_price.get("CompetitivePriceId", f"COMP_{len(offers)}"),
+                    "price": price_amount,
+                    "shipping": 0.0,  # Landed price includes shipping
+                    "is_buybox": comp_price.get("belongsToRequester", False)
+                })
+            
+            # Parse offers if available
+            for offer in offers_list:
+                buying_price = offer.get("BuyingPrice", {})
+                listing_price_data = buying_price.get("ListingPrice", {})
+                shipping_data = buying_price.get("Shipping", {})
+                
+                offers.append({
+                    "seller_id": offer.get("SellerId", f"SELLER_{len(offers)}"),
+                    "price": float(listing_price_data.get("Amount", 0)),
+                    "shipping": float(shipping_data.get("Amount", 0)),
+                    "is_buybox": offer.get("IsBuyBoxWinner", False)
+                })
+        
+        return offers if offers else []
+        
+    except Exception as e:
+        logger.error(f"Error parsing SP-API pricing data: {e}")
+        return []
 
 
 def _run_async(coro):
@@ -26,11 +92,33 @@ def run_cycle():
     try:
         stores = db.query(Store).all()
         for st in stores:
-            client = SPAPIClient(st.region, st.refresh_token)
+            # Try to create real SP-API client, fallback to mock if unavailable
+            real_client = create_spapi_client(st.refresh_token, st.region)
+            client = real_client if real_client else MockSPAPIClient(st.region, st.refresh_token)
+            
+            is_real_client = isinstance(client, AmazonSPAPIClient)
+            if is_real_client:
+                logger.info(f"Using real SP-API client for store {st.id}")
+            else:
+                logger.info(f"Using mock SP-API client for store {st.id} (real credentials not available)")
+            
             products = db.query(Product).filter(Product.user_id == st.user_id).all()
+            
+            # Get marketplace ID from store
+            marketplace_id = st.marketplace_ids.split(",")[0] if st.marketplace_ids else "ATVPDKIKX0DER"
+            
             for p in products:
-                offers = _run_async(client.get_competitive_pricing(p.asin))
+                # Get competitive pricing - different method for real vs mock client
+                if is_real_client:
+                    # Real SP-API client - use get_product_pricing
+                    pricing_result = _run_async(client.get_product_pricing(p.asin, marketplace_id))
+                    offers = _parse_sp_api_pricing_to_offers(pricing_result, marketplace_id)
+                else:
+                    # Mock client - use get_competitive_pricing
+                    offers = _run_async(client.get_competitive_pricing(p.asin))
+                
                 if not offers:
+                    logger.debug(f"No offers found for product {p.sku} (ASIN: {p.asin})")
                     continue
                 bb = determine_buybox(offers)
                 owning = (bb.get("seller_id") == st.selling_partner_id) if bb else False
@@ -64,7 +152,20 @@ def run_cycle():
                         max_price = p.price * 1.9
                     new_price = suggest_price(p.price, comp_min, rule.min_price, max_price, rule.strategy)
                     if new_price != p.price:
-                        ok = _run_async(client.update_price(p.sku, new_price))
+                        # Update price - different method for real vs mock client
+                        if is_real_client:
+                            # Real SP-API - use update_price with all required params
+                            result = _run_async(client.update_price(
+                                p.sku, 
+                                st.selling_partner_id, 
+                                marketplace_id, 
+                                new_price
+                            ))
+                            ok = result.get("success", False)
+                        else:
+                            # Mock client - simple update_price
+                            ok = _run_async(client.update_price(p.sku, new_price))
+                        
                         if ok:
                             p.price = new_price
                             db.add(Notification(
