@@ -96,10 +96,17 @@ export default function LandingPage() {
               Contact
             </Button>
             <Button 
-              className="bg-white text-purple-900 hover:bg-gray-100 font-semibold px-4 sm:px-6 text-sm sm:text-base"
+              variant="ghost"
+              className="text-white hover:bg-white/10 font-medium"
               onClick={() => router.push('/login')}
             >
               Login
+            </Button>
+            <Button 
+              className="bg-white text-purple-900 hover:bg-gray-100 font-semibold px-4 sm:px-6 text-sm sm:text-base"
+              onClick={() => router.push('/register')}
+            >
+              Sign Up Free
             </Button>
           </div>
         </div>
