@@ -14,6 +14,11 @@ class Settings(BaseSettings):
     # Google OAuth
     google_redirect_uri: str = "http://localhost:5000/auth/google/callback"
 
+    # Stripe Payment Integration
+    stripe_secret_key: str | None = None
+    stripe_publishable_key: str | None = None
+    stripe_webhook_secret: str | None = None
+
     # Notifications
     vapid_private_key: str | None = None
     vapid_public_key: str | None = None

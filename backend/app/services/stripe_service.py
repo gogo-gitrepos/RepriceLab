@@ -11,7 +11,7 @@ from ..config import settings
 from ..models import User
 
 # Initialize Stripe with API key
-stripe.api_key = settings.stripe_secret_key if hasattr(settings, 'stripe_secret_key') else None
+stripe.api_key = settings.stripe_secret_key
 
 
 class StripeService:
