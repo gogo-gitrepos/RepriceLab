@@ -8,7 +8,7 @@ from datetime import datetime
 # Plan limits configuration
 PLAN_LIMITS = {
     'free': {
-        'products': 100,
+        'products': 50,
         'stores': 1,
         'api_calls_per_day': 1000,
         'repricing_frequency_minutes': 60,  # Once per hour

@@ -59,8 +59,8 @@ Preferred communication style: Simple, everyday language.
 
 ### Payment Processing
 - **Stripe**: Subscription billing, checkout sessions, webhooks, customer portal.
-- **Stripe Price IDs**: Plus ($29/mo), Pro ($79/mo), Enterprise ($199/mo).
-- **Plan Limits**: Free (1 store, 50 products), Plus (3 stores, 500 products), Pro (10 stores, 2000 products), Enterprise (unlimited).
+- **Stripe Price IDs**: Plus ($99/mo), Pro ($199/mo), Enterprise ($299/mo).
+- **Plan Limits**: Free (1 store, 50 products), Plus (3 stores, 5000 products), Pro (10 stores, 10000 products), Enterprise (unlimited).
 
 ### Background Processing
 - **APScheduler**: Python task scheduling.

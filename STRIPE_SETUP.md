@@ -6,9 +6,9 @@ This guide explains how to configure Stripe for RepriceLab's subscription system
 
 RepriceLab uses Stripe for managing subscriptions across 4 tiers:
 - **Free**: Trial/basic tier (1 store, 50 products)
-- **Plus**: $29/month (3 stores, 500 products)
-- **Pro**: $79/month (10 stores, 2000 products)  
-- **Enterprise**: $199/month (unlimited stores & products)
+- **Plus**: $99/month (3 stores, 5000 products)
+- **Pro**: $199/month (10 stores, 10000 products)  
+- **Enterprise**: $299/month (unlimited stores & products)
 
 ## Setup Steps
 
@@ -24,19 +24,19 @@ For each tier, create a product with recurring pricing:
 **Plus Plan**
 - Product name: "RepriceLab Plus"
 - Billing: Monthly recurring
-- Price: $29
+- Price: $99
 - Copy the Price ID (starts with `price_`)
 
 **Pro Plan**
 - Product name: "RepriceLab Pro"
 - Billing: Monthly recurring
-- Price: $79
+- Price: $199
 - Copy the Price ID
 
 **Enterprise Plan**
 - Product name: "RepriceLab Enterprise"
 - Billing: Monthly recurring
-- Price: $199
+- Price: $299
 - Copy the Price ID
 
 ### 3. Configure Environment Variables
