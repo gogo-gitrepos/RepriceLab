@@ -115,10 +115,8 @@ export default function PricingPage() {
               key={plan.name}
               className={`relative cursor-pointer transition-all duration-300 ${
                 selectedPlan === plan.name
-                  ? 'scale-105 shadow-2xl ring-4 ring-white/50'
-                  : plan.popular 
-                    ? 'bg-white border-4 border-blue-400 shadow-2xl' 
-                    : 'bg-white/10 backdrop-blur-sm border-white/20 hover:scale-105'
+                  ? 'bg-white scale-105 shadow-2xl ring-4 ring-white/50 border-4 border-purple-400'
+                  : 'bg-white/10 backdrop-blur-sm border-white/20 hover:scale-105'
               }`}
               onClick={() => setSelectedPlan(plan.name)}
             >
@@ -135,18 +133,18 @@ export default function PricingPage() {
                 <div className="flex justify-center mb-3">
                   {plan.icon}
                 </div>
-                <CardTitle className={`text-center ${plan.popular || selectedPlan === plan.name ? 'text-gray-900' : 'text-white'}`}>
+                <CardTitle className={`text-center ${selectedPlan === plan.name ? 'text-gray-900' : 'text-white'}`}>
                   {plan.name}
                 </CardTitle>
                 <div className="mt-4 text-center">
-                  <span className={`text-5xl font-bold ${plan.popular || selectedPlan === plan.name ? 'text-gray-900' : 'text-white'}`}>
+                  <span className={`text-5xl font-bold ${selectedPlan === plan.name ? 'text-gray-900' : 'text-white'}`}>
                     {plan.price}
                   </span>
-                  <span className={plan.popular || selectedPlan === plan.name ? 'text-gray-600' : 'text-purple-200'}>
+                  <span className={selectedPlan === plan.name ? 'text-gray-600' : 'text-purple-200'}>
                     {plan.period}
                   </span>
                 </div>
-                <p className={`mt-2 text-center ${plan.popular || selectedPlan === plan.name ? 'text-gray-600' : 'text-purple-200'}`}>
+                <p className={`mt-2 text-center ${selectedPlan === plan.name ? 'text-gray-600' : 'text-purple-200'}`}>
                   {plan.description}
                 </p>
               </CardHeader>
@@ -156,9 +154,9 @@ export default function PricingPage() {
                   {plan.features.map((feature) => (
                     <li key={feature} className="flex items-start">
                       <Check className={`w-5 h-5 mr-3 flex-shrink-0 ${
-                        plan.popular || selectedPlan === plan.name ? 'text-green-600' : 'text-green-400'
+                        selectedPlan === plan.name ? 'text-green-600' : 'text-green-400'
                       }`} />
-                      <span className={plan.popular || selectedPlan === plan.name ? 'text-gray-700' : 'text-purple-100'}>
+                      <span className={selectedPlan === plan.name ? 'text-gray-700' : 'text-purple-100'}>
                         {feature}
                       </span>
                     </li>
