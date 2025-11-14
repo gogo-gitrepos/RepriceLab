@@ -15,6 +15,14 @@ class User(Base):
     google_id: Mapped[str | None] = mapped_column(String(128), nullable=True, unique=True)
     picture: Mapped[str | None] = mapped_column(String(512), nullable=True)
     created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
+    
+    # Subscription & Billing
+    subscription_plan: Mapped[str] = mapped_column(String(32), default='free')  # free, plus, pro, enterprise
+    subscription_status: Mapped[str] = mapped_column(String(32), default='trial')  # trial, active, canceled, past_due, incomplete
+    trial_ends_at: Mapped[datetime | None] = mapped_column(DateTime, nullable=True)
+    stripe_customer_id: Mapped[str | None] = mapped_column(String(128), nullable=True, unique=True)
+    stripe_subscription_id: Mapped[str | None] = mapped_column(String(128), nullable=True, unique=True)
+    subscription_period_end: Mapped[datetime | None] = mapped_column(DateTime, nullable=True)
 
 class Store(Base):
     __tablename__ = "stores"
