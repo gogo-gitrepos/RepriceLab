@@ -12,6 +12,35 @@ Preferred communication style: Simple, everyday language.
 
 ## Recent Changes
 
+### Phase 7 Complete: Advanced Repricing Engine Integration (November 2025)
+- ✅ **New RepricingEngine Integration**: Replaced old PricingRule system with advanced 3-strategy engine
+- ✅ **Three Intelligent Strategies Implemented**:
+  - **Win Buy Box**: Most aggressive - prices $0.01 below competitor to secure Buy Box
+  - **Maximize Profit**: Balance profitability (15% margin) with competitive positioning
+  - **Boost Sales**: Drive high sales velocity with $0.10 below competitor pricing
+- ✅ **Scheduler Integration**: Background scheduler now uses new RepricingEngine for all repricing decisions
+- ✅ **Type Safety Fixes**: Updated type annotations to Sequence[Any] for duck-typed competitor objects
+- ✅ **Critical Bug Fixes**:
+  - Fixed price floor/ceiling logic to prevent products from getting trapped at discounted prices
+  - Implemented competitor offer cleanup to prevent database bloat and stale data
+- ✅ **Comprehensive Testing**: All three strategies validated with demo products showing correct price calculations
+- ✅ **Production Ready**: Architect review completed and approved all changes
+
+**Technical Implementation:**
+- `RepricingEngine` class in `repricing_engine.py`: Advanced price calculation with Buy Box win chance estimation
+- `scheduler.py`: Integrated new engine, replaced old formula-based system
+- `calculate_optimal_price()`: Strategy-based pricing with configurable profit thresholds
+- Price floor uses configured min_price (fallback: 60% of competitor cost estimate)
+- Price ceiling uses configured max_price (fallback: 2x competitor for premium positioning)
+- Competitor offers purged before each cycle to prevent stale data
+- Price history logging with strategy tracking and Buy Box ownership
+
+**Strategy Configurations:**
+- Win Buy Box: 5% minimum profit, $0.01 below competitor
+- Maximize Profit: 15% minimum profit, $0.05 below competitor  
+- Boost Sales: 8% minimum profit, $0.10 below competitor
+- All strategies include Amazon Buy Box algorithm weights (price 25%, seller rating 40%, fulfillment 35%)
+
 ### Phase 6 Complete: Real Marketplace Data Integration (November 2025)
 - ✅ **Real SP-API Integration**: Scheduler now uses real Amazon SP-API client when credentials available
 - ✅ **Hybrid Client System**: Automatically falls back to mock client when SP-API credentials not configured
@@ -99,11 +128,12 @@ Preferred communication style: Simple, everyday language.
 
 ### Core Services
 - **SP-API Integration**: Amazon Seller Partner API client for listing management and competitive pricing data
-- **Repricing Engine**: Rule-based pricing strategy with configurable parameters (min/max prices, aggressive/defensive strategies)
-- **Buy Box Analysis**: Logic to determine Buy Box ownership and track ownership changes
+- **Repricing Engine**: Advanced 3-strategy system (Win Buy Box, Maximize Profit, Boost Sales) with intelligent price calculations
+- **Buy Box Analysis**: Logic to determine Buy Box ownership and track ownership changes with win chance estimation
 - **Notification System**: Email and push notification infrastructure for alerts
 - **Scheduler**: Background task management for automated repricing cycles (runs every 10 minutes)
 - **Real Marketplace Data**: Fetches competitive pricing from Amazon and updates prices via Listings API
+- **Price History Tracking**: Comprehensive logging of all price changes with strategy and Buy Box status
 
 ### Data Architecture
 - **Product Management**: SKU/ASIN tracking with pricing history and inventory levels
@@ -149,14 +179,33 @@ The architecture is designed for scalability with clear separation between front
 
 ## Repricing Strategies
 
-RepriceLab offers 3 intelligent repricing strategies:
+RepriceLab offers 3 intelligent repricing strategies powered by advanced RepricingEngine:
 
-1. **Win Buy Box** - Aggressive Buy Box winning with $0.01 below competitor pricing
-2. **Maximize Profit** - Balance profit margins (15% minimum) with Buy Box wins
-3. **Boost Sales** - Drive high sales velocity with competitive pricing (8% minimum profit)
+1. **Win Buy Box** - Most aggressive strategy for Buy Box domination
+   - Prices $0.01 below current Buy Box holder
+   - 5% minimum profit threshold
+   - Best for high-volume sellers prioritizing market share
 
-Each strategy considers:
-- Current Buy Box holder pricing
-- Lowest competitor price (including shipping)
-- Minimum/maximum safe price boundaries
+2. **Maximize Profit** - Balanced approach protecting margins
+   - Prices $0.05 below competitor while maintaining 15% minimum profit
+   - Protects margin even when being competitive
+   - Best for premium products with strong brand value
+
+3. **Boost Sales** - Sales velocity optimization
+   - Prices $0.10 below competitor for maximum volume
+   - 8% minimum profit threshold
+   - Best for clearing inventory or high-turnover products
+
+**Each strategy intelligently considers:**
+- Current Buy Box holder pricing and seller performance
+- Lowest competitor price (including shipping costs)
+- Configured minimum/maximum price boundaries with cost-based fallbacks
 - Amazon Buy Box algorithm weights (price 25%, seller rating 40%, fulfillment 35%)
+- Real-time competitive pricing data fetched every 10 minutes
+- Estimated Buy Box win chance based on price competitiveness
+
+**Advanced Features:**
+- Dynamic price floor prevents products from getting trapped at discounted prices
+- Automatic competitor offer refresh eliminates stale data
+- Price history tracking with strategy attribution
+- Production-ready with full architect approval
