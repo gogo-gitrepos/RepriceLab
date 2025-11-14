@@ -105,6 +105,26 @@ Preferred communication style: Simple, everyday language.
 
 ## Recent Changes
 
+### November 14, 2025 - Dashboard & Navigation E2E Tests
+- **Created comprehensive Dashboard tests (8 tests - D1-D8)**:
+  - D1: Dashboard loads successfully with Safe Mode banner
+  - D2: KPI cards visible (Spent, Daily limit, Need Help)
+  - D3: Need Help card actions (Send email, Schedule call buttons)
+  - D4: Sales data widget with Settings button
+  - D5: Insights + Profitability section (Categories A-E, 84% score)
+  - D6: Repricing Insights + Activity History + Buy Box Ownership
+  - D7: Top Competitors block (5 competitors with rankings)
+  - D8: Responsiveness basic layout smoke test
+- **Created comprehensive Navigation tests (17 tests - N1-N5)**:
+  - N1: All menu items render correctly with proper sections
+  - N2.1-N2.11: Navigation to 11 routes (Products, Multichannel, Repricing Rules, Automations, Import, Orders, Repricing Activity, Competitors, Reports, Settings, App Store)
+  - N3: Return to Dashboard from any page
+  - N4: Menu section titles visible (Repricing, Insights, System)
+  - N5: Settings dropdown expand/collapse behavior
+- **Created Page Objects**: DashboardPage and SideMenu with comprehensive locators and helper methods
+- **Updated test commands**: Added `test:e2e:dashboard` and `test:e2e:navigation` scripts
+- **Documentation**: Created DASHBOARD_TESTS.md with detailed test documentation
+
 ### November 14, 2025 - Subscription System Implementation
 - Added subscription fields to User model (plan, status, trial_ends_at, stripe_customer_id, stripe_subscription_id)
 - Implemented Stripe service for checkout sessions, customer management, and webhooks
