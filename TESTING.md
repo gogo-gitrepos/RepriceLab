@@ -69,6 +69,8 @@ npm run test:smoke
 | `npm test` | Run smoke tests (fastest) |
 | `npm run test:smoke` | Smoke tests - basic health checks |
 | `npm run test:e2e` | E2E flows - complete user journeys |
+| `npm run test:e2e:dashboard` | Dashboard page tests only (D1-D8) |
+| `npm run test:e2e:navigation` | Navigation menu tests only (N1-N5) |
 | `npm run test:functional` | Functional tests - forms, UI, validations |
 | `npm run test:ui` | All UI tests (smoke + e2e + functional) |
 | `npm run test:api` | Backend API tests (pytest) |
@@ -123,10 +125,16 @@ Tests:
 - Full login flow (homepage → login → dashboard)
 - Invalid credentials handling
 - Google OAuth button exists
+- **Dashboard page (8 tests)**: Safe Mode banner, KPI cards, Need Help section, Sales data widget, Insights categories, Profitability score, Repricing insights, Activity history, Buy Box ownership, Top competitors, Responsiveness
+- **Navigation menu (17 tests)**: All menu items visible, Navigation to 11 routes, Dashboard return, Section titles, Settings dropdown behavior
 
 ```bash
-npm run test:e2e
+npm run test:e2e                  # All E2E tests
+npm run test:e2e:dashboard        # Dashboard tests only
+npm run test:e2e:navigation       # Navigation tests only
 ```
+
+**See [DASHBOARD_TESTS.md](./DASHBOARD_TESTS.md) for detailed dashboard & navigation test documentation.**
 
 ### 3. Functional Tests (`tests/functional/`)
 
@@ -355,6 +363,7 @@ npm run test:all      # Full suite
 
 ## 📚 Resources
 
+- [DASHBOARD_TESTS.md](./DASHBOARD_TESTS.md) - Detailed dashboard & navigation test documentation
 - [Playwright Docs](https://playwright.dev)
 - [pytest Docs](https://docs.pytest.org)
 - [FastAPI Testing](https://fastapi.tiangolo.com/tutorial/testing/)

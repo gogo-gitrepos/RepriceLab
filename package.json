@@ -3,6 +3,8 @@
     "test": "npm run test:smoke",
     "test:smoke": "playwright test tests/smoke --project=chromium",
     "test:e2e": "playwright test tests/e2e --project=chromium",
+    "test:e2e:dashboard": "playwright test tests/e2e/dashboard.spec.ts --project=chromium",
+    "test:e2e:navigation": "playwright test tests/e2e/navigation.spec.ts --project=chromium",
     "test:functional": "playwright test tests/functional --project=chromium",
     "test:ui": "playwright test tests/smoke tests/e2e tests/functional --project=chromium",
     "test:api": "cd backend && pytest tests/api -v",
