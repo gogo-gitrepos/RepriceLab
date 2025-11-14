@@ -177,6 +177,14 @@ class ProductSyncService:
                 existing_product.sync_error_message = None
                 product = existing_product
             else:
+                # Check product limit before creating new product
+                from .plan_limiter import check_product_limit
+                from ..models import User
+                
+                user = db.query(User).filter(User.id == store.user_id).first()
+                if user:
+                    check_product_limit(db, user)
+                
                 # Create new product
                 product = Product(**product_data)
                 db.add(product)

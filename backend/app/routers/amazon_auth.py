@@ -138,6 +138,14 @@ async def amazon_oauth_callback(
             existing_store.last_sync = datetime.utcnow()
             store = existing_store
         else:
+            # Check store limit before creating new store
+            from ..services.plan_limiter import check_store_limit
+            from ..models import User
+            
+            user = db.query(User).filter(User.id == user_id).first()
+            if user:
+                check_store_limit(db, user)
+            
             # Create new store
             store = Store(
                 user_id=user_id,
