@@ -1,0 +1,143 @@
+You are an expert SDET.  
+We are inside my Replit project for **RepriceLab.com**, a SaaS Amazon Buy Box repricer (frontend + backend in this repo).
+
+🎯 GOAL  
+Create **from scratch** a complete **test automation framework** in this project that covers:
+
+- Frontend UI tests  
+- End-to-end (E2E) flows  
+- Smoke tests  
+- Functional tests  
+- Backend/API tests  
+
+Everything must be runnable directly in this Replit project.
+
+---
+
+## Tech & general requirements
+
+1. **Tech stack (proposal)**
+   - Use **TypeScript** where possible.
+   - **Frontend/E2E/UI:** Playwright (preferred) or Cypress.
+   - **Backend/API:** Jest + Supertest (or another standard Node test runner if our backend stack suggests better).
+   - Use **Page Object Model (POM)** for UI/E2E tests.
+
+2. **Project structure**
+
+   Create a clean, opinionated structure like:
+
+   - `tests/`
+     - `e2e/`          → full end-to-end flows (signup/login, onboarding, dashboard, pricing rules, etc.)
+     - `smoke/`        → very fast “is app alive?” checks
+     - `functional/`   → detailed UI & business logic tests for important features
+     - `api/`          → backend & REST/GraphQL/API tests
+     - `utils/`        → shared helpers (test data builders, auth helpers, API clients, etc.)
+     - `fixtures/`     → test data, JSON, sample payloads
+   - `playwright.config.ts` (or equivalent)  
+   - Any config files needed for Jest/API tests.
+
+3. **Environment & config**
+
+   - Add a safe `.env.example` file for test-related env vars (BASE_URL, API_URL, TEST_USER_EMAIL, etc.).
+   - Make tests read URLs and credentials from env variables, **never** hard-code secrets.
+   - Ensure tests can run:
+     - locally on Replit shell (`npm test`, `npm run test:e2e`, etc.)
+     - headless in CI.
+
+4. **NPM scripts**
+
+   In `package.json`, add scripts like:
+
+   - `"test": "npm run test:smoke"`
+   - `"test:smoke"` → run only smoke suite (fast)
+   - `"test:e2e"` → run full E2E UI suite
+   - `"test:functional"` → functional UI/business tests
+   - `"test:api"` → backend/API tests
+   - `"test:all"` → everything (api + e2e + functional)
+
+   Use tags or file patterns so I can easily choose which suite to run.
+
+---
+
+## What to automate (minimum)
+
+### Smoke suite
+Very fast checks that tell me the system is basically alive:
+
+- App main page loads without errors.
+- Login page renders correctly.
+- Can log in with a valid test account and reach dashboard.
+- API healthcheck or status endpoint returns success (200).
+
+### E2E flows
+Realistic end-to-end journeys, for example:
+
+- **Login flow:** open main page → go to login → enter email/password → reach dashboard → assert dashboard key elements.
+- **Signup/onboarding flow** (if implemented): sign up, confirm account, first-login flow.
+- **Core repricer flow:** create/edit a repricing rule/profile, save it, see it listed.
+- **Forgot password** or any important account recovery flow (if available).
+
+Use Page Objects for major pages:
+
+- `LoginPage`
+- `DashboardPage`
+- `PricingRulesPage`
+- etc.
+
+### Functional UI tests
+More detailed tests on important components, such as:
+
+- Form validations (email format, required fields, password rules).
+- Error states (wrong password, invalid input).
+- Navigation (header links: Features, Pricing, Contact, Login, etc.).
+- Visibility of pricing cards, buttons and CTAs.
+
+### Backend/API tests
+Create a small but solid API test layer that:
+
+- Hits auth/login endpoint and verifies correct responses.
+- Tests main repricing-related endpoints (e.g. create/update rule, list rules, etc.).
+- Verifies correct status codes, response schemas, and error handling.
+
+Use a shared **API client helper** to avoid duplication.
+
+---
+
+## DX (developer experience)
+
+- Add **README or TESTING.md** explaining:
+  - How to install dependencies.
+  - How to run each suite (smoke, e2e, functional, api, all).
+  - How to set up `.env` for tests.
+- Make sure default commands work out of the box in Replit terminal with:
+  - `npm install`
+  - `npm run test:smoke`
+  - `npm run test:e2e`
+  - `npm run test:api`
+
+---
+
+## Step-by-step execution
+
+Please proceed in clear steps and show me code changes:
+
+1. Inspect the repo and confirm tech stack.
+2. Propose the exact tools (Playwright/Cypress, Jest, etc.) and structure based on this stack.
+3. Add required dev dependencies and configuration files.
+4. Create folder structure and example tests for **each** suite:
+   - one smoke test
+   - one e2e flow
+   - one functional UI test
+   - one API test
+5. Wire up npm scripts.
+6. Run the tests in Replit terminal and fix any issues until they pass.
+7. At the end, give me:
+   - A short summary of what you created.
+   - Concrete commands I should use daily to run:
+     - smoke
+     - e2e
+     - functional
+     - backend/api
+     - full regression.
+
+Make sure everything you add is inside this Replit project and works end-to-end so I can test both frontend and backend easily.
