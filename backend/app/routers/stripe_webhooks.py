@@ -37,10 +37,8 @@ async def stripe_webhook(
         # In development without webhook secret, allow unverified webhooks
         # WARNING: Never do this in production!
         try:
-            event = stripe.Event.construct_from(
-                stripe.util.convert_to_dict(payload), 
-                stripe.api_key
-            )
+            import json
+            event = json.loads(payload.decode('utf-8'))
         except Exception as e:
             raise HTTPException(status_code=400, detail=f"Invalid payload: {str(e)}")
     else:
@@ -53,7 +51,8 @@ async def stripe_webhook(
             )
         except ValueError:
             raise HTTPException(status_code=400, detail="Invalid payload")
-        except stripe.error.SignatureVerificationError:
+        except Exception as e:
+            # Catch signature verification errors
             raise HTTPException(status_code=400, detail="Invalid signature")
     
     # Handle different event types
