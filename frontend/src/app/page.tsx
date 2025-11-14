@@ -427,20 +427,17 @@ export default function LandingPage() {
               {/* Social Media */}
               <div className="flex items-center gap-1">
                 <p className="text-sm text-purple-400 font-semibold mr-3">Follow along with us</p>
-                <a href="#" className="w-10 h-10 bg-gray-800 hover:bg-purple-600 rounded-lg flex items-center justify-center transition-colors">
-                  <Facebook className="w-5 h-5 text-purple-300" />
-                </a>
-                <a href="#" className="w-10 h-10 bg-gray-800 hover:bg-purple-600 rounded-lg flex items-center justify-center transition-colors">
-                  <Twitter className="w-5 h-5 text-purple-300" />
-                </a>
-                <a href="#" className="w-10 h-10 bg-gray-800 hover:bg-purple-600 rounded-lg flex items-center justify-center transition-colors">
-                  <Youtube className="w-5 h-5 text-purple-300" />
-                </a>
-                <a href="#" className="w-10 h-10 bg-gray-800 hover:bg-purple-600 rounded-lg flex items-center justify-center transition-colors">
+                <a href="https://www.linkedin.com/company/codexia-llc/" target="_blank" rel="noopener noreferrer" className="w-10 h-10 bg-gray-800 hover:bg-purple-600 rounded-lg flex items-center justify-center transition-colors">
                   <Linkedin className="w-5 h-5 text-purple-300" />
                 </a>
-                <a href="#" className="w-10 h-10 bg-gray-800 hover:bg-purple-600 rounded-lg flex items-center justify-center transition-colors">
+                <a href="https://www.instagram.com/codexiallc?igsh=MWxkOWk4Mmx5YjRhag%3D%3D&utm_source=qr" target="_blank" rel="noopener noreferrer" className="w-10 h-10 bg-gray-800 hover:bg-purple-600 rounded-lg flex items-center justify-center transition-colors">
                   <Instagram className="w-5 h-5 text-purple-300" />
+                </a>
+                <a href="https://www.facebook.com/share/172YsGyYSb/?mibextid=wwXIfr" target="_blank" rel="noopener noreferrer" className="w-10 h-10 bg-gray-800 hover:bg-purple-600 rounded-lg flex items-center justify-center transition-colors">
+                  <Facebook className="w-5 h-5 text-purple-300" />
+                </a>
+                <a href="https://x.com/codexiallc?s=21" target="_blank" rel="noopener noreferrer" className="w-10 h-10 bg-gray-800 hover:bg-purple-600 rounded-lg flex items-center justify-center transition-colors">
+                  <Twitter className="w-5 h-5 text-purple-300" />
                 </a>
               </div>
 
