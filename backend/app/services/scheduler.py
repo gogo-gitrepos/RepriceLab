@@ -88,9 +88,19 @@ def _run_async(coro):
 
 
 def run_cycle():
+    start_time = datetime.utcnow()
+    products_processed = 0
+    products_repriced = 0
+    buybox_changes = 0
+    
+    logger.info("="*80)
+    logger.info(f"🔄 REPRICING CYCLE STARTED at {start_time.strftime('%Y-%m-%d %H:%M:%S UTC')}")
+    logger.info("="*80)
+    
     db: Session = SessionLocal()
     try:
         stores = db.query(Store).all()
+        logger.info(f"📊 Processing {len(stores)} store(s)")
         for st in stores:
             # Try to create real SP-API client, fallback to mock if unavailable
             real_client = create_spapi_client(st.refresh_token, st.region)
@@ -103,6 +113,7 @@ def run_cycle():
                 logger.info(f"Using mock SP-API client for store {st.id} (real credentials not available)")
             
             products = db.query(Product).filter(Product.user_id == st.user_id).all()
+            logger.info(f"  📦 Store {st.id} ({st.store_name}): {len(products)} products")
             
             # Get marketplace ID from store
             marketplace_id = st.marketplace_ids.split(",")[0] if st.marketplace_ids else "ATVPDKIKX0DER"
@@ -117,12 +128,18 @@ def run_cycle():
                     # Mock client - use get_competitive_pricing
                     offers = _run_async(client.get_competitive_pricing(p.asin))
                 
+                products_processed += 1
+                
                 if not offers:
                     logger.debug(f"No offers found for product {p.sku} (ASIN: {p.asin})")
                     continue
                 bb = determine_buybox(offers)
                 owning = (bb.get("seller_id") == st.selling_partner_id) if bb else False
                 if owning != p.buybox_owning:
+                    buybox_changes += 1
+                    status_change = "✅ GAINED" if owning else "❌ LOST"
+                    logger.info(f"  {status_change} Buy Box: {p.sku} ({p.title[:40]}...)")
+                    
                     p.buybox_owning = owning
                     p.buybox_owner = bb.get("seller_id") if bb else None
                     db.add(PriceHistory(product_id=p.id, price=p.price, buybox_owning=owning))
@@ -184,6 +201,7 @@ def run_cycle():
                         ok = _run_async(client.update_price(p.sku, new_price))
                     
                     if ok:
+                        products_repriced += 1
                         old_price = p.price
                         p.price = new_price
                         p.last_repriced_at = datetime.utcnow()
@@ -212,9 +230,10 @@ def run_cycle():
                             sent=False
                         ))
                         
+                        price_change = ((new_price - old_price) / old_price) * 100
                         logger.info(
-                            f"Repriced {p.sku}: ${old_price:.2f} → ${new_price:.2f} | "
-                            f"Strategy: {strategy} | Buy Box chance: {repricing_result.get('estimated_buybox_chance', 0)}%"
+                            f"  💰 REPRICED {p.sku}: ${old_price:.2f} → ${new_price:.2f} ({price_change:+.1f}%) | "
+                            f"Strategy: {strategy.upper()} | Buy Box: {repricing_result.get('estimated_buybox_chance', 0)}%"
                         )
         db.commit()
         pending = db.query(Notification, User).join(User, User.id == Notification.user_id).filter(Notification.sent == False).all()
@@ -227,6 +246,19 @@ def run_cycle():
                 )
             n.sent = True
         db.commit()
+        
+        # Log cycle summary
+        end_time = datetime.utcnow()
+        duration = (end_time - start_time).total_seconds()
+        logger.info("="*80)
+        logger.info(f"✅ REPRICING CYCLE COMPLETED in {duration:.1f}s")
+        logger.info(f"   📦 Products Processed: {products_processed}")
+        logger.info(f"   💰 Products Repriced: {products_repriced}")
+        logger.info(f"   🎯 Buy Box Changes: {buybox_changes}")
+        logger.info("="*80)
+    except Exception as e:
+        logger.error(f"❌ Error in repricing cycle: {e}", exc_info=True)
+        db.rollback()
     finally:
         db.close()
 
