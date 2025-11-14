@@ -11,3 +11,4 @@ authlib==1.3.0
 itsdangerous==2.1.2
 passlib[bcrypt]==1.7.4
 email-validator==2.1.1
+stripe==8.0.0

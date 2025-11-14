@@ -102,6 +102,27 @@ class StripeService:
         }
     
     @staticmethod
+    def cancel_subscription(subscription_id: str) -> Dict[str, Any]:
+        """
+        Cancel a Stripe subscription at period end.
+        
+        Args:
+            subscription_id: Stripe Subscription ID
+            
+        Returns:
+            Dictionary with cancellation details
+        """
+        subscription = stripe.Subscription.modify(
+            subscription_id,
+            cancel_at_period_end=True
+        )
+        
+        return {
+            'success': True,
+            'cancel_at': datetime.fromtimestamp(subscription.current_period_end).isoformat()
+        }
+    
+    @staticmethod
     def handle_subscription_created(subscription: Dict[str, Any], db: Session):
         """
         Handle subscription.created webhook event.

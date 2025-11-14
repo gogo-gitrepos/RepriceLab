@@ -18,6 +18,9 @@ class Settings(BaseSettings):
     stripe_secret_key: str | None = None
     stripe_publishable_key: str | None = None
     stripe_webhook_secret: str | None = None
+    stripe_price_id_plus: str = "price_plus_monthly"
+    stripe_price_id_pro: str = "price_pro_monthly"
+    stripe_price_id_enterprise: str = "price_enterprise_monthly"
 
     # Notifications
     vapid_private_key: str | None = None

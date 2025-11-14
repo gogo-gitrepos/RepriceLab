@@ -13,23 +13,8 @@ from ..models import User, Product, Store
 from .plan_limits import validate_limit, PlanLimitError
 
 
-def get_current_user_from_token(db: Session = Depends(get_db)) -> User:
-    """
-    FastAPI dependency to get current user from JWT token.
-    This is a placeholder - you should implement actual JWT verification.
-    
-    For now, returns first user for testing. In production, decode JWT from header.
-    """
-    # TODO: Implement JWT token verification
-    # token = request.headers.get('Authorization')
-    # user_id = decode_jwt(token)
-    # return db.query(User).filter(User.id == user_id).first()
-    
-    # Temporary: Return first user for testing
-    user = db.query(User).first()
-    if not user:
-        raise HTTPException(status_code=401, detail="User not found")
-    return user
+# Import existing authentication dependency from dependencies.py
+from ..dependencies import get_current_user
 
 
 def check_product_limit(db: Session, user: User):
@@ -145,7 +130,7 @@ def require_plan_limit(limit_type: str):
 
 def require_product_limit(
     db: Session = Depends(get_db),
-    current_user: User = Depends(get_current_user_from_token)
+    current_user: User = Depends(get_current_user)
 ):
     """
     FastAPI dependency to check product limit before endpoint execution.
@@ -164,7 +149,7 @@ def require_product_limit(
 
 def require_store_limit(
     db: Session = Depends(get_db),
-    current_user: User = Depends(get_current_user_from_token)
+    current_user: User = Depends(get_current_user)
 ):
     """
     FastAPI dependency to check store limit before endpoint execution.
