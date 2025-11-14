@@ -1,0 +1,147 @@
+We already have a basic automation framework in this RepriceLab.com project.
+
+Now I want you to DESIGN AND IMPLEMENT detailed **UI/E2E test cases** for the **Dashboard page and the entire left side menu**.
+
+Use Playwright + Page Object Model (or the existing stack in this repo) and add tests under the appropriate folder (e.g. `tests/e2e/dashboard.spec.ts` and `tests/e2e/navigation.spec.ts`).
+
+### 1. Page Objects
+
+Create/extend Page Objects for:
+
+- `DashboardPage`
+- `SideMenu` (left navigation)
+- Any sub-pages that are opened from the side menu (Products, Multichannel, Repricing Rules, Automations, Import, Orders, Repricing Activity, Competitors, Reports, Settings, App Store, etc.)
+
+Expose locators + helper methods like `goToDashboard()`, `openProducts()`, `openRepricingRules()`, `openSettings()`, etc.
+
+### 2. Dashboard main use cases
+
+Create automated tests for at least the following scenarios. Use **data-independent assertions** where possible (texts, titles, presence of components, etc.).
+
+**D1 – Dashboard loads successfully**
+- Open `/dashboard` (or the route used after login).
+- Verify:
+  - Page title and main heading (e.g. “Dashboard”).
+  - Safe Mode banner appears with correct text when account is in Safe Mode.
+  - No unhandled console errors.
+
+**D2 – KPI cards are visible**
+- Verify the 3 top cards render:
+  - “$0.00 Spent this period”
+  - “$0.00 Daily limit remaining”
+  - “Need Help?” card with its title and description.
+- Assert that each card has the expected icon and basic layout.
+
+**D3 – Need Help card actions**
+- On the “Need Help?” section:
+  - Verify “Send us an email” button/link is visible and clickable.
+  - Verify “Schedule a call” button/link is visible and clickable.
+  - Assert that click opens the correct URL or triggers the expected navigation/modal.
+
+**D4 – Sales data widget**
+- Verify the “Sales data unavailable for this period” block is shown.
+- Click **Settings** on this widget and assert:
+  - A settings panel/modal opens OR the user is navigated to the correct settings page.
+  - Close the panel/modal and assert dashboard is still usable.
+
+**D5 – Insights + Profitability section**
+- Verify “Insights” card with category list (Category A–E) is visible.
+- Assert that each category row shows:
+  - Category name
+  - Percentage text (e.g. “75%”)
+  - Progress bar element.
+- Verify “Profitability” card is visible with:
+  - Main percentage (e.g. “84% Profitable”)
+  - Supporting text below.
+
+**D6 – Repricing Insights + Activity History + Buy Box Ownership**
+- Verify “Repricing Insights” card is visible with at least:
+  - Optimized listings
+  - Repricing listings
+  - Underpriced listings
+  - Buy box loss listings
+  - Latest price listings
+- Assert the numeric values and “of X” labels are rendered.
+- Verify “Activity History” card and its total pricing events text.
+- Verify “Buy Box Ownership” card:
+  - Shows ring chart with percentage (e.g. “60%”)
+  - Shows description text (e.g. “Current Buy Box Rate…”).
+
+**D7 – Top Competitors block**
+- Verify the “Top Competitors” section lists at least 5 competitors.
+- Check ranking numbers (1–5), competitor names and progress bar percentages.
+- Click “View All Competitors” and assert:
+  - User is navigated to the Competitors page OR a full list view.
+  - URL or route is correct.
+
+**D8 – Responsiveness/basic layout smoke**
+- At least one test that resizes viewport (desktop → smaller width) and verifies:
+  - Dashboard main elements still render (no critical overlaps).
+  - Left menu can still be used (visible or collapsible, depending on app behavior).
+
+### 3. Left side menu navigation use cases
+
+Implement a dedicated test file (e.g. `navigation.spec.ts`) that focuses on the **entire left sidebar**.
+
+Assume the following entries, adapt to real labels in code:
+
+- Dashboard
+- Products
+- Multichannel
+- Repricing Rules
+- Automations
+- Import
+- Orders
+- Repricing Activity
+- Competitors
+- Reports
+- Settings
+- App Store
+
+Create tests for:
+
+**N1 – Menu renders correctly**
+- After login, verify all menu items above are visible with their icons and labels.
+- Assert the current page (Dashboard) is highlighted/active.
+
+**N2 – Navigation works for each menu item**
+For EACH menu item:
+- Click the menu item.
+- Assert:
+  - URL/route changes correctly (e.g. `/products`, `/repricing-rules`, etc.).
+  - The related page shows its main heading (e.g. “Products”, “Repricing Rules”).
+  - The selected menu item is highlighted as active.
+- Make these as parameterized tests / data-driven where possible to avoid duplication.
+
+**N3 – Return to Dashboard from any page**
+- Navigate to a non-dashboard page.
+- Click “Dashboard” in the side menu.
+- Assert user is back on the dashboard, with widgets visible and Dashboard active.
+
+**N4 – Menu hover / focus states (optional)**
+- Check that menu items visually react to hover/focus (if easily assertable via CSS classes).
+
+**N5 – Menu collapsible behavior (if implemented)**
+- If there is a collapse/expand control for the side menu:
+  - Collapse the menu and verify icons remain, text hides.
+  - Expand again and verify labels return.
+
+### 4. Implementation details
+
+- Reuse existing login helper to authenticate once per test file (or in `beforeAll`).
+- Use POM methods like `sideMenu.openProducts()` rather than repeating selectors.
+- Keep tests **stable** and independent of live data; focus on static texts and components already shown in empty demo state.
+- Name tests clearly (e.g. `should_navigate_to_products_page_from_side_menu`).
+
+### 5. Deliverables
+
+1. New/updated Page Objects for Dashboard and SideMenu.
+2. New test files for:
+   - `dashboard.spec.ts` (all D-series use cases)
+   - `navigation.spec.ts` (all N-series use cases)
+3. Any necessary updates to test config (tags, fixtures, base URL).
+4. Commands I can run, for example:
+   - `npm run test:e2e -- --grep "Dashboard"` to run dashboard tests only
+   - `npm run test:e2e -- --grep "Navigation"` to run navigation tests only
+
+Please implement these tests end-to-end in this repo and ensure they pass when run in Replit.
