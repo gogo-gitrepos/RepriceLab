@@ -246,7 +246,11 @@ export default function LandingPage() {
                   <div className="text-center pt-4">
                     <p className="text-sm text-gray-600">
                       Don't have an account?{' '}
-                      <button type="button" className="font-semibold text-purple-600 hover:text-purple-700">
+                      <button 
+                        type="button" 
+                        className="font-semibold text-purple-600 hover:text-purple-700"
+                        onClick={() => router.push('/register')}
+                      >
                         Start free trial
                       </button>
                     </p>
