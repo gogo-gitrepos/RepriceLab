@@ -20,7 +20,7 @@ export default function PricingPage() {
       features: [
         'Up to 5,000 products',
         'Advanced repricing strategies',
-        'Priority email support',
+        'Email support',
         'Multi-marketplace support',
         'Advanced analytics',
         'Inventory management',
@@ -38,7 +38,7 @@ export default function PricingPage() {
       features: [
         '10,000+ products',
         'AI-powered repricing',
-        'Phone + email support',
+        'Priority email support',
         'All marketplace integrations',
         'Custom analytics dashboard',
         'Advanced inventory management',
@@ -167,16 +167,16 @@ export default function PricingPage() {
                 
                 <Button 
                   className={`w-full h-12 text-base font-semibold ${
-                    selectedPlan === plan.name || plan.popular
+                    selectedPlan === plan.name
                       ? 'bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white shadow-lg'
                       : 'bg-white text-purple-900 hover:bg-gray-100'
                   }`}
                   onClick={(e) => {
                     e.stopPropagation();
-                    router.push('/login');
+                    router.push(`/login?plan=${plan.name.toLowerCase()}`);
                   }}
                 >
-                  {selectedPlan === plan.name ? 'Get Started' : 'Start Free Trial'}
+                  Start Free Trial
                 </Button>
               </CardContent>
             </Card>
