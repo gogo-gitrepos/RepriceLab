@@ -4,7 +4,7 @@ Premium yet simple - The best algorithm for Buy Box domination
 """
 
 from datetime import datetime, timedelta
-from typing import List, Dict, Optional
+from typing import List, Dict, Optional, Sequence, Any
 from sqlalchemy.orm import Session
 from ..models import Product, CompetitorOffer, PriceHistory
 import logging
@@ -58,7 +58,7 @@ class RepricingEngine:
     def calculate_optimal_price(
         self,
         product: Product,
-        competitors: List[CompetitorOffer],
+        competitors: Sequence[Any],
         strategy: str = 'win_buybox'
     ) -> Dict:
         """
@@ -87,9 +87,20 @@ class RepricingEngine:
         lowest_competitor = min(competitors, key=lambda c: c.price + c.shipping)
         lowest_total_price = lowest_competitor.price + lowest_competitor.shipping
         
-        # Calculate costs and minimum price
-        min_safe_price = product.min_price or (product.price * 0.7)
-        max_safe_price = product.max_price or (product.price * 1.5)
+        # Use configured min/max prices, with cost-based fallbacks independent of current price
+        # Critical: Never use current price as floor - it traps discounted products
+        if product.min_price:
+            min_safe_price = product.min_price
+        else:
+            # Fallback: Estimate cost at 60% of lowest competitor (conservative)
+            estimated_cost = lowest_total_price * 0.6
+            min_safe_price = estimated_cost
+        
+        if product.max_price:
+            max_safe_price = product.max_price
+        else:
+            # Fallback: Allow up to 2x lowest competitor for premium positioning
+            max_safe_price = lowest_total_price * 2.0
         
         # Apply strategy logic
         if strategy == 'win_buybox':

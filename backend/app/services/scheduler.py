@@ -1,13 +1,13 @@
 from __future__ import annotations
+from datetime import datetime
 from apscheduler.schedulers.background import BackgroundScheduler
 from sqlalchemy.orm import Session
 from sqlalchemy import text
 from ..database import SessionLocal
-from ..models import Product, PriceHistory, CompetitorOffer, Store, PricingRule, Notification, User
+from ..models import Product, PriceHistory, CompetitorOffer, Store, Notification, User
 from .spapi import SPAPIClient as MockSPAPIClient
 from .amazon_spapi import create_spapi_client, AmazonSPAPIClient
 from .buybox import determine_buybox
-from .repricing import eval_max_price, suggest_price
 from .notify import send_email, send_push
 from .repricing_engine import RepricingEngine
 import json
@@ -132,48 +132,90 @@ def run_cycle():
                         payload_json=json.dumps({"asin": p.asin, "owner": p.buybox_owner}),
                         sent=False
                     ))
+                # Delete old competitor offers for this product to prevent bloat
+                db.query(CompetitorOffer).filter(
+                    CompetitorOffer.product_id == p.id
+                ).delete()
+                
+                # Store fresh competitor offers in database
+                competitor_offers_list = []
                 for o in offers:
-                    db.add(CompetitorOffer(
+                    comp_offer = CompetitorOffer(
                         product_id=p.id,
                         seller_id=o.get("seller_id", ""),
                         price=float(o.get("price", 0.0)),
                         shipping=float(o.get("shipping", 0.0)),
                         is_buybox=bool(o.get("is_buybox", False))
-                    ))
-                rule = db.query(PricingRule).filter(PricingRule.user_id == p.user_id).first()
-                if rule:
-                    comp_min = min(
-                        ((o.get("price", 0.0) + o.get("shipping", 0.0)) for o in offers if o.get("seller_id") != st.selling_partner_id),
-                        default=None
                     )
-                    try:
-                        max_price = eval_max_price(rule.max_price_formula, p.price)
-                    except Exception:
-                        max_price = p.price * 1.9
-                    new_price = suggest_price(p.price, comp_min, rule.min_price, max_price, rule.strategy)
-                    if new_price != p.price:
-                        # Update price - different method for real vs mock client
-                        if is_real_client:
-                            # Real SP-API - use update_price with all required params
-                            result = _run_async(client.update_price(
-                                p.sku, 
-                                st.selling_partner_id, 
-                                marketplace_id, 
-                                new_price
-                            ))
-                            ok = result.get("success", False)
-                        else:
-                            # Mock client - simple update_price
-                            ok = _run_async(client.update_price(p.sku, new_price))
+                    db.add(comp_offer)
+                    competitor_offers_list.append(comp_offer)
+                
+                # Skip repricing if product doesn't have repricing enabled
+                if not p.repricing_enabled:
+                    continue
+                
+                # Use new RepricingEngine with advanced strategies
+                engine = RepricingEngine(db)
+                strategy = p.repricing_strategy or 'win_buybox'  # Default to Win Buy Box
+                
+                # Calculate optimal price using new engine
+                repricing_result = engine.calculate_optimal_price(
+                    product=p,
+                    competitors=competitor_offers_list,
+                    strategy=strategy
+                )
+                
+                # Check if repricing is needed
+                if repricing_result['should_reprice']:
+                    new_price = repricing_result['new_price']
+                    
+                    # Update price on Amazon - different method for real vs mock client
+                    if is_real_client:
+                        # Real SP-API - use update_price with all required params
+                        result = _run_async(client.update_price(
+                            p.sku, 
+                            st.selling_partner_id, 
+                            marketplace_id, 
+                            new_price
+                        ))
+                        ok = result.get("success", False)
+                    else:
+                        # Mock client - simple update_price
+                        ok = _run_async(client.update_price(p.sku, new_price))
+                    
+                    if ok:
+                        old_price = p.price
+                        p.price = new_price
+                        p.last_repriced_at = datetime.utcnow()
+                        p.competitor_count = repricing_result.get('competitor_count', len(offers))
+                        p.lowest_competitor_price = repricing_result.get('lowest_competitor_price')
                         
-                        if ok:
-                            p.price = new_price
-                            db.add(Notification(
-                                user_id=p.user_id,
-                                type="PRICE_CHANGED",
-                                payload_json=json.dumps({"asin": p.asin, "new_price": new_price}),
-                                sent=False
-                            ))
+                        # Log price change
+                        db.add(PriceHistory(
+                            product_id=p.id,
+                            price=new_price,
+                            buybox_owning=p.buybox_owning
+                        ))
+                        
+                        db.add(Notification(
+                            user_id=p.user_id,
+                            type="PRICE_CHANGED",
+                            payload_json=json.dumps({
+                                "asin": p.asin,
+                                "sku": p.sku,
+                                "old_price": old_price,
+                                "new_price": new_price,
+                                "strategy": strategy,
+                                "reason": repricing_result.get('reason', ''),
+                                "buybox_chance": repricing_result.get('estimated_buybox_chance', 0)
+                            }),
+                            sent=False
+                        ))
+                        
+                        logger.info(
+                            f"Repriced {p.sku}: ${old_price:.2f} → ${new_price:.2f} | "
+                            f"Strategy: {strategy} | Buy Box chance: {repricing_result.get('estimated_buybox_chance', 0)}%"
+                        )
         db.commit()
         pending = db.query(Notification, User).join(User, User.id == Notification.user_id).filter(Notification.sent == False).all()
         for n, u in pending:
