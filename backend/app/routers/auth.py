@@ -3,6 +3,7 @@ from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
 from sqlalchemy.orm import Session
 from pydantic import BaseModel, EmailStr
 from typing import Optional
+from datetime import datetime, timedelta
 
 from ..database import get_db
 from ..models import User
@@ -48,10 +49,14 @@ def register(request: RegisterRequest, db: Session = Depends(get_db)):
     
     hashed_password = hash_password(request.password)
     
+    # Initialize new user with free trial (14 days)
     new_user = User(
         email=request.email,
         password_hash=hashed_password,
-        name=request.name or request.email.split("@")[0]
+        name=request.name or request.email.split("@")[0],
+        subscription_plan="free",
+        subscription_status="trial",
+        trial_ends_at=datetime.utcnow() + timedelta(days=14)
     )
     
     db.add(new_user)

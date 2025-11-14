@@ -32,6 +32,7 @@ class Settings(BaseSettings):
     from_email: str = "no-reply@example.com"
 
     scheduler_enabled: bool = True
+    development_mode: bool = False  # Set to True only in development via DEVELOPMENT_MODE env var
 
     class Config:
         env_file = ".env"
