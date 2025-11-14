@@ -7,6 +7,7 @@ export function ConditionalLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const isPublicPage = pathname === '/' || 
                        pathname === '/login' || 
+                       pathname === '/register' ||
                        pathname === '/features' || 
                        pathname === '/pricing' || 
                        pathname === '/contact' ||
