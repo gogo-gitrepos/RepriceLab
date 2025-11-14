@@ -1,4 +1,17 @@
 {
+  "scripts": {
+    "test": "npm run test:smoke",
+    "test:smoke": "playwright test tests/smoke --project=chromium",
+    "test:e2e": "playwright test tests/e2e --project=chromium",
+    "test:functional": "playwright test tests/functional --project=chromium",
+    "test:ui": "playwright test tests/smoke tests/e2e tests/functional --project=chromium",
+    "test:api": "cd backend && pytest tests/api -v",
+    "test:api:smoke": "cd backend && pytest tests/api -v -m smoke",
+    "test:all": "npm run test:ui && npm run test:api",
+    "test:headed": "playwright test --headed",
+    "test:debug": "playwright test --debug",
+    "test:report": "playwright show-report"
+  },
   "dependencies": {
     "@playwright/test": "^1.56.1",
     "@radix-ui/react-label": "^2.1.7",
