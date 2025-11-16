@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { ArrowLeft, Mail, Send } from 'lucide-react';
+import { ArrowLeft, Send, CheckCircle, AlertCircle } from 'lucide-react';
 
 export default function ContactPage() {
   const router = useRouter();
@@ -15,10 +15,40 @@ export default function ContactPage() {
     subject: '',
     message: ''
   });
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submitStatus, setSubmitStatus] = useState<'idle' | 'success' | 'error'>('idle');
+  const [errorMessage, setErrorMessage] = useState('');
   
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    alert('Thank you for your message! We will get back to you soon.');
+    setIsSubmitting(true);
+    setSubmitStatus('idle');
+    setErrorMessage('');
+    
+    try {
+      const response = await fetch('/api/contact', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(formData),
+      });
+      
+      const data = await response.json();
+      
+      if (response.ok) {
+        setSubmitStatus('success');
+        setFormData({ name: '', email: '', subject: '', message: '' });
+      } else {
+        setSubmitStatus('error');
+        setErrorMessage(data.detail || 'Failed to send message. Please try again.');
+      }
+    } catch (error) {
+      setSubmitStatus('error');
+      setErrorMessage('Network error. Please check your connection and try again.');
+    } finally {
+      setIsSubmitting(false);
+    }
   };
   
   return (
@@ -55,18 +85,37 @@ export default function ContactPage() {
 
       {/* Contact Section */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 pb-12 sm:pb-16 lg:pb-20">
-        <div className="grid lg:grid-cols-3 gap-6 sm:gap-8">
+        <div className="max-w-4xl mx-auto">
           {/* Contact Form */}
-          <div className="lg:col-span-2">
-            <Card className="bg-white/95 backdrop-blur-xl shadow-2xl border-0">
-              <CardHeader>
-                <CardTitle className="text-2xl sm:text-3xl font-bold text-gray-900">Send us a message</CardTitle>
-                <p className="text-sm sm:text-base text-gray-600 mt-2">
-                  Fill out the form below and we'll get back to you within 24 hours
-                </p>
-              </CardHeader>
-              <CardContent>
-                <form onSubmit={handleSubmit} className="space-y-4 sm:space-y-6">
+          <Card className="bg-white/95 backdrop-blur-xl shadow-2xl border-0">
+            <CardHeader>
+              <CardTitle className="text-2xl sm:text-3xl font-bold text-gray-900">Send us a message</CardTitle>
+              <p className="text-sm sm:text-base text-gray-600 mt-2">
+                Fill out the form below and we'll get back to you within 24 hours
+              </p>
+            </CardHeader>
+            <CardContent>
+              {submitStatus === 'success' && (
+                <div className="mb-6 p-4 bg-green-50 border border-green-200 rounded-lg flex items-start gap-3">
+                  <CheckCircle className="w-5 h-5 text-green-600 flex-shrink-0 mt-0.5" />
+                  <div>
+                    <p className="font-semibold text-green-900">Message Sent Successfully!</p>
+                    <p className="text-sm text-green-700 mt-1">Thank you for contacting us. We'll get back to you within 24 hours.</p>
+                  </div>
+                </div>
+              )}
+              
+              {submitStatus === 'error' && (
+                <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg flex items-start gap-3">
+                  <AlertCircle className="w-5 h-5 text-red-600 flex-shrink-0 mt-0.5" />
+                  <div>
+                    <p className="font-semibold text-red-900">Failed to Send Message</p>
+                    <p className="text-sm text-red-700 mt-1">{errorMessage}</p>
+                  </div>
+                </div>
+              )}
+              
+              <form onSubmit={handleSubmit} className="space-y-4 sm:space-y-6">
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
                     <div className="space-y-2">
                       <Label htmlFor="name" className="text-xs sm:text-sm font-semibold text-gray-700">
@@ -131,33 +180,15 @@ export default function ContactPage() {
                   
                   <Button 
                     type="submit" 
-                    className="w-full h-10 sm:h-12 text-sm sm:text-base font-semibold bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white"
+                    disabled={isSubmitting}
+                    className="w-full h-10 sm:h-12 text-sm sm:text-base font-semibold bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white disabled:opacity-50 disabled:cursor-not-allowed"
                   >
                     <Send className="w-4 h-4 sm:w-5 sm:h-5 mr-2" />
-                    Send Message
+                    {isSubmitting ? 'Sending...' : 'Send Message'}
                   </Button>
                 </form>
               </CardContent>
             </Card>
-          </div>
-
-          {/* Contact Info */}
-          <div className="space-y-6">
-            <Card className="bg-white/10 backdrop-blur-sm border-white/20">
-              <CardHeader>
-                <div className="w-14 h-14 bg-gradient-to-r from-blue-500 to-blue-600 rounded-xl flex items-center justify-center mb-4 shadow-lg">
-                  <Mail className="w-7 h-7 text-white" />
-                </div>
-                <CardTitle className="text-white text-xl">Email Us</CardTitle>
-                <p className="text-purple-200 mt-2">
-                  support@repricelab.com
-                </p>
-                <p className="text-purple-200">
-                  sales@repricelab.com
-                </p>
-              </CardHeader>
-            </Card>
-          </div>
         </div>
       </div>
     </div>
