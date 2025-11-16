@@ -105,6 +105,39 @@ Preferred communication style: Simple, everyday language.
 
 ## Recent Changes
 
+### November 16, 2025 - Contact Form with Email Privacy & Scheduler Bug Fix
+
+**Contact Form Email Privacy:**
+- **Removed Public Email Display**: Eliminated `support@repricelab.com` and `sales@repricelab.com` from public contact page
+  - Email addresses no longer visible to website visitors
+  - Contact page now shows only the message form
+  - Files: `frontend/src/app/contact/page.tsx`
+- **Backend Contact API**: Created `/api/contact` endpoint with SMTP email sending
+  - Contact form submissions sent directly to `repricelab@gmail.com`
+  - HTML formatted emails with sender info, subject, and message
+  - Proper error handling for SMTP failures
+  - Files: `backend/app/routers/contact.py`, `backend/app/main.py`
+- **Frontend Form Integration**: Updated contact form with API integration
+  - Success/error state handling with visual feedback
+  - Loading state during submission
+  - Form reset after successful submission
+  - Network error handling with retry messaging
+  - Files: `frontend/src/app/contact/page.tsx`
+- **SMTP Configuration Required**: Environment variables needed for email functionality
+  - `SMTP_HOST`: SMTP server hostname (e.g., smtp.gmail.com)
+  - `SMTP_PORT`: SMTP server port (default: 587)
+  - `SMTP_USER`: SMTP username/email
+  - `SMTP_PASS`: SMTP password/app password
+  - `FROM_EMAIL`: Sender email address for contact form emails
+
+**Critical Scheduler Bug Fix:**
+- **Fixed Product Loop Logic**: Repricing logic was outside product loop, only processing last product
+  - Moved all repricing logic inside product-level try block (lines 124-257 in scheduler.py)
+  - Each product now correctly processed with buybox analysis, competitor tracking, and repricing
+  - `products_processed` counter increments per product
+  - Product-level exception handling prevents store-level abort
+  - Files: `backend/app/services/scheduler.py`
+
 ### November 16, 2025 - Production-Ready Updates & Amazon SP-API Error Fixes
 
 **Production Authentication & Empty State:**
