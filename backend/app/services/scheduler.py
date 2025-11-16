@@ -99,34 +99,50 @@ def run_cycle():
     
     db: Session = SessionLocal()
     try:
-        stores = db.query(Store).all()
-        logger.info(f"📊 Processing {len(stores)} store(s)")
+        # Only process active stores
+        stores = db.query(Store).filter(Store.is_active == True).all()
+        logger.info(f"📊 Processing {len(stores)} active store(s)")
         for st in stores:
-            # Try to create real SP-API client, fallback to mock if unavailable
-            real_client = create_spapi_client(st.refresh_token, st.region)
-            client = real_client if real_client else MockSPAPIClient(st.region, st.refresh_token)
-            
-            is_real_client = isinstance(client, AmazonSPAPIClient)
-            if is_real_client:
-                logger.info(f"Using real SP-API client for store {st.id}")
-            else:
-                logger.info(f"Using mock SP-API client for store {st.id} (real credentials not available)")
-            
-            products = db.query(Product).filter(Product.user_id == st.user_id).all()
-            logger.info(f"  📦 Store {st.id} ({st.store_name}): {len(products)} products")
-            
-            # Get marketplace ID from store
-            marketplace_id = st.marketplace_ids.split(",")[0] if st.marketplace_ids else "ATVPDKIKX0DER"
-            
-            for p in products:
-                # Get competitive pricing - different method for real vs mock client
+            try:
+                # Try to create real SP-API client, fallback to mock if unavailable
+                real_client = create_spapi_client(st.refresh_token, st.region)
+                client = real_client if real_client else MockSPAPIClient(st.region, st.refresh_token)
+                
+                is_real_client = isinstance(client, AmazonSPAPIClient)
                 if is_real_client:
-                    # Real SP-API client - use get_product_pricing
-                    pricing_result = _run_async(client.get_product_pricing(p.asin, marketplace_id))
-                    offers = _parse_sp_api_pricing_to_offers(pricing_result, marketplace_id)
+                    logger.info(f"Using real SP-API client for store {st.id}")
                 else:
-                    # Mock client - use get_competitive_pricing
-                    offers = _run_async(client.get_competitive_pricing(p.asin))
+                    logger.info(f"Using mock SP-API client for store {st.id} (real credentials not available)")
+                
+                products = db.query(Product).filter(Product.user_id == st.user_id).all()
+                logger.info(f"  📦 Store {st.id} ({st.store_name}): {len(products)} products")
+                
+                # Get marketplace ID from store
+                marketplace_id = st.marketplace_ids.split(",")[0] if st.marketplace_ids else "ATVPDKIKX0DER"
+                
+                for p in products:
+                    try:
+                        # Get competitive pricing - different method for real vs mock client
+                        if is_real_client:
+                            # Real SP-API client - use get_product_pricing
+                            pricing_result = _run_async(client.get_product_pricing(p.asin, marketplace_id))
+                            
+                            # Check if pricing failed due to authentication error
+                            if not pricing_result.get("success", False):
+                                error_msg = pricing_result.get("error", "")
+                                if "invalid_grant" in str(error_msg).lower() or "refresh_token" in str(error_msg).lower():
+                                    logger.error(f"🔒 Authentication failed for store {st.id} - marking as inactive")
+                                    st.is_active = False
+                                    db.commit()
+                                    break  # Skip remaining products for this store
+                            
+                            offers = _parse_sp_api_pricing_to_offers(pricing_result, marketplace_id)
+                        else:
+                            # Mock client - use get_competitive_pricing
+                            offers = _run_async(client.get_competitive_pricing(p.asin))
+                    except Exception as e:
+                        logger.error(f"  ⚠️ Error processing product {p.sku}: {e}")
+                        continue  # Continue with next product
                 
                 products_processed += 1
                 
@@ -235,6 +251,10 @@ def run_cycle():
                             f"  💰 REPRICED {p.sku}: ${old_price:.2f} → ${new_price:.2f} ({price_change:+.1f}%) | "
                             f"Strategy: {strategy.upper()} | Buy Box: {repricing_result.get('estimated_buybox_chance', 0)}%"
                         )
+            except Exception as e:
+                logger.error(f"⚠️ Error processing store {st.id}: {e}")
+                continue  # Continue with next store
+                
         db.commit()
         pending = db.query(Notification, User).join(User, User.id == Notification.user_id).filter(Notification.sent == False).all()
         for n, u in pending:
