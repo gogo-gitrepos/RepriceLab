@@ -118,7 +118,7 @@ export default function LoginPage() {
                 <Input
                   id="email"
                   type="email"
-                  placeholder="john@repricer.com"
+                  placeholder="john@repricerlab.com"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   className="h-12 text-base border-gray-300 focus:border-purple-500 focus:ring-purple-500"

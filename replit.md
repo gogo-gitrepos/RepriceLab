@@ -105,6 +105,23 @@ Preferred communication style: Simple, everyday language.
 
 ## Recent Changes
 
+### November 16, 2025 - Production-Ready Updates
+- **Updated Email Placeholders**: Changed all demo emails from `john@repricer.com` to `john@repricerlab.com` throughout the UI
+  - Files: `frontend/src/app/page.tsx`, `frontend/src/app/login/page.tsx`, `frontend/src/app/top-header.tsx`
+- **Implemented Dashboard Empty State**: Dashboard now shows proper empty state for new users without connected stores/products
+  - Added `/api/auth/me` endpoint to check user's store and product status
+  - Created `UserStatus` API type with `has_connected_stores` and `has_products` flags
+  - Dashboard displays onboarding UI when no stores connected, guiding users through setup
+  - Removed hardcoded demo data (84% profitability, 68,724 events, fake competitors) when no real data exists
+  - Files: `frontend/src/app/dashboard/page.tsx`, `frontend/src/lib/api.ts`, `backend/app/routers/auth.py`
+- **Disabled Demo Login**: Enforced real authentication for production security
+  - Fixed landing page login form bypass - now calls `/auth/login` backend API
+  - Validates credentials against database before allowing access
+  - Shows proper error messages for invalid login attempts
+  - Production mode enforced (development_mode=False by default)
+  - Files: `frontend/src/app/page.tsx`, `backend/app/config.py`
+- **Login Flow**: All login paths (email/password, Google OAuth, landing page) now require valid authentication tokens
+
 ### November 14, 2025 - Dashboard & Navigation E2E Tests
 - **Created comprehensive Dashboard tests (8 tests - D1-D8)**:
   - D1: Dashboard loads successfully with Safe Mode banner

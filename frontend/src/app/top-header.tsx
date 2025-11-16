@@ -409,7 +409,7 @@ export function TopHeader() {
                     </div>
                     <div>
                       <p className="font-medium text-gray-900">John Doe</p>
-                      <p className="text-sm text-gray-500">john@repricer.com</p>
+                      <p className="text-sm text-gray-500">john@repricerlab.com</p>
                     </div>
                   </div>
                 </div>

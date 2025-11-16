@@ -31,10 +31,38 @@ export default function LandingPage() {
   const router = useRouter();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [loginError, setLoginError] = useState('');
+  const [isLoggingIn, setIsLoggingIn] = useState(false);
 
-  const handleLogin = (e: React.FormEvent) => {
+  const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
-    router.push('/dashboard');
+    setLoginError('');
+    setIsLoggingIn(true);
+
+    try {
+      const response = await fetch('http://localhost:8000/auth/login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ email, password }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.detail || 'Login failed');
+      }
+
+      localStorage.setItem('access_token', data.access_token);
+      localStorage.setItem('user', JSON.stringify(data.user));
+      
+      router.push('/dashboard');
+    } catch (err: any) {
+      setLoginError(err.message || 'Login failed. Please check your credentials.');
+    } finally {
+      setIsLoggingIn(false);
+    }
   };
 
   const handleGoogleLogin = async () => {
@@ -174,6 +202,12 @@ export default function LandingPage() {
               </CardHeader>
               <CardContent>
                 <form onSubmit={handleLogin} className="space-y-4 sm:space-y-5">
+                  {loginError && (
+                    <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg text-sm">
+                      {loginError}
+                    </div>
+                  )}
+                  
                   <div className="space-y-2">
                     <Label htmlFor="email" className="text-xs sm:text-sm font-semibold text-gray-700">
                       Email Address
@@ -181,7 +215,7 @@ export default function LandingPage() {
                     <Input
                       id="email"
                       type="email"
-                      placeholder="john@repricer.com"
+                      placeholder="john@repricerlab.com"
                       value={email}
                       onChange={(e) => setEmail(e.target.value)}
                       className="h-10 sm:h-12 text-sm sm:text-base border-gray-300 focus:border-purple-500 focus:ring-purple-500 bg-white [&:-webkit-autofill]:!bg-white [&:-webkit-autofill:hover]:!bg-white [&:-webkit-autofill:focus]:!bg-white"
@@ -214,9 +248,10 @@ export default function LandingPage() {
                   <Button 
                     type="submit" 
                     className="w-full h-10 sm:h-12 text-sm sm:text-base font-semibold bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white shadow-lg hover:shadow-xl transition-all duration-200"
+                    disabled={isLoggingIn}
                   >
-                    Sign In to Dashboard
-                    <ArrowRight className="w-5 h-5 ml-2" />
+                    {isLoggingIn ? 'Signing In...' : 'Sign In to Dashboard'}
+                    {!isLoggingIn && <ArrowRight className="w-5 h-5 ml-2" />}
                   </Button>
 
                   <div className="relative py-4">

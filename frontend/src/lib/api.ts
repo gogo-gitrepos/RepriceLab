@@ -3,10 +3,12 @@
 const BASE = '';
 
 async function api<T>(path: string, init?: RequestInit): Promise<T> {
+    const token = typeof window !== 'undefined' ? localStorage.getItem('access_token') : null;
     const res = await fetch(`${BASE}${path}`, {
         ...init,
         headers: {
             'Content-Type': 'application/json',
+            ...(token ? { 'Authorization': `Bearer ${token}` } : {}),
             ...(init?.headers || {}),
         },
         cache: 'no-store',
@@ -45,9 +47,30 @@ export type PricingPreview = {
     suggested_price: number;
 };
 
+export type UserStatus = {
+    id: number;
+    email: string;
+    name: string;
+    picture?: string | null;
+    created_at: string;
+    has_connected_stores: boolean;
+    has_products: boolean;
+};
+
 export const apiClient = {
     getMetrics: () => api<MetricsSummary>('/api/metrics/summary'),
     getProducts: () => api<Product[]>('/api/products/'),
+    getUserStatus: () => {
+        const token = typeof window !== 'undefined' ? localStorage.getItem('access_token') : null;
+        if (!token) {
+            return Promise.resolve(null);
+        }
+        return api<UserStatus>('/api/auth/me', {
+            headers: {
+                'Authorization': `Bearer ${token}`
+            }
+        });
+    },
     syncProducts: () => api<{ synced: number }>('/api/products/sync', { method: 'POST' }),
     getPreview: (asin: string) => api<PricingPreview>(`/api/pricing/preview/${asin}`),
     setRule: (body: { min_price: number; max_price_formula: string; strategy: string }) =>

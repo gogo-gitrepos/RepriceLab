@@ -1,0 +1,83 @@
+You are working on my RepriceLab.com app in this Replit project.
+
+I need three production changes:
+
+------------------------------------------------
+1) Update login email placeholder/domain
+------------------------------------------------
+Goal: Change every occurrence of the demo email `john@repricer.com` to `john@repricerlab.com` on the login/signup UI.
+
+Requirements:
+- On the main login screen, change the email input placeholder and any pre-filled demo value from `john@repricer.com` to `john@repricerlab.com`.
+- Search the codebase for:
+  - `john@repricer.com`
+  - `repricer.com`
+and replace with the new domain ONLY where it is used as a demo/sample user email for this app (login form, signup form, help text, seeds, etc.).
+- Do NOT break any email validation logic; the new email must still pass all validations.
+
+------------------------------------------------
+2) Clear demo/sample data on Dashboard for new users
+------------------------------------------------
+Right now the Dashboard shows static example data (e.g. “84% Profitable”, “68,724 events”, “Top Competitors” list, etc.) even for a brand new account.
+
+I want the Dashboard to have a proper **empty state** until the user connects their marketplace (Amazon / channels), e.g. until some “account is connected / has data” flag is true.
+
+Requirements:
+- Inspect how the dashboard data is currently populated (mock JSON, hard-coded constants, or API responses).
+- Introduce or reuse a clear flag such as `hasConnectedMarketplace`, `hasSalesData`, or similar.
+  - If such a flag already exists in the backend/frontend, use it.
+  - If not, create a minimal placeholder flag in the frontend for now (e.g. assume `false` by default for new users) and structure the code so it can later be wired to the real backend.
+- When there is **no connected marketplace / no data**:
+  - All top KPIs (Spent this period, Daily limit remaining, Safe Mode banner, profitability percentage, buy box rate, activity totals, competitors, etc.) should show either:
+    - 0 values, or
+    - a clear “No data yet” / “Connect your marketplace to see data” empty state.
+  - Remove or hide fake numbers like 84%, 68,724, 8.4K products, competitor list, etc.
+  - Use consistent empty state text across widgets, for example:
+    - “No data available yet. Connect your Amazon account to start seeing insights.”
+- When there **is data / marketplace connected** (flag true):
+  - Existing graphs and cards should display real data coming from the backend API (or the current mocked pipeline), not static constants.
+
+Please refactor the dashboard components so that this “no data vs has data” logic is clean and easy to extend.
+
+------------------------------------------------
+3) Disable demo login – require real sign-up for access
+------------------------------------------------
+We are now in production. Users must NOT be able to log in with any random email/password. Only registered accounts should be allowed.
+
+Requirements:
+- Inspect the current authentication implementation:
+  - If there is already a proper auth backend (database, JWT, etc.), make sure the login form calls it and validates credentials instead of accepting any values.
+  - If there is a temporary or demo auth that lets any email/password in, **remove that behavior**.
+- Enforce the following behavior:
+  - A user can log in ONLY if:
+    - they have previously registered via the signup flow, OR
+    - they exist in the backend user store.
+  - Invalid email/password combinations must return an error and stay on the login page.
+- If there is no signup flow at all, create a minimal but secure email/password registration:
+  - Store passwords hashed (e.g. bcrypt or similar).
+  - Validate email format.
+  - Show proper error messages on duplicate emails, weak passwords, etc.
+- Protect the dashboard and all authenticated routes with proper route guards:
+  - If a user is not authenticated, they should be redirected to the login page.
+- Keep a configuration or environment flag for future:
+  - e.g. `DEMO_MODE=true/false`
+  - When `DEMO_MODE=false` (production), demo login should be completely disabled (current requirement).
+  - If you introduce this flag, default it to `false` in this project.
+
+------------------------------------------------
+4) Housekeeping
+------------------------------------------------
+- Run existing tests and ensure no build errors.
+- If necessary, add or update basic tests:
+  - Login fails with invalid credentials.
+  - Dashboard empty state is shown when there is no data.
+- Briefly document in README or a short comment:
+  - where the login logic lives,
+  - how the “has data vs no data” flag works on the dashboard.
+
+Once you finish, summarize:
+- Which files you changed,
+- How to test:
+  - login behavior,
+  - dashboard empty state,
+  - and where the placeholder email was updated.

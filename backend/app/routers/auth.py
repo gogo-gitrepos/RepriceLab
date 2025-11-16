@@ -167,10 +167,17 @@ def get_current_user(token: str = Depends(oauth2_scheme), db: Session = Depends(
             detail="User not found"
         )
     
+    # Check if user has connected stores and products
+    from ..models import Store, Product
+    has_stores = db.query(Store).filter(Store.user_id == user.id, Store.is_active == True).count() > 0
+    has_products = db.query(Product).filter(Product.user_id == user.id).count() > 0
+    
     return {
         "id": user.id,
         "email": user.email,
         "name": user.name,
         "picture": user.picture,
-        "created_at": user.created_at
+        "created_at": user.created_at,
+        "has_connected_stores": has_stores,
+        "has_products": has_products
     }
