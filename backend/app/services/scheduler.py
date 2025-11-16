@@ -140,117 +140,118 @@ def run_cycle():
                         else:
                             # Mock client - use get_competitive_pricing
                             offers = _run_async(client.get_competitive_pricing(p.asin))
+                        
+                        products_processed += 1
+                        
+                        if not offers:
+                            logger.debug(f"No offers found for product {p.sku} (ASIN: {p.asin})")
+                            continue
+                        
+                        bb = determine_buybox(offers)
+                        owning = (bb.get("seller_id") == st.selling_partner_id) if bb else False
+                        if owning != p.buybox_owning:
+                            buybox_changes += 1
+                            status_change = "✅ GAINED" if owning else "❌ LOST"
+                            logger.info(f"  {status_change} Buy Box: {p.sku} ({p.title[:40]}...)")
+                            
+                            p.buybox_owning = owning
+                            p.buybox_owner = bb.get("seller_id") if bb else None
+                            db.add(PriceHistory(product_id=p.id, price=p.price, buybox_owning=owning))
+                            db.add(Notification(
+                                user_id=p.user_id,
+                                type=("BUYBOX_GAINED" if owning else "BUYBOX_LOST"),
+                                payload_json=json.dumps({"asin": p.asin, "owner": p.buybox_owner}),
+                                sent=False
+                            ))
+                        # Delete old competitor offers for this product to prevent bloat
+                        db.query(CompetitorOffer).filter(
+                            CompetitorOffer.product_id == p.id
+                        ).delete()
+                        
+                        # Store fresh competitor offers in database
+                        competitor_offers_list = []
+                        for o in offers:
+                            comp_offer = CompetitorOffer(
+                                product_id=p.id,
+                                seller_id=o.get("seller_id", ""),
+                                price=float(o.get("price", 0.0)),
+                                shipping=float(o.get("shipping", 0.0)),
+                                is_buybox=bool(o.get("is_buybox", False))
+                            )
+                            db.add(comp_offer)
+                            competitor_offers_list.append(comp_offer)
+                        
+                        # Skip repricing if product doesn't have repricing enabled
+                        if not p.repricing_enabled:
+                            continue
+                        
+                        # Use new RepricingEngine with advanced strategies
+                        engine = RepricingEngine(db)
+                        strategy = p.repricing_strategy or 'win_buybox'  # Default to Win Buy Box
+                        
+                        # Calculate optimal price using new engine
+                        repricing_result = engine.calculate_optimal_price(
+                            product=p,
+                            competitors=competitor_offers_list,
+                            strategy=strategy
+                        )
+                        
+                        # Check if repricing is needed
+                        if repricing_result['should_reprice']:
+                            new_price = repricing_result['new_price']
+                            
+                            # Update price on Amazon - different method for real vs mock client
+                            if is_real_client:
+                                # Real SP-API - use update_price with all required params
+                                result = _run_async(client.update_price(
+                                    p.sku, 
+                                    st.selling_partner_id, 
+                                    marketplace_id, 
+                                    new_price
+                                ))
+                                ok = result.get("success", False)
+                            else:
+                                # Mock client - simple update_price
+                                ok = _run_async(client.update_price(p.sku, new_price))
+                            
+                            if ok:
+                                products_repriced += 1
+                                old_price = p.price
+                                p.price = new_price
+                                p.last_repriced_at = datetime.utcnow()
+                                p.competitor_count = repricing_result.get('competitor_count', len(offers))
+                                p.lowest_competitor_price = repricing_result.get('lowest_competitor_price')
+                                
+                                # Log price change
+                                db.add(PriceHistory(
+                                    product_id=p.id,
+                                    price=new_price,
+                                    buybox_owning=p.buybox_owning
+                                ))
+                                
+                                db.add(Notification(
+                                    user_id=p.user_id,
+                                    type="PRICE_CHANGED",
+                                    payload_json=json.dumps({
+                                        "asin": p.asin,
+                                        "sku": p.sku,
+                                        "old_price": old_price,
+                                        "new_price": new_price,
+                                        "strategy": strategy,
+                                        "reason": repricing_result.get('reason', ''),
+                                        "buybox_chance": repricing_result.get('estimated_buybox_chance', 0)
+                                    }),
+                                    sent=False
+                                ))
+                                
+                                price_change = ((new_price - old_price) / old_price) * 100
+                                logger.info(
+                                    f"  💰 REPRICED {p.sku}: ${old_price:.2f} → ${new_price:.2f} ({price_change:+.1f}%) | "
+                                    f"Strategy: {strategy.upper()} | Buy Box: {repricing_result.get('estimated_buybox_chance', 0)}%"
+                                )
                     except Exception as e:
                         logger.error(f"  ⚠️ Error processing product {p.sku}: {e}")
                         continue  # Continue with next product
-                
-                products_processed += 1
-                
-                if not offers:
-                    logger.debug(f"No offers found for product {p.sku} (ASIN: {p.asin})")
-                    continue
-                bb = determine_buybox(offers)
-                owning = (bb.get("seller_id") == st.selling_partner_id) if bb else False
-                if owning != p.buybox_owning:
-                    buybox_changes += 1
-                    status_change = "✅ GAINED" if owning else "❌ LOST"
-                    logger.info(f"  {status_change} Buy Box: {p.sku} ({p.title[:40]}...)")
-                    
-                    p.buybox_owning = owning
-                    p.buybox_owner = bb.get("seller_id") if bb else None
-                    db.add(PriceHistory(product_id=p.id, price=p.price, buybox_owning=owning))
-                    db.add(Notification(
-                        user_id=p.user_id,
-                        type=("BUYBOX_GAINED" if owning else "BUYBOX_LOST"),
-                        payload_json=json.dumps({"asin": p.asin, "owner": p.buybox_owner}),
-                        sent=False
-                    ))
-                # Delete old competitor offers for this product to prevent bloat
-                db.query(CompetitorOffer).filter(
-                    CompetitorOffer.product_id == p.id
-                ).delete()
-                
-                # Store fresh competitor offers in database
-                competitor_offers_list = []
-                for o in offers:
-                    comp_offer = CompetitorOffer(
-                        product_id=p.id,
-                        seller_id=o.get("seller_id", ""),
-                        price=float(o.get("price", 0.0)),
-                        shipping=float(o.get("shipping", 0.0)),
-                        is_buybox=bool(o.get("is_buybox", False))
-                    )
-                    db.add(comp_offer)
-                    competitor_offers_list.append(comp_offer)
-                
-                # Skip repricing if product doesn't have repricing enabled
-                if not p.repricing_enabled:
-                    continue
-                
-                # Use new RepricingEngine with advanced strategies
-                engine = RepricingEngine(db)
-                strategy = p.repricing_strategy or 'win_buybox'  # Default to Win Buy Box
-                
-                # Calculate optimal price using new engine
-                repricing_result = engine.calculate_optimal_price(
-                    product=p,
-                    competitors=competitor_offers_list,
-                    strategy=strategy
-                )
-                
-                # Check if repricing is needed
-                if repricing_result['should_reprice']:
-                    new_price = repricing_result['new_price']
-                    
-                    # Update price on Amazon - different method for real vs mock client
-                    if is_real_client:
-                        # Real SP-API - use update_price with all required params
-                        result = _run_async(client.update_price(
-                            p.sku, 
-                            st.selling_partner_id, 
-                            marketplace_id, 
-                            new_price
-                        ))
-                        ok = result.get("success", False)
-                    else:
-                        # Mock client - simple update_price
-                        ok = _run_async(client.update_price(p.sku, new_price))
-                    
-                    if ok:
-                        products_repriced += 1
-                        old_price = p.price
-                        p.price = new_price
-                        p.last_repriced_at = datetime.utcnow()
-                        p.competitor_count = repricing_result.get('competitor_count', len(offers))
-                        p.lowest_competitor_price = repricing_result.get('lowest_competitor_price')
-                        
-                        # Log price change
-                        db.add(PriceHistory(
-                            product_id=p.id,
-                            price=new_price,
-                            buybox_owning=p.buybox_owning
-                        ))
-                        
-                        db.add(Notification(
-                            user_id=p.user_id,
-                            type="PRICE_CHANGED",
-                            payload_json=json.dumps({
-                                "asin": p.asin,
-                                "sku": p.sku,
-                                "old_price": old_price,
-                                "new_price": new_price,
-                                "strategy": strategy,
-                                "reason": repricing_result.get('reason', ''),
-                                "buybox_chance": repricing_result.get('estimated_buybox_chance', 0)
-                            }),
-                            sent=False
-                        ))
-                        
-                        price_change = ((new_price - old_price) / old_price) * 100
-                        logger.info(
-                            f"  💰 REPRICED {p.sku}: ${old_price:.2f} → ${new_price:.2f} ({price_change:+.1f}%) | "
-                            f"Strategy: {strategy.upper()} | Buy Box: {repricing_result.get('estimated_buybox_chance', 0)}%"
-                        )
             except Exception as e:
                 logger.error(f"⚠️ Error processing store {st.id}: {e}")
                 continue  # Continue with next store

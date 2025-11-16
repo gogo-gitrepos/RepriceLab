@@ -105,7 +105,9 @@ Preferred communication style: Simple, everyday language.
 
 ## Recent Changes
 
-### November 16, 2025 - Production-Ready Updates
+### November 16, 2025 - Production-Ready Updates & Amazon SP-API Error Fixes
+
+**Production Authentication & Empty State:**
 - **Updated Email Placeholders**: Changed all demo emails from `john@repricer.com` to `john@repricerlab.com` throughout the UI
   - Files: `frontend/src/app/page.tsx`, `frontend/src/app/login/page.tsx`, `frontend/src/app/top-header.tsx`
 - **Implemented Dashboard Empty State**: Dashboard now shows proper empty state for new users without connected stores/products
@@ -120,7 +122,29 @@ Preferred communication style: Simple, everyday language.
   - Shows proper error messages for invalid login attempts
   - Production mode enforced (development_mode=False by default)
   - Files: `frontend/src/app/page.tsx`, `backend/app/config.py`
-- **Login Flow**: All login paths (email/password, Google OAuth, landing page) now require valid authentication tokens
+- **Robust Error Handling**: Added `redirecting` state flag to prevent UI flash during authentication failures
+  - Authorization header automatically included in all API calls from localStorage
+  - 401 errors redirect to login without flash
+  - Network errors show retry UI
+  - Files: `frontend/src/app/dashboard/page.tsx`, `frontend/src/lib/api.ts`
+
+**Amazon SP-API Token Error Fixes:**
+- **Database Cleanup**: Identified and deactivated demo store with invalid 28-character refresh token
+  - SQL: `UPDATE stores SET is_active = false WHERE id = 1`
+- **Scheduler Improvements**: Enhanced repricing scheduler with robust error handling
+  - Only processes active stores (`Store.is_active == True`)
+  - Store-level exception handling - errors skip to next store
+  - Product-level exception handling - errors skip to next product
+  - Auto-detection of `invalid_grant` errors - marks store as inactive automatically
+  - Prevents continuous error logging for invalid tokens
+  - File: `backend/app/services/scheduler.py`
+- **Dependencies**: Added `gunicorn==21.2.0` to backend/requirements.txt for production deployment
+
+**Production Deployment Configuration:**
+- **Deployment Type**: Autoscale (stateless web app with external PostgreSQL database)
+- **Build Command**: `pip install -r backend/requirements.txt && cd frontend && npm install && npm run build`
+- **Run Command**: Backend (port 8000) + Frontend (port 5000) with Gunicorn + Next.js production server
+- **Architecture**: Frontend serves on port 5000, proxies `/api/*` requests to backend on port 8000 via Next.js rewrites
 
 ### November 14, 2025 - Dashboard & Navigation E2E Tests
 - **Created comprehensive Dashboard tests (8 tests - D1-D8)**:
