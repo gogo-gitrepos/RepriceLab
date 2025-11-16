@@ -1,13 +1,15 @@
 'use client';
 import { useEffect, useState } from 'react';
+import { useParams } from 'next/navigation';
 import { apiClient, PricingPreview } from '../../../lib/api';
 import { useI18n } from '@/lib/i18n';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 
-export default function ProductDetail({ params }: { params: { asin: string } }) {
+export default function ProductDetail() {
     const { t } = useI18n();
-    const { asin } = params;
+    const params = useParams();
+    const asin = params.asin as string;
     const [preview, setPreview] = useState<PricingPreview | null>(null);
     const [error, setError] = useState<string | null>(null);
 
