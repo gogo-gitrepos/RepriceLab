@@ -105,6 +105,27 @@ Preferred communication style: Simple, everyday language.
 
 ## Recent Changes
 
+### November 17, 2025 - Amazon SP-API Public OAuth Flow Restoration
+
+**Restored Public OAuth Flow for Multi-Tenant SaaS:**
+- **Removed Private App Implementation**: Reverted private app self-authorization approach
+  - Deleted `get_access_token()` function from amazon_spapi.py (was for single-account private apps)
+  - Removed dev test endpoints `/dev/spapi-test/token` and `/dev/spapi-test/marketplace-participations`
+  - Deleted `backend/app/routers/spapi_test.py` file entirely
+  - Files: `backend/app/services/amazon_spapi.py`, `backend/app/main.py`
+- **Restored Public OAuth Consent Flow**: Re-enabled multi-tenant store connections
+  - Updated documentation to reflect public app OAuth flow
+  - Removed "[LEGACY - NOT USED]" markers from `/auth/amazon/connect` and `/callback` endpoints
+  - Each user can now connect their own Amazon Seller Central account via OAuth
+  - Files: `backend/app/routers/amazon_auth.py`, `backend/app/services/amazon_spapi.py`
+- **Verified OAuth Configuration**: 
+  - Redirect URI: `https://69bcb19a-a003-4492-b392-01ab8e76d5d7-00-1oq2ou7777ks3.worf.replit.dev/api/auth/amazon/callback`
+  - Frontend URL: `https://69bcb19a-a003-4492-b392-01ab8e76d5d7-00-1oq2ou7777ks3.worf.replit.dev`
+  - OAuth flow tested successfully - generates proper authorization URLs with state parameter
+- **Architecture Decision**: RepriceLab is a SaaS platform where multiple users need to connect their own Amazon accounts
+  - Private app (single account) → NOT suitable for multi-tenant SaaS
+  - Public OAuth (multiple accounts) → Correct approach for RepriceLab ✅
+
 ### November 16, 2025 - Contact Form with Email Privacy & Scheduler Bug Fix
 
 **Contact Form Email Privacy:**

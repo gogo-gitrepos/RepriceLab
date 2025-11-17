@@ -3,7 +3,7 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from .config import settings
 from .database import init_db
-from .routers import auth, pricing, notifications, metrics, amazon_auth, products, google_auth, repricing, admin, stripe_webhooks, subscriptions, contact, spapi_test
+from .routers import auth, pricing, notifications, metrics, amazon_auth, products, google_auth, repricing, admin, stripe_webhooks, subscriptions, contact
 from .services.scheduler import start_scheduler
 
 def create_app() -> FastAPI:
@@ -28,7 +28,6 @@ def create_app() -> FastAPI:
     app.include_router(stripe_webhooks.router)
     app.include_router(subscriptions.router)
     app.include_router(contact.router)
-    app.include_router(spapi_test.router)
     if settings.scheduler_enabled:
         start_scheduler()
     return app
