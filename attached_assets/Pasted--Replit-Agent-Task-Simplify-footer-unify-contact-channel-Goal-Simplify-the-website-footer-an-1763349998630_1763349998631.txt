@@ -1,0 +1,80 @@
+🧠 Replit Agent Task – Simplify footer & unify contact channel
+
+Goal:
+Simplify the website footer and make sure the only way to contact us is via the “Contact Us” web form (no direct email addresses anywhere).
+
+1. Simplify the footer links
+
+In the main footer component (e.g. Footer.tsx / Footer.jsx in the frontend):
+
+Keep exactly these three columns and links:
+
+Product
+
+Repricing Basics
+
+Pricing Strategies
+
+Integrations
+
+Analytics
+
+Resources
+
+Blog
+
+Help Center
+
+Partners
+
+Company
+
+Contact Us
+
+Affiliates
+
+Requirements:
+
+Remove all other footer links such as “Safe Mode”, “Assisted Setup”, “Customer Stories”, “What’s New”, “eBooks”, “Webinars”, “Careers”, etc.
+
+Keep the current design/style of the footer (layout, colors, typography), just update the link labels and URLs.
+
+Make sure each link points to an existing or placeholder route (e.g. /blog, /help-center, /partners, /affiliates). If a page does not exist yet, link to a sensible placeholder route but do not break the build.
+
+2. Make “Contact Us” the only contact channel
+
+Goal: Nobody should see an email address; everyone must use the Contact Us form.
+
+Ensure the “Contact Us” link in the footer points to the existing contact page with the web form
+
+e.g. route like /contact or /contact-us.
+
+Search the entire codebase for any direct email usage and remove/replace:
+
+All mailto: links (e.g. mailto:support@repricelab.com)
+
+Any visible @repricelab.com email addresses in:
+
+Header / hero sections
+
+Footer
+
+Contact / Support / Help Center pages
+
+FAQ, pricing, about pages
+
+Config files that render emails into the UI
+
+Where an email address was shown to users, replace the text with something like:
+
+“Please use the Contact Us form to get in touch with us.”
+
+Make sure the contact form still works and submits correctly after these changes.
+
+3. Code quality
+
+Do not change backend behavior or email sending logic; only remove emails from the UI.
+
+Keep TypeScript/React/Next.js types and imports clean (no unused imports).
+
+Run the frontend build or dev server to be sure there are no TypeScript/compile errors.

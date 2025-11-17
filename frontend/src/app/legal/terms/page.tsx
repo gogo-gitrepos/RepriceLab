@@ -100,11 +100,11 @@ export default function TermsPage() {
             <section>
               <h2 className="text-2xl font-bold text-white mb-4">8. Contact</h2>
               <p>
-                For questions about these terms, contact us at:
-                <br />
-                <a href="mailto:legal@repricelab.com" className="text-blue-300 hover:text-blue-200 underline">
-                  legal@repricelab.com
+                For questions about these terms, please use our{' '}
+                <a href="/contact" className="text-blue-300 hover:text-blue-200 underline font-semibold">
+                  Contact Us form
                 </a>
+                {' '}to get in touch with us.
               </p>
             </section>
           </CardContent>

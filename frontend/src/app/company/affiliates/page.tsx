@@ -119,7 +119,7 @@ export default function AffiliatesPage() {
           >
             Apply to Affiliate Program
           </Button>
-          <p className="text-purple-200 mt-4">Questions? Contact us at affiliates@repricelab.com</p>
+          <p className="text-purple-200 mt-4">Questions? Please use our <a href="/contact" className="text-white hover:underline font-semibold">Contact Us form</a> to get in touch.</p>
         </div>
       </div>
     </div>

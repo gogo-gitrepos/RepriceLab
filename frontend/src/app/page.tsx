@@ -424,8 +424,6 @@ export default function LandingPage() {
               <ul className="space-y-3">
                 <li><a href="/product/repricing-basics" className="text-purple-300 hover:text-white text-sm transition-colors">Repricing Basics</a></li>
                 <li><a href="/product/pricing-strategies" className="text-purple-300 hover:text-white text-sm transition-colors">Pricing Strategies</a></li>
-                <li><a href="/product/safe-mode" className="text-purple-300 hover:text-white text-sm transition-colors">Safe Mode</a></li>
-                <li><a href="/product/assisted-setup" className="text-purple-300 hover:text-white text-sm transition-colors">Assisted Setup</a></li>
                 <li><a href="/product/integrations" className="text-purple-300 hover:text-white text-sm transition-colors">Integrations</a></li>
                 <li><a href="/product/analytics" className="text-purple-300 hover:text-white text-sm transition-colors">Analytics</a></li>
               </ul>
@@ -435,11 +433,7 @@ export default function LandingPage() {
             <div>
               <h3 className="text-white font-bold mb-4">Resources</h3>
               <ul className="space-y-3">
-                <li><a href="/resources/customer-stories" className="text-purple-300 hover:text-white text-sm transition-colors">Customer Stories</a></li>
-                <li><a href="/resources/whats-new" className="text-purple-300 hover:text-white text-sm transition-colors">What's New</a></li>
-                <li><a href="/resources/ebooks" className="text-purple-300 hover:text-white text-sm transition-colors">eBooks</a></li>
                 <li><a href="/resources/blog" className="text-purple-300 hover:text-white text-sm transition-colors">Blog</a></li>
-                <li><a href="/resources/webinars" className="text-purple-300 hover:text-white text-sm transition-colors">Webinars</a></li>
                 <li><a href="/resources/help-center" className="text-purple-300 hover:text-white text-sm transition-colors">Help Center</a></li>
                 <li><a href="/resources/partners" className="text-purple-300 hover:text-white text-sm transition-colors">Partners</a></li>
               </ul>
@@ -449,9 +443,8 @@ export default function LandingPage() {
             <div>
               <h3 className="text-white font-bold mb-4">Company</h3>
               <ul className="space-y-3">
-                <li><a href="/contact" className="text-purple-300 hover:text-white text-sm transition-colors">Contact us</a></li>
+                <li><a href="/contact" className="text-purple-300 hover:text-white text-sm transition-colors">Contact Us</a></li>
                 <li><a href="/company/affiliates" className="text-purple-300 hover:text-white text-sm transition-colors">Affiliates</a></li>
-                <li><a href="/company/careers" className="text-purple-300 hover:text-white text-sm transition-colors">Careers</a></li>
               </ul>
             </div>
           </div>

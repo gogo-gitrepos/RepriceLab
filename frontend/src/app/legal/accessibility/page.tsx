@@ -76,12 +76,11 @@ export default function AccessibilityPage() {
               <h2 className="text-2xl font-bold text-white mb-4">Feedback</h2>
               <p>
                 We welcome your feedback on the accessibility of RepriceLab. If you encounter any barriers or have 
-                suggestions for improvement, please contact us:
-                <br />
-                <br />
-                Email: <a href="mailto:accessibility@repricelab.com" className="text-blue-300 hover:text-blue-200 underline">
-                  accessibility@repricelab.com
+                suggestions for improvement, please use our{' '}
+                <a href="/contact" className="text-blue-300 hover:text-blue-200 underline font-semibold">
+                  Contact Us form
                 </a>
+                {' '}to get in touch with us.
                 <br />
                 <br />
                 We aim to respond to accessibility feedback within 5 business days.

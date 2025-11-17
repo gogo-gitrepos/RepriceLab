@@ -103,11 +103,11 @@ export default function PrivacyPolicyPage() {
             <section>
               <h2 className="text-2xl font-bold text-white mb-4">6. Contact Us</h2>
               <p>
-                If you have any questions about this Privacy Policy, please contact us at:
-                <br />
-                <a href="mailto:privacy@repricelab.com" className="text-blue-300 hover:text-blue-200 underline">
-                  privacy@repricelab.com
+                If you have any questions about this Privacy Policy, please use our{' '}
+                <a href="/contact" className="text-blue-300 hover:text-blue-200 underline font-semibold">
+                  Contact Us form
                 </a>
+                {' '}to get in touch with us.
               </p>
             </section>
           </CardContent>
