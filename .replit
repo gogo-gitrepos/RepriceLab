@@ -80,6 +80,6 @@ localPort = 46033
 externalPort = 5000
 
 [deployment]
-deploymentTarget = "gce"
-run = ["sh", "-c", "bash -c \"(cd backend && gunicorn app.main:app --worker-class uvicorn.workers.UvicornWorker --bind 0.0.0.0:8000 --reuse-port --workers 2) & (cd frontend && npm start) & wait\""]
+deploymentTarget = "autoscale"
+run = ["bash", "-c", "(cd backend && gunicorn app.main:app --worker-class uvicorn.workers.UvicornWorker --bind 0.0.0.0:8000 --reuse-port --workers 2) & (cd frontend && npm start) & wait"]
 build = ["bash", "-c", "pip install -r backend/requirements.txt && cd frontend && npm install && npm run build"]
