@@ -1,0 +1,105 @@
+2025-11-16 17:07:28.78
+abebd158
+User
+code: 'MODULE_NOT_FOUND',
+2025-11-16 17:07:28.78
+abebd158
+User
+}
+2025-11-16 17:07:28.78
+abebd158
+User
+at Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:164:12)
+2025-11-16 17:07:28.78
+abebd158
+User
+at node:internal/main/run_main_module:28:49 {
+2025-11-16 17:07:28.78
+abebd158
+User
+at Module._resolveFilename (node:internal/modules/cjs/loader:1212:15)
+2025-11-16 17:07:28.78
+abebd158
+User
+at Module._load (node:internal/modules/cjs/loader:1043:27)
+2025-11-16 17:07:28.78
+abebd158
+User
+throw err;
+2025-11-16 17:07:28.78
+abebd158
+User
+^
+2025-11-16 17:07:28.78
+abebd158
+User
+node:internal/modules/cjs/loader:1215
+2025-11-16 17:07:28.78
+abebd158
+User
+requireStack: []
+2025-11-16 17:07:28.78
+abebd158
+User
+Error: Cannot find module '/home/runner/workspace/frontend/.next/standalone/server.js'
+2025-11-16 17:07:28.78
+abebd158
+User
+Node.js v20.19.3
+2025-11-16 17:07:28.78
+abebd158
+System
+command finished with error [sh -c (cd backend && python -m gunicorn app.main:app --worker-class uvicorn.workers.UvicornWorker --bind 127.0.0.1:8000 --workers 1 --access-logfile - --error-logfile - --daemon) && sleep 3 && cd frontend && node .next/standalone/server.js]: exit status 1
+2025-11-16 17:07:32.22
+abebd158
+User
+Error: Cannot find module '/home/runner/workspace/frontend/.next/standalone/server.js'
+2025-11-16 17:07:32.22
+abebd158
+User
+}
+2025-11-16 17:07:32.22
+abebd158
+User
+Node.js v20.19.3
+2025-11-16 17:07:32.22
+abebd158
+User
+at node:internal/main/run_main_module:28:49 {
+2025-11-16 17:07:32.22
+abebd158
+User
+^
+
+2025-11-16 17:07:32.22
+abebd158
+User
+at Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:164:12)
+2025-11-16 17:07:32.22
+abebd158
+User
+at Module._load (node:internal/modules/cjs/loader:1043:27)
+2025-11-16 17:07:32.22
+abebd158
+User
+throw err;
+2025-11-16 17:07:32.22
+abebd158
+User
+at Module._resolveFilename (node:internal/modules/cjs/loader:1212:15)
+2025-11-16 17:07:32.22
+abebd158
+User
+node:internal/modules/cjs/loader:1215
+2025-11-16 17:07:32.22
+abebd158
+User
+requireStack: []
+2025-11-16 17:07:32.22
+abebd158
+User
+code: 'MODULE_NOT_FOUND',
+2025-11-16 17:07:32.23
+abebd158
+System
+command finished with error [sh -c (cd backend && python -m gunicorn app.main:app --worker-class uvicorn.workers.UvicornWorker --bind 127.0.0.1:8000 --workers 1 --access-logfile - --error-logfile - --daemon) && sleep 3 && cd frontend && node .next/standalone/server.js]: exit status 1

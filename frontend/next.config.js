@@ -2,8 +2,6 @@
 const nextConfig = {
   reactStrictMode: true,
   experimental: {},
-  output: 'standalone',
-  outputFileTracingRoot: require('path').join(__dirname, '../'),
   // Configure for Replit environment
   async headers() {
     return [
