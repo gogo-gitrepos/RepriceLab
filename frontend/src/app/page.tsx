@@ -469,6 +469,7 @@ export default function LandingPage() {
               <div className="flex flex-wrap items-center gap-6 text-sm">
                 <a href="/legal/privacy" className="text-purple-300 hover:text-white transition-colors">Privacy Policy</a>
                 <a href="/legal/terms" className="text-purple-300 hover:text-white transition-colors">Terms and Conditions</a>
+                <a href="/legal/security" className="text-purple-300 hover:text-white transition-colors">Security Policy</a>
                 <a href="/legal/accessibility" className="text-purple-300 hover:text-white transition-colors">Accessibility Statement</a>
                 <span className="text-purple-400">© Copyright 2025 Codexia LLC, All Rights Reserved</span>
               </div>
