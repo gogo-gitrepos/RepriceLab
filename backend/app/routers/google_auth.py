@@ -119,12 +119,16 @@ async def google_callback(request: GoogleCallbackRequest, db: Session = Depends(
                     user.name = user_info.get("name")
                     user.picture = user_info.get("picture")
                 else:
-                    # Create new user
+                    # Create new user with free trial (14 days)
+                    from datetime import datetime, timedelta
                     user = User(
                         email=user_info["email"],
                         google_id=user_info["id"],
                         name=user_info.get("name"),
-                        picture=user_info.get("picture")
+                        picture=user_info.get("picture"),
+                        subscription_plan="free",
+                        subscription_status="trial",
+                        trial_ends_at=datetime.utcnow() + timedelta(days=14)
                     )
                     db.add(user)
                 
