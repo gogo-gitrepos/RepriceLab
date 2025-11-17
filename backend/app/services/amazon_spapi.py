@@ -1,4 +1,17 @@
 # backend/app/services/amazon_spapi.py
+"""
+Amazon SP-API Service for RepriceLab
+
+This project uses SP-API as a PRIVATE APP with self-authorization.
+Access is obtained via Developer Central self-authorization (not public OAuth consent).
+We use a long-lived refresh token to obtain access tokens for API calls.
+
+Authentication flow:
+1. Developer obtains refresh token from Amazon Developer Central
+2. We exchange refresh token for access token (expires in 1 hour)
+3. Use access token in x-amz-access-token header for all SP-API calls
+4. Continue using SigV4 signing with IAM role credentials
+"""
 import os
 import httpx
 from typing import Optional, Dict, Any
@@ -43,6 +56,54 @@ MARKETPLACE_CURRENCY = {
 def get_marketplace_currency(marketplace_id: str) -> str:
     """Get currency code for a marketplace ID"""
     return MARKETPLACE_CURRENCY.get(marketplace_id, "USD")
+
+async def get_access_token() -> Dict[str, Any]:
+    """
+    Get access token using stored refresh token (Private App Self-Authorization).
+    
+    This function exchanges the long-lived refresh token (from Developer Central)
+    for a short-lived access token (1 hour expiry).
+    
+    Returns:
+        dict: {"success": bool, "access_token": str, "expires_in": int} or {"success": False, "error": str}
+    """
+    from ..config import settings
+    
+    if not settings.amazon_sp_api_refresh_token:
+        logger.error("AMAZON_SP_API_REFRESH_TOKEN not configured")
+        return {"success": False, "error": "Refresh token not configured"}
+    
+    token_url = "https://api.amazon.com/auth/o2/token"
+    
+    data = {
+        "grant_type": "refresh_token",
+        "refresh_token": settings.amazon_sp_api_refresh_token,
+        "client_id": settings.lwa_client_id,
+        "client_secret": settings.lwa_client_secret
+    }
+    
+    try:
+        async with httpx.AsyncClient() as client:
+            response = await client.post(
+                token_url,
+                data=data,
+                headers={"Content-Type": "application/x-www-form-urlencoded"}
+            )
+            response.raise_for_status()
+            
+            tokens = response.json()
+            logger.info("Successfully obtained access token from refresh token")
+            return {
+                "success": True,
+                "access_token": tokens.get("access_token"),
+                "expires_in": tokens.get("expires_in", 3600)
+            }
+    except httpx.HTTPStatusError as e:
+        logger.error(f"Token refresh failed with status {e.response.status_code}")
+        return {"success": False, "error": f"HTTP {e.response.status_code}"}
+    except Exception as e:
+        logger.error(f"Token refresh failed: {type(e).__name__}")
+        return {"success": False, "error": "Token refresh failed"}
 
 class AmazonSPAPIClient:
     """Amazon SP-API client for RepriceLab"""

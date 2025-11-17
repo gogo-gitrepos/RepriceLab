@@ -8,9 +8,14 @@ class Settings(BaseSettings):
     app_base_url: str = "http://localhost:8000"
     frontend_url: str = "http://localhost:5000"
 
-    # Amazon SP-API
+    # Amazon SP-API (Private App - Self-Authorization)
     lwa_client_id: str = Field(default="changeme", validation_alias="AMAZON_SP_API_CLIENT_ID")
     lwa_client_secret: str = Field(default="changeme", validation_alias="AMAZON_SP_API_CLIENT_SECRET")
+    amazon_sp_api_refresh_token: str = Field(default="", validation_alias="AMAZON_SP_API_REFRESH_TOKEN")
+    amazon_sp_api_role_arn: str = Field(default="", validation_alias="AMAZON_SP_API_ROLE_ARN")
+    amazon_sp_api_app_id: str = Field(default="", validation_alias="AMAZON_SP_API_APP_ID")
+    
+    # Legacy OAuth fields (not used for private app)
     amazon_sp_api_redirect_uri: str = Field(default="http://localhost:5000/api/auth/amazon/callback", validation_alias="AMAZON_SP_API_REDIRECT_URI")
     
     # Google OAuth
