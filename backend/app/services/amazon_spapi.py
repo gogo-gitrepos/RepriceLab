@@ -387,15 +387,19 @@ class AmazonOAuthFlow:
         self.redirect_uri = redirect_uri
         
     def generate_authorization_url(self, state: str) -> str:
-        """Generate Amazon authorization URL"""
+        """Generate Amazon authorization URL with proper encoding"""
+        from urllib.parse import urlencode
+        
         base_url = "https://sellercentral.amazon.com/apps/authorize/consent"
         params = {
             "application_id": self.client_id,
             "redirect_uri": self.redirect_uri,
-            "state": state
+            "state": state,
+            "version": "beta"
         }
         
-        query_string = "&".join([f"{k}={v}" for k, v in params.items()])
+        # Properly URL-encode all parameters
+        query_string = urlencode(params)
         return f"{base_url}?{query_string}"
     
     async def exchange_code_for_tokens(self, code: str) -> Dict[str, Any]:

@@ -6,6 +6,7 @@ from sqlalchemy import select
 from typing import Dict, Any
 import secrets
 import logging
+import os
 from datetime import datetime
 
 from ..database import SessionLocal
@@ -165,9 +166,11 @@ async def amazon_oauth_callback(
         # Clean up state
         del _oauth_states[state]
         
-        # Redirect to success page (you can customize this)
+        # Redirect to multichannel page with success message
+        # Use environment variable for frontend URL (works in both dev and production)
+        frontend_url = os.getenv("FRONTEND_URL", "http://localhost:5000")
         return RedirectResponse(
-            url=f"http://localhost:5000/settings?connected=success&store_id={store.id}",
+            url=f"{frontend_url}/multichannel?connected=success&store_id={store.id}",
             status_code=302
         )
         

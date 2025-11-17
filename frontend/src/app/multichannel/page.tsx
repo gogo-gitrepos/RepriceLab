@@ -24,8 +24,19 @@ export default function MultichannelPage() {
   const [loading, setLoading] = useState(false);
   const [connectingAmazon, setConnectingAmazon] = useState(false);
   const [userId, setUserId] = useState<number | null>(null);
+  const [showSuccessMessage, setShowSuccessMessage] = useState(false);
 
   useEffect(() => {
+    // Check for success message in URL
+    const urlParams = new URLSearchParams(window.location.search);
+    if (urlParams.get('connected') === 'success') {
+      setShowSuccessMessage(true);
+      // Remove query params from URL
+      window.history.replaceState({}, '', '/multichannel');
+      // Hide message after 5 seconds
+      setTimeout(() => setShowSuccessMessage(false), 5000);
+    }
+    
     initializePage();
   }, []);
 
@@ -128,6 +139,21 @@ export default function MultichannelPage() {
           </div>
         </div>
       </div>
+
+      {/* Success Message */}
+      {showSuccessMessage && (
+        <Card className="border-green-200 bg-green-50">
+          <CardContent className="p-4">
+            <div className="flex items-center gap-3">
+              <CheckCircle className="w-5 h-5 text-green-600" />
+              <div>
+                <h3 className="font-semibold text-green-900">Amazon Store Connected Successfully!</h3>
+                <p className="text-sm text-green-700">Your Amazon Seller Central account has been linked. Products will sync shortly.</p>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      )}
 
       {/* Connection Cards */}
       <div className="grid gap-6 max-w-3xl">
