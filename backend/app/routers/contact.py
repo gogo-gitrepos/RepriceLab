@@ -16,8 +16,7 @@ class ContactRequest(BaseModel):
     subject: str
     message: str
 
-@router.post("/")
-async def submit_contact_form(request: ContactRequest):
+async def _submit_contact_form_handler(request: ContactRequest):
     try:
         recipient_email = "repricelab@gmail.com"
         
@@ -108,3 +107,11 @@ Message:
             status_code=500,
             detail="An error occurred while processing your request"
         )
+
+@router.post("/")
+async def submit_contact_form_with_slash(request: ContactRequest):
+    return await _submit_contact_form_handler(request)
+
+@router.post("")
+async def submit_contact_form_without_slash(request: ContactRequest):
+    return await _submit_contact_form_handler(request)
