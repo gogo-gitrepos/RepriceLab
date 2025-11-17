@@ -424,7 +424,6 @@ export default function LandingPage() {
               <ul className="space-y-3">
                 <li><a href="/product/repricing-basics" className="text-purple-300 hover:text-white text-sm transition-colors">Repricing Basics</a></li>
                 <li><a href="/product/pricing-strategies" className="text-purple-300 hover:text-white text-sm transition-colors">Pricing Strategies</a></li>
-                <li><a href="/product/integrations" className="text-purple-300 hover:text-white text-sm transition-colors">Integrations</a></li>
                 <li><a href="/product/analytics" className="text-purple-300 hover:text-white text-sm transition-colors">Analytics</a></li>
               </ul>
             </div>
@@ -433,9 +432,7 @@ export default function LandingPage() {
             <div>
               <h3 className="text-white font-bold mb-4">Resources</h3>
               <ul className="space-y-3">
-                <li><a href="/resources/blog" className="text-purple-300 hover:text-white text-sm transition-colors">Blog</a></li>
                 <li><a href="/resources/help-center" className="text-purple-300 hover:text-white text-sm transition-colors">Help Center</a></li>
-                <li><a href="/resources/partners" className="text-purple-300 hover:text-white text-sm transition-colors">Partners</a></li>
               </ul>
             </div>
 
@@ -444,7 +441,6 @@ export default function LandingPage() {
               <h3 className="text-white font-bold mb-4">Company</h3>
               <ul className="space-y-3">
                 <li><a href="/contact" className="text-purple-300 hover:text-white text-sm transition-colors">Contact Us</a></li>
-                <li><a href="/company/affiliates" className="text-purple-300 hover:text-white text-sm transition-colors">Affiliates</a></li>
               </ul>
             </div>
           </div>
