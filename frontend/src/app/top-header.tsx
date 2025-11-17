@@ -1,12 +1,19 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { Bell, MessageSquare, HelpCircle, ChevronDown, Settings, CreditCard, LogOut, Package, Star, Monitor, X, Send, Search } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
+interface User {
+  id: number;
+  email: string;
+  name?: string;
+}
+
 export function TopHeader() {
   const router = useRouter();
+  const [user, setUser] = useState<User | null>(null);
   const [profileDropdownOpen, setProfileDropdownOpen] = useState(false);
   const [notificationsOpen, setNotificationsOpen] = useState(false);
   const [messagesOpen, setMessagesOpen] = useState(false);
@@ -14,6 +21,17 @@ export function TopHeader() {
   const [searchTerm, setSearchTerm] = useState('');
   const [newMessage, setNewMessage] = useState('');
   const [showSupportChat, setShowSupportChat] = useState(false);
+
+  useEffect(() => {
+    const storedUser = localStorage.getItem('user');
+    if (storedUser) {
+      try {
+        setUser(JSON.parse(storedUser));
+      } catch (error) {
+        console.error('Error parsing user data:', error);
+      }
+    }
+  }, []);
 
   const [notifications, setNotifications] = useState([
     {
@@ -118,6 +136,27 @@ export function TopHeader() {
     item.question.toLowerCase().includes(searchTerm.toLowerCase()) ||
     item.answer.toLowerCase().includes(searchTerm.toLowerCase())
   );
+
+  const getInitials = (email: string, name?: string) => {
+    if (name) {
+      const parts = name.trim().split(' ');
+      if (parts.length >= 2) {
+        return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
+      }
+      return parts[0].substring(0, 2).toUpperCase();
+    }
+    return email.substring(0, 2).toUpperCase();
+  };
+
+  const getDisplayName = (email: string, name?: string) => {
+    return name || email.split('@')[0];
+  };
+
+  const handleLogout = () => {
+    localStorage.removeItem('access_token');
+    localStorage.removeItem('user');
+    router.push('/');
+  };
 
   const LabLogo = () => (
     <div className="relative w-10 h-10">
@@ -390,7 +429,9 @@ export function TopHeader() {
             className="flex items-center space-x-1 sm:space-x-2 text-white hover:text-white bg-white/20 backdrop-blur-sm rounded-full px-2 sm:px-3 py-1.5 sm:py-2 transition-all duration-200 hover:bg-white/30"
           >
             <div className="w-6 h-6 sm:w-8 sm:h-8 bg-purple-800 rounded-full flex items-center justify-center">
-              <span className="text-white font-bold text-xs sm:text-sm">JD</span>
+              <span className="text-white font-bold text-xs sm:text-sm">
+                {user ? getInitials(user.email, user.name) : 'U'}
+              </span>
             </div>
             <ChevronDown className="w-3 h-3 sm:w-4 sm:h-4" />
           </button>
@@ -405,11 +446,17 @@ export function TopHeader() {
                 <div className="p-4 border-b">
                   <div className="flex items-center space-x-3">
                     <div className="w-10 h-10 bg-gray-600 rounded-full flex items-center justify-center">
-                      <span className="text-white font-bold">JD</span>
+                      <span className="text-white font-bold">
+                        {user ? getInitials(user.email, user.name) : 'U'}
+                      </span>
                     </div>
                     <div>
-                      <p className="font-medium text-gray-900">John Doe</p>
-                      <p className="text-sm text-gray-500">john@repricerlab.com</p>
+                      <p className="font-medium text-gray-900">
+                        {user ? getDisplayName(user.email, user.name) : 'User'}
+                      </p>
+                      <p className="text-sm text-gray-500">
+                        {user?.email || 'user@example.com'}
+                      </p>
                     </div>
                   </div>
                 </div>
@@ -455,7 +502,7 @@ export function TopHeader() {
 
                 <div className="border-t py-2">
                   <button 
-                    onClick={() => router.push('/')}
+                    onClick={handleLogout}
                     className="flex items-center w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-50"
                   >
                     <LogOut className="w-4 h-4 mr-3" />
