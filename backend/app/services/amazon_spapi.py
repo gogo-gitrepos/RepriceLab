@@ -465,10 +465,11 @@ class AmazonOAuthFlow:
 # Environment-based configuration
 def get_spapi_config():
     """Get SP-API configuration from environment"""
+    from ..config import settings
     return {
-        "client_id": os.getenv("AMAZON_SP_API_CLIENT_ID"),
-        "client_secret": os.getenv("AMAZON_SP_API_CLIENT_SECRET"),
-        "redirect_uri": os.getenv("AMAZON_SP_API_REDIRECT_URI", "http://localhost:5000/api/auth/amazon/callback")
+        "client_id": settings.lwa_client_id,
+        "client_secret": settings.lwa_client_secret,
+        "redirect_uri": settings.amazon_sp_api_redirect_uri
     }
 
 def create_spapi_client(refresh_token: str, region: str = "NA") -> Optional[AmazonSPAPIClient]:

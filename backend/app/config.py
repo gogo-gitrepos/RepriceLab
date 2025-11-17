@@ -1,4 +1,5 @@
 # backend/app/config.py
+from pydantic import Field
 from pydantic_settings import BaseSettings
 
 class Settings(BaseSettings):
@@ -8,9 +9,9 @@ class Settings(BaseSettings):
     frontend_url: str = "http://localhost:5000"
 
     # Amazon SP-API
-    lwa_client_id: str = "changeme"
-    lwa_client_secret: str = "changeme"
-    amazon_sp_api_redirect_uri: str = "http://localhost:5000/api/auth/amazon/callback"
+    lwa_client_id: str = Field(default="changeme", validation_alias="AMAZON_SP_API_CLIENT_ID")
+    lwa_client_secret: str = Field(default="changeme", validation_alias="AMAZON_SP_API_CLIENT_SECRET")
+    amazon_sp_api_redirect_uri: str = Field(default="http://localhost:5000/api/auth/amazon/callback", validation_alias="AMAZON_SP_API_REDIRECT_URI")
     
     # Google OAuth
     google_redirect_uri: str = "http://localhost:5000/auth/google/callback"
