@@ -1,4 +1,15 @@
 # backend/app/routes/amazon_auth.py
+"""
+Amazon Authentication Routes
+
+NOTE: This module contains PUBLIC OAuth consent flow code.
+RepriceLab is currently configured as a PRIVATE SP-API app using self-authorization.
+The public OAuth flow (/connect, /callback endpoints) is NOT USED in production.
+
+For private app authentication, see:
+- backend/app/services/amazon_spapi.py::get_access_token()
+- Developer Central self-authorization with refresh token
+"""
 from fastapi import APIRouter, HTTPException, Depends, Query, Request
 from fastapi.responses import RedirectResponse
 from sqlalchemy.orm import Session
@@ -32,7 +43,13 @@ async def initiate_amazon_oauth(
     user_id: int = Query(..., description="User ID to connect store to"),
     db: Session = Depends(get_db)
 ):
-    """Initiate Amazon OAuth flow to connect seller account"""
+    """
+    [LEGACY - NOT USED FOR PRIVATE APP]
+    
+    Initiate Amazon OAuth flow to connect seller account.
+    This endpoint generates public OAuth consent URLs and is NOT used
+    for RepriceLab's private app configuration.
+    """
     
     # Check if user exists
     user = db.execute(select(User).where(User.id == user_id)).scalar_one_or_none()
