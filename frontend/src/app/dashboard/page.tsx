@@ -191,8 +191,20 @@ export default function DashboardPage() {
     return null;
   }
 
+  // Show loading state while fetching data
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-50 via-white to-purple-50 p-6">
+        <div className="text-center">
+          <div className="w-16 h-16 border-4 border-purple-200 border-t-purple-600 rounded-full animate-spin mx-auto mb-4"></div>
+          <p className="text-gray-600 font-medium">Loading dashboard...</p>
+        </div>
+      </div>
+    );
+  }
+
   // Show error state if there's an error loading data
-  if (!loading && error) {
+  if (error) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-50 via-white to-purple-50 p-6">
         <Card className="max-w-md w-full shadow-2xl border-red-200">
@@ -215,7 +227,7 @@ export default function DashboardPage() {
   }
 
   // Show empty state if no connected stores or products
-  if (!loading && !hasData) {
+  if (!hasData) {
     return <EmptyState />;
   }
 
