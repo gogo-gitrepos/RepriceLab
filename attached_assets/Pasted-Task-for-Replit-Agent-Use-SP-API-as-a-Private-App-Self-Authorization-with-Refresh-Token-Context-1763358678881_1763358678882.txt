@@ -1,0 +1,129 @@
+Task for Replit Agent – Use SP-API as a Private App (Self-Authorization with Refresh Token)
+
+Context
+
+App name: RepriceLab
+
+Hosting: Replit (current URL: https://69bcb19a-a003-4492-b392-01ab8e76d5d7-00-1oq2ou7777ks3.worf.replit.dev)
+
+This is an Amazon SP-API private app, not a public/3rd-party marketplace app.
+
+Because it is a private app, I am using self-authorization from Seller Central → Developer Central → “Authorize” screen (not the /apps/authorize/consent URL).
+
+From that screen I already obtained a Login With Amazon refresh token and I have:
+
+LWA Client ID
+
+LWA Client Secret
+
+LWA Refresh Token
+
+SP-API App ID
+
+IAM Role ARN
+
+I need you to wire all of this into the existing code and stop trying to use the public OAuth consent flow.
+
+What I want you to do
+
+Environment variables
+
+Add support (or ensure we already support) these env vars in the Replit project:
+
+AMAZON_SP_API_CLIENT_ID=...          # LWA client identifier
+AMAZON_SP_API_CLIENT_SECRET=...      # LWA client secret
+AMAZON_SP_API_REFRESH_TOKEN=...      # refresh token from Developer Central → Authorize
+AMAZON_SP_API_ROLE_ARN=...           # IAM Role ARN shown on the Authorize page
+AMAZON_SP_API_APP_ID=amzn1.sp.solution.e1263a36-c554-4217-951f-0949b14a1592
+
+
+Do not log these values anywhere.
+
+Implement refresh-token based access token retrieval
+
+In backend/app/services/amazon_spapi.py (or the main SP-API service module):
+
+Create a function like get_access_token() that:
+
+Sends a POST request to https://api.amazon.com/auth/o2/token
+
+With Content-Type: application/x-www-form-urlencoded
+
+Body:
+
+grant_type=refresh_token
+refresh_token=${AMAZON_SP_API_REFRESH_TOKEN}
+client_id=${AMAZON_SP_API_CLIENT_ID}
+client_secret=${AMAZON_SP_API_CLIENT_SECRET}
+
+
+Parses the JSON response and returns access_token.
+
+Handles errors gracefully (log a short message, but never log secrets).
+
+Use this access token for all SP-API calls
+
+Wherever we call SP-API (pricing, inventory, listings, etc.), update the code to:
+
+Call get_access_token() to get a fresh token.
+
+Send it in the header as:
+
+x-amz-access-token: <access_token>
+
+
+Continue to use SigV4 signing with the IAM role/credentials as before (don’t remove signing, just add the x-amz-access-token header correctly).
+
+Remove / disable the public OAuth consent flow
+
+We do not want to use the Seller Central URL
+https://sellercentral.amazon.com/apps/authorize/consent?...
+because this is only for public / 3rd-party apps.
+
+If there is any code, route, or configuration that:
+
+Builds a consent URL,
+
+Expects an spapi_oauth_code from a browser redirect,
+
+Or tries to exchange authorization_code for tokens on the callback,
+
+then:
+
+Comment it out or clearly mark it as “not used for private app”.
+
+Make sure the current production auth flow only relies on the static refresh token that I got via self-authorization.
+
+Small health-check / test endpoint
+
+Add a simple dev-only endpoint or CLI helper that:
+
+Calls get_access_token()
+
+Then makes a very basic SP-API request such as getMarketplaceParticipations (Sellers API).
+
+Returns status code and a tiny piece of JSON so I can confirm everything works.
+
+Make sure this test route is not exposed publicly in a dangerous way (no secrets in the response).
+
+Comments / docs
+
+Add short comments in the SP-API service explaining that:
+
+This project is currently a private SP-API app.
+
+Access is obtained via self-authorization in Developer Central.
+
+We are using a long-lived refresh token instead of interactive OAuth consent from other sellers.
+
+Acceptance criteria
+
+I can start the Replit app, hit the test endpoint (or run the helper), and:
+
+A new access token is fetched using the stored refresh token.
+
+A simple SP-API call succeeds (200) with a valid JSON response.
+
+There is no more MD9100 error because we are not calling the public consent URL anymore.
+
+No secrets are printed in logs or responses.
