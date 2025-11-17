@@ -1,10 +1,12 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Store, Plus, CheckCircle, AlertCircle, Loader2, ExternalLink, Radio } from 'lucide-react';
+import { apiClient } from '@/lib/api';
 
 interface StoreConnection {
   id: number;
@@ -17,18 +19,46 @@ interface StoreConnection {
 }
 
 export default function MultichannelPage() {
+  const router = useRouter();
   const [stores, setStores] = useState<StoreConnection[]>([]);
   const [loading, setLoading] = useState(false);
   const [connectingAmazon, setConnectingAmazon] = useState(false);
+  const [userId, setUserId] = useState<number | null>(null);
 
   useEffect(() => {
-    loadStores();
+    initializePage();
   }, []);
 
-  const loadStores = async () => {
+  const initializePage = async () => {
+    try {
+      // Get user status to retrieve user ID
+      const userStatus = await apiClient.getUserStatus();
+      
+      if (!userStatus) {
+        // Not authenticated - redirect to login
+        router.push('/login');
+        return;
+      }
+
+      setUserId(userStatus.id);
+      
+      // Load stores for this user
+      await loadStores(userStatus.id);
+    } catch (error) {
+      console.error('Failed to initialize page:', error);
+      router.push('/login');
+    }
+  };
+
+  const loadStores = async (uid: number) => {
     try {
       setLoading(true);
-      const response = await fetch('/api/stores?user_id=2');
+      const token = localStorage.getItem('access_token');
+      const response = await fetch(`/api/stores?user_id=${uid}`, {
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      });
       
       if (response.ok) {
         const data = await response.json();
@@ -42,15 +72,31 @@ export default function MultichannelPage() {
   };
 
   const connectAmazon = async () => {
+    if (!userId) {
+      alert('Please log in first');
+      router.push('/login');
+      return;
+    }
+
     try {
       setConnectingAmazon(true);
-      const response = await fetch('/api/auth/amazon/connect?user_id=2');
+      const token = localStorage.getItem('access_token');
+      const response = await fetch(`/api/auth/amazon/connect?user_id=${userId}`, {
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      });
       
       if (response.ok) {
         const data = await response.json();
         if (data.authorization_url) {
           window.location.href = data.authorization_url;
+        } else {
+          alert('Failed to get Amazon authorization URL. Please try again.');
         }
+      } else {
+        const errorData = await response.json();
+        alert(errorData.detail || 'Failed to connect Amazon account. Please try again.');
       }
     } catch (error) {
       console.error('Failed to initiate Amazon connection:', error);
