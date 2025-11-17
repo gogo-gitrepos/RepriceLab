@@ -61,3 +61,38 @@ Preferred communication style: Simple, everyday language.
 ### Notification Services
 - **SMTP**: Email notifications.
 - **Web Push API / PyWebPush**: Browser push notifications.
+
+## Recent Changes
+
+### November 17, 2025 - Legal Documentation for US Market (CCPA/CPRA Compliance)
+
+**Created Comprehensive Legal Documentation for Amazon Public App Approval (US-Focused):**
+- **Privacy Policy:** US privacy law compliance (CCPA/CPRA)
+  - California consumer privacy rights (Right to Know, Delete, Correct, Portability, Opt-Out, Non-Discrimination)
+  - Amazon seller data handling procedures (OAuth tokens, product data, orders)
+  - Encryption standards (TLS 1.2+, AES-256)
+  - Data retention and deletion policies (30-day grace period)
+  - 45-day response time for CCPA requests
+  - Authorized agent provision for California residents
+  - Files: `frontend/src/app/legal/privacy/page.tsx`
+- **Terms of Service:** US jurisdiction and Amazon seller requirements
+  - Subscription plans and pricing (Free, Plus, Pro, Enterprise)
+  - Amazon OAuth authorization scope
+  - Repricing rules responsibility disclaimer
+  - Limitation of liability for pricing errors and Buy Box loss
+  - Governing law: State of Delaware, United States
+  - Arbitration: American Arbitration Association (AAA)
+  - Refund policy and cancellation terms
+  - Files: `frontend/src/app/legal/terms/page.tsx`
+- **Security Policy:** Technical security documentation for Amazon reviewers
+  - Infrastructure security (AWS SOC 2, ISO 27001, CCPA/CPRA compliance)
+  - Data encryption (in transit and at rest)
+  - Amazon SP-API token security (encrypted refresh tokens)
+  - Access control and authentication (JWT, bcrypt, MFA)
+  - Incident response plan (24-hour Amazon notification, 72-hour user notification per CCPA)
+  - Backup and disaster recovery (RTO: 4 hours, RPO: 6 hours)
+  - Vulnerability management procedures
+  - Files: `frontend/src/app/legal/security/page.tsx`
+- **Footer Navigation:** Added Security Policy link to footer legal section
+  - Files: `frontend/src/app/page.tsx`
+- **Purpose:** Enable Amazon public app approval for US-based multi-tenant SaaS OAuth consent flow
