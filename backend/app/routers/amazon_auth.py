@@ -21,7 +21,7 @@ from ..models import Store, User
 from ..services.amazon_spapi import AmazonOAuthFlow, get_spapi_config, create_spapi_client
 
 logger = logging.getLogger(__name__)
-router = APIRouter(prefix="/api/auth/amazon", tags=["Amazon Authentication"])
+router = APIRouter(prefix="/auth/amazon", tags=["Amazon Authentication"])
 
 # In-memory state storage (in production, use Redis or database)
 _oauth_states = {}

@@ -16,7 +16,7 @@ from ..services.plan_limits import PLAN_LIMITS
 from ..config import settings
 
 logger = logging.getLogger(__name__)
-router = APIRouter(prefix="/api/subscriptions", tags=["Subscriptions"])
+router = APIRouter(prefix="/subscriptions", tags=["Subscriptions"])
 
 stripe_service = StripeService()
 

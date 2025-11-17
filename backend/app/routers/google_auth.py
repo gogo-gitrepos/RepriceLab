@@ -11,7 +11,7 @@ from ..database import get_db
 from ..models import User
 from ..config import settings
 
-router = APIRouter(prefix="/api/auth/google", tags=["google-auth"])
+router = APIRouter(prefix="/auth/google", tags=["google-auth"])
 
 GOOGLE_CLIENT_ID = os.getenv("GOOGLE_CLIENT_ID", "")
 GOOGLE_CLIENT_SECRET = os.getenv("GOOGLE_CLIENT_SECRET", "")

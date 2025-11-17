@@ -10,7 +10,7 @@ from ..models import Product, Store
 from ..services.product_sync import ProductSyncService
 
 logger = logging.getLogger(__name__)
-router = APIRouter(prefix="/api/products", tags=["Products"])
+router = APIRouter(prefix="/products", tags=["Products"])
 
 # Initialize product sync service
 product_sync_service = ProductSyncService()

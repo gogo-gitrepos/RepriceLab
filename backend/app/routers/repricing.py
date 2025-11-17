@@ -11,7 +11,7 @@ from ..database import get_db
 from ..models import Product
 from ..services.repricing_engine import RepricingEngine
 
-router = APIRouter(prefix="/api/repricing", tags=["repricing"])
+router = APIRouter(prefix="/repricing", tags=["repricing"])
 
 
 class RepricingStrategyUpdate(BaseModel):

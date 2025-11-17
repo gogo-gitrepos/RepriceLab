@@ -7,7 +7,7 @@ import logging
 
 from ..config import settings
 
-router = APIRouter(prefix="/api/contact", tags=["contact"])
+router = APIRouter(prefix="/contact", tags=["contact"])
 logger = logging.getLogger(__name__)
 
 class ContactRequest(BaseModel):
