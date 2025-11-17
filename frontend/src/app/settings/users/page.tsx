@@ -1,39 +1,56 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { UserPlus, Search, Settings, Trash2, Mail, Shield, Crown } from 'lucide-react';
 
+interface User {
+  id: number;
+  name: string;
+  email: string;
+  role: string;
+  status: string;
+  lastLogin: string;
+}
+
 export default function UsersPage() {
-  const [users, setUsers] = useState([
-    {
-      id: 1,
-      name: 'John Doe',
-      email: 'john@company.com',
-      role: 'Owner',
-      status: 'Active',
-      lastLogin: '2 hours ago'
-    },
-    {
-      id: 2,
-      name: 'Sarah Wilson',
-      email: 'sarah@company.com',
-      role: 'Admin',
-      status: 'Active',
-      lastLogin: '1 day ago'
-    },
-    {
-      id: 3,
-      name: 'Mike Chen',
-      email: 'mike@company.com',
-      role: 'Member',
-      status: 'Pending',
-      lastLogin: 'Never'
+  const router = useRouter();
+  const [users, setUsers] = useState<User[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    // Get current user from localStorage
+    const userStr = localStorage.getItem('user');
+    if (!userStr) {
+      router.push('/login');
+      return;
     }
-  ]);
+
+    try {
+      const currentUser = JSON.parse(userStr);
+      
+      // Show only the current user as Owner
+      setUsers([
+        {
+          id: currentUser.id,
+          name: currentUser.name || 'User',
+          email: currentUser.email,
+          role: 'Owner',
+          status: 'Active',
+          lastLogin: 'Now'
+        }
+      ]);
+    } catch (error) {
+      console.error('Failed to parse user data:', error);
+      router.push('/login');
+    } finally {
+      setLoading(false);
+    }
+  }, [router]);
 
   const [searchQuery, setSearchQuery] = useState('');
   const [showInviteModal, setShowInviteModal] = useState(false);
