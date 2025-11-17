@@ -77,14 +77,14 @@ export default function MultichannelPage() {
           <div>
             <h1 className="text-3xl font-bold">Multichannel</h1>
             <p className="text-muted-foreground mt-1">
-              Connect and manage your Amazon and Walmart seller accounts
+              Connect and manage your Amazon seller accounts
             </p>
           </div>
         </div>
       </div>
 
       {/* Connection Cards */}
-      <div className="grid md:grid-cols-2 gap-6">
+      <div className="grid gap-6 max-w-3xl">
         {/* Amazon Connection */}
         <Card className="border-2 border-orange-200 bg-gradient-to-br from-orange-50 to-white">
           <CardHeader>
@@ -162,34 +162,6 @@ export default function MultichannelPage() {
                 )}
               </Button>
             )}
-          </CardContent>
-        </Card>
-
-        {/* Walmart Connection */}
-        <Card className="border-2 border-blue-200 bg-gradient-to-br from-blue-50 to-white">
-          <CardHeader>
-            <CardTitle className="flex items-center gap-3">
-              <div className="w-12 h-12 bg-blue-500 rounded-lg flex items-center justify-center">
-                <Store className="w-6 h-6 text-white" />
-              </div>
-              <div>
-                <div className="text-xl">Walmart Marketplace</div>
-                <div className="text-sm font-normal text-muted-foreground">
-                  Coming soon
-                </div>
-              </div>
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <p className="text-sm text-muted-foreground">
-              Walmart integration is coming soon. Sync your Walmart Marketplace products 
-              and prices automatically.
-            </p>
-            
-            <Button disabled className="w-full" variant="outline">
-              <AlertCircle className="w-4 h-4 mr-2" />
-              Coming Soon
-            </Button>
           </CardContent>
         </Card>
       </div>

@@ -188,49 +188,6 @@ export default function ChannelsPage() {
         </CardContent>
       </Card>
 
-      {/* Available Marketplaces */}
-      <Card>
-        <CardHeader>
-          <CardTitle>Available Marketplaces</CardTitle>
-          <CardDescription>Connect to additional sales channels</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            <Card className="cursor-pointer hover:shadow-md transition-shadow">
-              <CardContent className="p-4 text-center">
-                <div className="w-12 h-12 bg-red-100 rounded-lg flex items-center justify-center mx-auto mb-3">
-                  <Store className="w-6 h-6 text-red-600" />
-                </div>
-                <h3 className="font-medium mb-2">Walmart</h3>
-                <p className="text-sm text-muted-foreground mb-3">Connect to Walmart Marketplace</p>
-                <Button variant="outline" size="sm" className="w-full">Connect</Button>
-              </CardContent>
-            </Card>
-            
-            <Card className="cursor-pointer hover:shadow-md transition-shadow">
-              <CardContent className="p-4 text-center">
-                <div className="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center mx-auto mb-3">
-                  <ShoppingCart className="w-6 h-6 text-purple-600" />
-                </div>
-                <h3 className="font-medium mb-2">Shopify</h3>
-                <p className="text-sm text-muted-foreground mb-3">Connect your Shopify store</p>
-                <Button variant="outline" size="sm" className="w-full">Connect</Button>
-              </CardContent>
-            </Card>
-            
-            <Card className="cursor-pointer hover:shadow-md transition-shadow">
-              <CardContent className="p-4 text-center">
-                <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center mx-auto mb-3">
-                  <Globe className="w-6 h-6 text-blue-600" />
-                </div>
-                <h3 className="font-medium mb-2">Etsy</h3>
-                <p className="text-sm text-muted-foreground mb-3">Connect to Etsy marketplace</p>
-                <Button variant="outline" size="sm" className="w-full">Connect</Button>
-              </CardContent>
-            </Card>
-          </div>
-        </CardContent>
-      </Card>
     </div>
   );
 }

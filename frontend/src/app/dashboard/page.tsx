@@ -154,7 +154,7 @@ export default function DashboardPage() {
           <Button 
             size="lg" 
             className="bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white font-semibold px-8 py-6 text-lg shadow-xl"
-            onClick={() => router.push('/settings/channels')}
+            onClick={() => router.push('/multichannel')}
           >
             <Store className="w-5 h-5 mr-2" />
             Connect Your Amazon Store
