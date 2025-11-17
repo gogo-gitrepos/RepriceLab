@@ -68,7 +68,7 @@ export default function SecurityPolicyPage() {
                   <li>SOC 2 Type II compliant</li>
                   <li>ISO 27001 certified</li>
                   <li>PCI DSS Level 1 (via Stripe)</li>
-                  <li>GDPR & KVKK compliant infrastructure</li>
+                  <li>CCPA/CPRA compliant infrastructure</li>
                 </ul>
               </div>
 
@@ -242,7 +242,7 @@ export default function SecurityPolicyPage() {
                   <li><strong>Containment (4-24 hours):</strong> Isolate affected systems, prevent spread</li>
                   <li><strong>Eradication (24-48 hours):</strong> Remove threat, patch vulnerabilities</li>
                   <li><strong>Recovery (48-72 hours):</strong> Restore services, verify security</li>
-                  <li><strong>Communication:</strong> Notify affected users within 72 hours (GDPR requirement)</li>
+                  <li><strong>Communication:</strong> Notify affected users within 72 hours (CCPA/state breach notification laws)</li>
                   <li><strong>Post-Incident Review:</strong> Root cause analysis, preventive measures</li>
                 </ol>
               </div>
@@ -251,8 +251,8 @@ export default function SecurityPolicyPage() {
               <p className="mb-3">In the event of a data breach affecting Amazon seller data:</p>
               <ul className="list-disc pl-6 space-y-2">
                 <li>Amazon notified within <strong>24 hours</strong> (as required by SP-API DPP)</li>
-                <li>Affected users notified within <strong>72 hours</strong> (GDPR/KVKK requirement)</li>
-                <li>Regulatory authorities notified as required by law</li>
+                <li>Affected users notified within <strong>72 hours</strong> (CCPA/state breach notification laws)</li>
+                <li>Regulatory authorities notified as required by applicable state laws</li>
                 <li>Public disclosure if legally required</li>
               </ul>
             </section>
@@ -311,12 +311,12 @@ export default function SecurityPolicyPage() {
                   <p className="text-sm text-green-800">Fully compliant with Amazon's Data Protection Policy</p>
                 </div>
                 <div className="bg-green-50 border border-green-300 p-4 rounded-lg">
-                  <h4 className="font-bold text-green-900 mb-2">✓ GDPR Compliant</h4>
-                  <p className="text-sm text-green-800">EU General Data Protection Regulation</p>
+                  <h4 className="font-bold text-green-900 mb-2">✓ CCPA Compliant</h4>
+                  <p className="text-sm text-green-800">California Consumer Privacy Act</p>
                 </div>
                 <div className="bg-green-50 border border-green-300 p-4 rounded-lg">
-                  <h4 className="font-bold text-green-900 mb-2">✓ KVKK Compliant</h4>
-                  <p className="text-sm text-green-800">Turkish Personal Data Protection Law</p>
+                  <h4 className="font-bold text-green-900 mb-2">✓ CPRA Compliant</h4>
+                  <p className="text-sm text-green-800">California Privacy Rights Act</p>
                 </div>
                 <div className="bg-green-50 border border-green-300 p-4 rounded-lg">
                   <h4 className="font-bold text-green-900 mb-2">✓ PCI DSS (via Stripe)</h4>

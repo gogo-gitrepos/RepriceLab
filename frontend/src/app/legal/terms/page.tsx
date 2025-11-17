@@ -60,7 +60,7 @@ export default function TermsPage() {
                 <a href="/legal/privacy" className="text-purple-600 hover:underline font-semibold">Privacy Policy</a>.
               </p>
               <p className="mt-4 leading-relaxed">
-                These Terms constitute a legally binding agreement between you ("User," "you," or "your") and RepriceLab ("we," "us," or "our").
+                These Terms constitute a legally binding agreement between you ("User," "you," or "your") and RepriceLab ("we," "us," or "our"), a United States-based company.
               </p>
             </section>
 
@@ -188,7 +188,7 @@ export default function TermsPage() {
                 <li><strong>Payment Method:</strong> Credit/debit card processed securely via Stripe</li>
                 <li><strong>Auto-Renewal:</strong> Subscriptions renew automatically unless cancelled</li>
                 <li><strong>Failed Payments:</strong> Account suspended after 3 failed payment attempts</li>
-                <li><strong>Currency:</strong> All prices in USD unless otherwise stated</li>
+                <li><strong>Currency:</strong> All prices in USD</li>
               </ul>
 
               <h3 className="text-xl font-semibold text-gray-800 mb-3">5.3 Refund Policy</h3>
@@ -305,12 +305,15 @@ export default function TermsPage() {
 
               <h3 className="text-xl font-semibold text-gray-800 mb-3">10.2 Governing Law</h3>
               <p className="mb-4">
-                These Terms shall be governed by and construed in accordance with the laws of [Your Jurisdiction], without regard to conflict of law principles.
+                These Terms shall be governed by and construed in accordance with the laws of the State of Delaware, United States, without regard to conflict of law principles.
               </p>
 
               <h3 className="text-xl font-semibold text-gray-800 mb-3">10.3 Arbitration</h3>
-              <p>
-                Any disputes not resolved informally shall be settled through binding arbitration in accordance with the rules of [Arbitration Organization]. Each party bears its own costs unless otherwise awarded by the arbitrator.
+              <p className="mb-3">
+                Any disputes not resolved informally shall be settled through binding arbitration administered by the American Arbitration Association (AAA) under its Commercial Arbitration Rules. The arbitration will be conducted in English and held in Delaware, or remotely via videoconference.
+              </p>
+              <p className="text-sm text-gray-600">
+                Each party bears its own costs unless otherwise awarded by the arbitrator. You agree to waive the right to participate in a class action lawsuit or class-wide arbitration.
               </p>
             </section>
 

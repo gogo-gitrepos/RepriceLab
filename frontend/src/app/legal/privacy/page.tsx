@@ -36,7 +36,7 @@ export default function PrivacyPolicyPage() {
           </div>
           <h1 className="text-5xl font-bold text-white mb-4">Privacy Policy</h1>
           <p className="text-purple-200 text-lg">Last updated: November 17, 2025</p>
-          <p className="text-purple-300 mt-4">Amazon SP-API Data Protection Policy Compliant</p>
+          <p className="text-purple-300 mt-4">CCPA/CPRA Compliant | Amazon SP-API Data Protection Policy</p>
         </div>
 
         <Card className="bg-white/95 backdrop-blur-sm border-white/20 shadow-2xl">
@@ -54,7 +54,7 @@ export default function PrivacyPolicyPage() {
                 <a href="#data-sharing" className="text-purple-600 hover:underline">3. Data Sharing & Disclosure</a>
                 <a href="#amazon-spapi" className="text-purple-600 hover:underline">4. Amazon SP-API Data Protection</a>
                 <a href="#security" className="text-purple-600 hover:underline">5. Data Security Measures</a>
-                <a href="#your-rights" className="text-purple-600 hover:underline">6. Your Rights</a>
+                <a href="#your-rights" className="text-purple-600 hover:underline">6. Your Privacy Rights (CCPA/CPRA)</a>
               </div>
             </div>
 
@@ -62,7 +62,7 @@ export default function PrivacyPolicyPage() {
             <section>
               <h2 className="text-3xl font-bold text-gray-900 mb-4">Introduction</h2>
               <p className="leading-relaxed">
-                RepriceLab ("we," "our," or "us") is committed to protecting your privacy. This Privacy Policy explains how we collect, use, disclose, and safeguard your information when you use our Amazon repricing service. We are an Amazon SP-API solution provider and comply with all Amazon Data Protection Policy requirements.
+                RepriceLab ("we," "our," or "us") is a US-based company committed to protecting your privacy. This Privacy Policy explains how we collect, use, disclose, and safeguard your information when you use our Amazon repricing service. We comply with US privacy laws including the California Consumer Privacy Act (CCPA), California Privacy Rights Act (CPRA), and Amazon's SP-API Data Protection Policy.
               </p>
             </section>
 
@@ -129,7 +129,7 @@ export default function PrivacyPolicyPage() {
               
               <div className="bg-green-50 border border-green-200 p-4 rounded-lg mb-6">
                 <h4 className="font-bold text-green-900 mb-2">✓ We DO NOT Sell Your Data</h4>
-                <p className="text-green-800">We never sell, rent, or trade your personal information or Amazon seller data to third parties for marketing purposes.</p>
+                <p className="text-green-800">We never sell, rent, or trade your personal information or Amazon seller data to third parties for marketing purposes. This is a commitment under CCPA and our core business principle.</p>
               </div>
 
               <h3 className="text-xl font-semibold text-gray-800 mt-6 mb-3">3.1 Service Providers</h3>
@@ -144,7 +144,7 @@ export default function PrivacyPolicyPage() {
               <h3 className="text-xl font-semibold text-gray-800 mt-6 mb-3">3.2 Legal Requirements</h3>
               <p>We may disclose information when required by:</p>
               <ul className="list-disc pl-6 space-y-2">
-                <li>Law, regulation, or court order</li>
+                <li>Law, regulation, subpoena, or court order</li>
                 <li>Government or regulatory authority requests</li>
                 <li>Protection of our legal rights or prevention of fraud</li>
                 <li>Emergency situations involving safety or security</li>
@@ -226,59 +226,70 @@ export default function PrivacyPolicyPage() {
 
             {/* Your Rights */}
             <section id="your-rights">
-              <h2 className="text-3xl font-bold text-gray-900 mb-4">6. Your Rights (GDPR & KVKK Compliant)</h2>
-              <p className="mb-4">You have the following rights regarding your personal data:</p>
+              <h2 className="text-3xl font-bold text-gray-900 mb-4">6. Your Privacy Rights (CCPA/CPRA)</h2>
+              <p className="mb-4">Under California and other US state privacy laws, you have the following rights:</p>
               
               <div className="grid md:grid-cols-2 gap-4">
                 <div className="border border-gray-200 p-4 rounded-lg">
-                  <h4 className="font-semibold text-gray-900 mb-2">Right to Access</h4>
-                  <p className="text-sm text-gray-700">Request a copy of all personal data we hold about you</p>
+                  <h4 className="font-semibold text-gray-900 mb-2">Right to Know</h4>
+                  <p className="text-sm text-gray-700">Request disclosure of personal information we collect, use, and share</p>
                 </div>
                 <div className="border border-gray-200 p-4 rounded-lg">
-                  <h4 className="font-semibold text-gray-900 mb-2">Right to Rectification</h4>
+                  <h4 className="font-semibold text-gray-900 mb-2">Right to Delete</h4>
+                  <p className="text-sm text-gray-700">Request permanent deletion of your account and personal data</p>
+                </div>
+                <div className="border border-gray-200 p-4 rounded-lg">
+                  <h4 className="font-semibold text-gray-900 mb-2">Right to Correct</h4>
                   <p className="text-sm text-gray-700">Correct inaccurate or incomplete information</p>
-                </div>
-                <div className="border border-gray-200 p-4 rounded-lg">
-                  <h4 className="font-semibold text-gray-900 mb-2">Right to Deletion</h4>
-                  <p className="text-sm text-gray-700">Request permanent deletion of your account and data</p>
                 </div>
                 <div className="border border-gray-200 p-4 rounded-lg">
                   <h4 className="font-semibold text-gray-900 mb-2">Right to Portability</h4>
                   <p className="text-sm text-gray-700">Export your data in machine-readable format (JSON/CSV)</p>
                 </div>
                 <div className="border border-gray-200 p-4 rounded-lg">
-                  <h4 className="font-semibold text-gray-900 mb-2">Right to Revoke Consent</h4>
-                  <p className="text-sm text-gray-700">Disconnect Amazon account and revoke API access anytime</p>
+                  <h4 className="font-semibold text-gray-900 mb-2">Right to Opt-Out</h4>
+                  <p className="text-sm text-gray-700">Opt-out of sale/sharing of personal data (we don't sell data)</p>
                 </div>
                 <div className="border border-gray-200 p-4 rounded-lg">
-                  <h4 className="font-semibold text-gray-900 mb-2">Right to Object</h4>
-                  <p className="text-sm text-gray-700">Object to processing for specific purposes</p>
+                  <h4 className="font-semibold text-gray-900 mb-2">Right to Non-Discrimination</h4>
+                  <p className="text-sm text-gray-700">Exercise rights without discrimination or denial of service</p>
                 </div>
               </div>
 
-              <p className="mt-6">
-                To exercise these rights, contact us at{' '}
-                <a href="mailto:repricelab@gmail.com" className="text-purple-600 hover:underline font-semibold">
-                  repricelab@gmail.com
-                </a>{' '}
-                or use our{' '}
-                <a href="/contact" className="text-purple-600 hover:underline font-semibold">
-                  Contact Form
-                </a>.
-                We will respond within 30 days.
+              <div className="bg-blue-50 border border-blue-200 p-4 rounded-lg mt-6">
+                <h4 className="font-semibold text-blue-900 mb-2">How to Exercise Your Rights</h4>
+                <p className="text-sm text-blue-800">
+                  To exercise these rights, contact us at{' '}
+                  <a href="mailto:repricelab@gmail.com" className="text-purple-600 hover:underline font-semibold">
+                    repricelab@gmail.com
+                  </a>{' '}
+                  or use our{' '}
+                  <a href="/contact" className="text-purple-600 hover:underline font-semibold">
+                    Contact Form
+                  </a>.
+                  We will respond within <strong>45 days</strong> (CCPA requirement).
+                </p>
+                <p className="text-sm text-blue-800 mt-2">
+                  <strong>Verification:</strong> We may request information to verify your identity before processing requests.
+                </p>
+              </div>
+
+              <h3 className="text-xl font-semibold text-gray-800 mt-6 mb-3">6.1 Authorized Agent</h3>
+              <p>
+                California residents may designate an authorized agent to make requests on their behalf. The agent must provide written authorization and proof of authority.
               </p>
             </section>
 
-            {/* International Transfers */}
+            {/* Data Retention */}
             <section>
-              <h2 className="text-3xl font-bold text-gray-900 mb-4">7. International Data Transfers</h2>
-              <p className="mb-4">
-                Your data may be transferred to and processed in countries outside your residence. We ensure appropriate safeguards:
-              </p>
+              <h2 className="text-3xl font-bold text-gray-900 mb-4">7. Data Retention</h2>
+              <p className="mb-4">We retain your data for as long as necessary to provide our services:</p>
               <ul className="list-disc pl-6 space-y-2">
-                <li><strong>Standard Contractual Clauses (SCCs):</strong> For EU data transfers</li>
-                <li><strong>AWS Global Infrastructure:</strong> Data centers with compliance certifications</li>
-                <li><strong>Data Localization:</strong> Stored in geographically appropriate AWS regions</li>
+                <li><strong>Active Accounts:</strong> Data retained while your account is active</li>
+                <li><strong>After Cancellation:</strong> 30-day grace period for account recovery</li>
+                <li><strong>Permanent Deletion:</strong> All personal data deleted after 30 days</li>
+                <li><strong>Legal Compliance:</strong> Financial records and compliance logs retained for 7 years</li>
+                <li><strong>Amazon SP-API Tokens:</strong> Automatically deleted upon store disconnection</li>
               </ul>
             </section>
 
@@ -295,20 +306,28 @@ export default function PrivacyPolicyPage() {
                   <p className="text-sm text-gray-700 mt-1">Usage patterns, feature adoption - requires user consent</p>
                 </div>
               </div>
-              <p className="mt-4 text-sm text-gray-600">You can manage cookie preferences in your browser settings.</p>
+              <p className="mt-4 text-sm text-gray-600">You can manage cookie preferences in your browser settings. Note that disabling essential cookies may affect service functionality.</p>
+            </section>
+
+            {/* Do Not Track */}
+            <section>
+              <h2 className="text-3xl font-bold text-gray-900 mb-4">9. Do Not Track Signals</h2>
+              <p>
+                We currently do not respond to Do Not Track (DNT) browser signals. However, we comply with CCPA's "Right to Opt-Out of Sale" and do not sell personal information.
+              </p>
             </section>
 
             {/* Children's Privacy */}
             <section>
-              <h2 className="text-3xl font-bold text-gray-900 mb-4">9. Children's Privacy</h2>
+              <h2 className="text-3xl font-bold text-gray-900 mb-4">10. Children's Privacy</h2>
               <p>
-                RepriceLab is intended for business use by individuals 18 years or older. We do not knowingly collect information from children under 18. If you believe we have collected data from a minor, contact us immediately.
+                RepriceLab is intended for business use by individuals 18 years or older. We do not knowingly collect information from children under 18. If you believe we have collected data from a minor, contact us immediately for deletion.
               </p>
             </section>
 
             {/* Changes to Policy */}
             <section>
-              <h2 className="text-3xl font-bold text-gray-900 mb-4">10. Changes to This Privacy Policy</h2>
+              <h2 className="text-3xl font-bold text-gray-900 mb-4">11. Changes to This Privacy Policy</h2>
               <p>
                 We may update this Privacy Policy periodically. Material changes will be communicated via:
               </p>
@@ -322,13 +341,16 @@ export default function PrivacyPolicyPage() {
 
             {/* Contact */}
             <section>
-              <h2 className="text-3xl font-bold text-gray-900 mb-4">11. Contact Information</h2>
+              <h2 className="text-3xl font-bold text-gray-900 mb-4">12. Contact Information</h2>
               <div className="bg-gradient-to-r from-purple-50 to-indigo-50 p-6 rounded-lg border border-purple-200">
                 <h4 className="font-bold text-purple-900 mb-4">Privacy Questions or Concerns?</h4>
                 <div className="space-y-2 text-gray-800">
                   <p><strong>Email:</strong> <a href="mailto:repricelab@gmail.com" className="text-purple-600 hover:underline">repricelab@gmail.com</a></p>
                   <p><strong>Contact Form:</strong> <a href="/contact" className="text-purple-600 hover:underline">https://repricelab.com/contact</a></p>
                   <p><strong>Response Time:</strong> Within 48 hours for privacy inquiries</p>
+                  <p className="mt-3 text-sm text-gray-600">
+                    <strong>California residents:</strong> Requests under CCPA will receive a response within 45 days as required by law.
+                  </p>
                 </div>
               </div>
             </section>
@@ -338,12 +360,12 @@ export default function PrivacyPolicyPage() {
               <h2 className="text-3xl font-bold text-gray-900 mb-4">Compliance & Certifications</h2>
               <div className="grid md:grid-cols-2 gap-4">
                 <div className="bg-green-50 border border-green-200 p-4 rounded-lg">
-                  <h4 className="font-semibold text-green-900">✓ GDPR Compliant</h4>
-                  <p className="text-sm text-green-800 mt-1">European General Data Protection Regulation</p>
+                  <h4 className="font-semibold text-green-900">✓ CCPA Compliant</h4>
+                  <p className="text-sm text-green-800 mt-1">California Consumer Privacy Act</p>
                 </div>
                 <div className="bg-green-50 border border-green-200 p-4 rounded-lg">
-                  <h4 className="font-semibold text-green-900">✓ KVKK Compliant</h4>
-                  <p className="text-sm text-green-800 mt-1">Turkish Personal Data Protection Law</p>
+                  <h4 className="font-semibold text-green-900">✓ CPRA Compliant</h4>
+                  <p className="text-sm text-green-800 mt-1">California Privacy Rights Act</p>
                 </div>
                 <div className="bg-green-50 border border-green-200 p-4 rounded-lg">
                   <h4 className="font-semibold text-green-900">✓ Amazon SP-API DPP</h4>
