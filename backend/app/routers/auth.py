@@ -9,6 +9,7 @@ from ..database import get_db
 from ..models import User
 from ..services.password import hash_password, verify_password
 from ..services.jwt_token import create_access_token, verify_token
+from ..config import settings
 
 
 router = APIRouter(prefix="/auth", tags=["auth"])
@@ -34,6 +35,13 @@ class TokenResponse(BaseModel):
 
 @router.post("/register", response_model=TokenResponse)
 def register(request: RegisterRequest, db: Session = Depends(get_db)):
+    # Check if public registration is enabled
+    if not settings.public_registration_enabled:
+        raise HTTPException(
+            status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
+            detail="Public registration is temporarily disabled. Please check back later or contact support."
+        )
+    
     existing_user = db.query(User).filter(User.email == request.email).first()
     if existing_user:
         raise HTTPException(
@@ -79,6 +87,13 @@ def register(request: RegisterRequest, db: Session = Depends(get_db)):
 
 @router.post("/login", response_model=TokenResponse)
 def login(request: LoginRequest, db: Session = Depends(get_db)):
+    # Check if public registration is enabled (also affects login for consistency)
+    if not settings.public_registration_enabled:
+        raise HTTPException(
+            status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
+            detail="Login is temporarily disabled during system maintenance. Please check back later."
+        )
+    
     user = db.query(User).filter(User.email == request.email).first()
     
     if not user:

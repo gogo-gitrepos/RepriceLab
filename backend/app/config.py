@@ -40,6 +40,7 @@ class Settings(BaseSettings):
 
     scheduler_enabled: bool = True
     development_mode: bool = False  # Set to True only in development via DEVELOPMENT_MODE env var
+    public_registration_enabled: bool = True  # Set to False in production to disable public signups temporarily
 
     class Config:
         env_file = ".env"

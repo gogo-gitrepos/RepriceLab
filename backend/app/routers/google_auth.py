@@ -40,6 +40,13 @@ async def login_google():
     Initiate Google OAuth flow
     Returns the Google authorization URL for frontend to redirect to
     """
+    # Check if public registration is enabled
+    if not settings.public_registration_enabled:
+        raise HTTPException(
+            status_code=503,
+            detail="Login is temporarily disabled during system maintenance. Please check back later."
+        )
+    
     if not GOOGLE_CLIENT_ID or not GOOGLE_CLIENT_SECRET:
         raise HTTPException(
             status_code=500,
@@ -64,6 +71,13 @@ async def google_callback(request: GoogleCallbackRequest, db: Session = Depends(
     Handle Google OAuth callback
     Exchange authorization code for access token and get user info
     """
+    # Check if public registration is enabled
+    if not settings.public_registration_enabled:
+        raise HTTPException(
+            status_code=503,
+            detail="Login is temporarily disabled during system maintenance. Please check back later."
+        )
+    
     if not GOOGLE_CLIENT_ID or not GOOGLE_CLIENT_SECRET:
         raise HTTPException(
             status_code=500,
