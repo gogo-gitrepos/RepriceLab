@@ -67,7 +67,7 @@ def send_password_reset_email(to_email: str, reset_link: str, user_name: str = N
                         &copy; 2025 RepriceLab. All rights reserved.
                     </p>
                     <p style="color: #9ca3af; font-size: 12px; margin: 10px 0 0 0;">
-                        Questions? Contact us at support@repricelab.com
+                        Questions? We're here to help.
                     </p>
                 </td>
             </tr>
@@ -300,7 +300,6 @@ def send_welcome_email(to_email: str, user_name: str = None, plan: str = "Free",
                     <p style="color: #6b7280; font-size: 14px; margin: 0 0 15px 0;">
                         Need help? Our support team is here for you.
                     </p>
-                    <a href="mailto:support@repricelab.com" style="color: #7c3aed; text-decoration: none; font-weight: 500;">support@repricelab.com</a>
                     <p style="color: #9ca3af; font-size: 12px; margin: 20px 0 0 0;">
                         &copy; 2025 RepriceLab. All rights reserved.
                     </p>
@@ -330,7 +329,7 @@ def send_welcome_email(to_email: str, user_name: str = None, plan: str = "Free",
     
     Go to your dashboard: https://repricelab.com/dashboard
     
-    Need help? Contact us at support@repricelab.com
+    Need help? Our support team is here for you.
     
     - The RepriceLab Team
     """
