@@ -134,7 +134,8 @@ export default function LoginPage() {
                   </Label>
                   <a 
                     href="/forgot-password"
-                    className="text-sm font-medium text-purple-600 hover:text-purple-700"
+                    className="text-sm font-medium text-purple-600 hover:text-purple-700 cursor-pointer z-50 relative"
+                    style={{ pointerEvents: 'auto' }}
                   >
                     Forgot password?
                   </a>
