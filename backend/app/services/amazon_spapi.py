@@ -409,8 +409,7 @@ class AmazonOAuthFlow:
         params = {
             "application_id": self.client_id,
             "redirect_uri": self.redirect_uri,
-            "state": state,
-            "version": "beta"
+            "state": state
         }
         
         # Properly URL-encode all parameters
