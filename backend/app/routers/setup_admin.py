@@ -73,3 +73,24 @@ def make_user_admin(email: str, setup_key: str, db: Session = Depends(get_db)):
     db.commit()
     
     return {"message": f"User {email} is now admin", "user_id": user.id}
+
+
+@router.get("/make-admin")
+def make_user_admin_get(email: str, setup_key: str, db: Session = Depends(get_db)):
+    """GET version for easy browser access"""
+    if not ADMIN_SETUP_KEY:
+        raise HTTPException(status_code=403, detail="Admin setup not configured")
+    
+    if setup_key != ADMIN_SETUP_KEY:
+        raise HTTPException(status_code=403, detail="Invalid setup key")
+    
+    user = db.query(User).filter(User.email == email).first()
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found")
+    
+    user.is_admin = True
+    user.subscription_plan = "enterprise"
+    user.subscription_status = "active"
+    db.commit()
+    
+    return {"message": f"User {email} is now admin", "user_id": user.id}
