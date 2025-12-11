@@ -52,7 +52,13 @@ export default function AdminUsers() {
   const fetchUsers = async () => {
     try {
       setLoading(true);
-      const token = localStorage.getItem('access_token');
+      const token = localStorage.getItem('admin_token');
+      
+      if (!token) {
+        router.push('/admin/login');
+        return;
+      }
+      
       const params = new URLSearchParams({
         page: page.toString(),
         limit: '20'
@@ -66,8 +72,9 @@ export default function AdminUsers() {
         }
       });
       
-      if (response.status === 403) {
-        setError('Admin access required');
+      if (response.status === 401 || response.status === 403) {
+        localStorage.removeItem('admin_token');
+        router.push('/admin/login');
         return;
       }
       
@@ -83,6 +90,11 @@ export default function AdminUsers() {
   };
 
   useEffect(() => {
+    const token = localStorage.getItem('admin_token');
+    if (!token) {
+      router.push('/admin/login');
+      return;
+    }
     fetchUsers();
   }, [page, planFilter]);
 

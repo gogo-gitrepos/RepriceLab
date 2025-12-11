@@ -52,15 +52,23 @@ export default function AdminDashboard() {
   const fetchDashboard = async () => {
     try {
       setLoading(true);
-      const token = localStorage.getItem('access_token');
+      const token = localStorage.getItem('admin_token');
+      
+      if (!token) {
+        router.push('/admin/login');
+        return;
+      }
+      
       const response = await fetch('/api/admin/dashboard', {
         headers: {
           'Authorization': `Bearer ${token}`
         }
       });
       
-      if (response.status === 403) {
-        setError('Admin access required');
+      if (response.status === 401 || response.status === 403) {
+        localStorage.removeItem('admin_token');
+        localStorage.removeItem('admin_user');
+        router.push('/admin/login');
         return;
       }
       
@@ -76,6 +84,11 @@ export default function AdminDashboard() {
   };
 
   useEffect(() => {
+    const token = localStorage.getItem('admin_token');
+    if (!token) {
+      router.push('/admin/login');
+      return;
+    }
     fetchDashboard();
   }, []);
 
@@ -98,8 +111,8 @@ export default function AdminDashboard() {
             <AlertTriangle className="w-12 h-12 text-red-500 mx-auto mb-4" />
             <h2 className="text-xl font-semibold text-gray-900 mb-2">Access Denied</h2>
             <p className="text-gray-600 mb-4">{error}</p>
-            <Button onClick={() => router.push('/dashboard')}>
-              Go to Dashboard
+            <Button onClick={() => router.push('/admin/login')}>
+              Go to Admin Login
             </Button>
           </CardContent>
         </Card>
@@ -112,16 +125,21 @@ export default function AdminDashboard() {
       <div className="max-w-7xl mx-auto px-4 py-8">
         <div className="flex items-center justify-between mb-8">
           <div className="flex items-center gap-4">
-            <Button variant="ghost" onClick={() => router.push('/dashboard')}>
-              <ArrowLeft className="w-4 h-4 mr-2" />
-              Back
-            </Button>
             <h1 className="text-3xl font-bold text-gray-900">Admin Panel</h1>
           </div>
-          <Button onClick={fetchDashboard} variant="outline">
-            <RefreshCw className="w-4 h-4 mr-2" />
-            Refresh
-          </Button>
+          <div className="flex items-center gap-2">
+            <Button onClick={fetchDashboard} variant="outline">
+              <RefreshCw className="w-4 h-4 mr-2" />
+              Refresh
+            </Button>
+            <Button variant="outline" onClick={() => {
+              localStorage.removeItem('admin_token');
+              localStorage.removeItem('admin_user');
+              router.push('/admin/login');
+            }}>
+              Logout
+            </Button>
+          </div>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">

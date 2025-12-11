@@ -48,7 +48,13 @@ export default function AdminErrors() {
   const fetchErrors = async () => {
     try {
       setLoading(true);
-      const token = localStorage.getItem('access_token');
+      const token = localStorage.getItem('admin_token');
+      
+      if (!token) {
+        router.push('/admin/login');
+        return;
+      }
+      
       const params = new URLSearchParams({
         page: page.toString(),
         limit: '50'
@@ -62,8 +68,9 @@ export default function AdminErrors() {
         }
       });
       
-      if (response.status === 403) {
-        setError('Admin access required');
+      if (response.status === 401 || response.status === 403) {
+        localStorage.removeItem('admin_token');
+        router.push('/admin/login');
         return;
       }
       
@@ -79,13 +86,18 @@ export default function AdminErrors() {
   };
 
   useEffect(() => {
+    const token = localStorage.getItem('admin_token');
+    if (!token) {
+      router.push('/admin/login');
+      return;
+    }
     fetchErrors();
   }, [page, typeFilter, resolvedFilter]);
 
   const viewErrorDetails = async (errorId: number) => {
     try {
       setDetailsLoading(true);
-      const token = localStorage.getItem('access_token');
+      const token = localStorage.getItem('admin_token');
       const response = await fetch(`/api/admin/errors/${errorId}`, {
         headers: {
           'Authorization': `Bearer ${token}`
@@ -105,7 +117,7 @@ export default function AdminErrors() {
 
   const resolveError = async (errorId: number) => {
     try {
-      const token = localStorage.getItem('access_token');
+      const token = localStorage.getItem('admin_token');
       const response = await fetch(`/api/admin/errors/${errorId}/resolve`, {
         method: 'PATCH',
         headers: {

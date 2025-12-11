@@ -8,9 +8,15 @@ from typing import Optional
 from ..database import get_db
 from ..models import PriceHistory, Product, Store, Notification, User, ErrorLog
 from ..services.admin_auth import get_admin_user
-from ..services.password import hash_password
+from ..services.password import hash_password, verify_password
+from ..services.jwt_token import create_access_token
 
 router = APIRouter(prefix="/admin", tags=["admin"])
+
+
+class AdminLoginRequest(BaseModel):
+    email: EmailStr
+    password: str
 
 
 class CreateAdminRequest(BaseModel):
@@ -24,6 +30,36 @@ class UpdateUserRequest(BaseModel):
     subscription_plan: Optional[str] = None
     subscription_status: Optional[str] = None
     is_admin: Optional[bool] = None
+
+
+@router.post("/login")
+def admin_login(request: AdminLoginRequest, db: Session = Depends(get_db)):
+    user = db.query(User).filter(User.email == request.email).first()
+    
+    if not user:
+        raise HTTPException(status_code=401, detail="Invalid credentials")
+    
+    if not user.password_hash:
+        raise HTTPException(status_code=401, detail="Invalid credentials")
+    
+    if not verify_password(request.password, user.password_hash):
+        raise HTTPException(status_code=401, detail="Invalid credentials")
+    
+    if not user.is_admin:
+        raise HTTPException(status_code=403, detail="Admin access required")
+    
+    access_token = create_access_token(data={"sub": str(user.id), "email": user.email, "is_admin": True})
+    
+    return {
+        "access_token": access_token,
+        "token_type": "bearer",
+        "user": {
+            "id": user.id,
+            "email": user.email,
+            "name": user.name,
+            "is_admin": user.is_admin
+        }
+    }
 
 
 @router.get("/dashboard")
