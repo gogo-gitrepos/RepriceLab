@@ -98,11 +98,3 @@ def make_user_admin_get(email: str, setup_key: str, db: Session = Depends(get_db
     return {"message": f"User {email} is now admin", "user_id": user.id}
 
 
-@router.get("/debug-env")
-def debug_env():
-    """Debug endpoint to check if ADMIN_SETUP_KEY is set (only shows if exists, not value)"""
-    key = os.getenv("ADMIN_SETUP_KEY", "")
-    return {
-        "admin_setup_key_exists": bool(key),
-        "admin_setup_key_length": len(key) if key else 0
-    }
