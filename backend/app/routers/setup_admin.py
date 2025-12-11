@@ -78,11 +78,13 @@ def make_user_admin(email: str, setup_key: str, db: Session = Depends(get_db)):
 @router.get("/make-admin")
 def make_user_admin_get(email: str, setup_key: str, db: Session = Depends(get_db)):
     """GET version for easy browser access"""
-    if not ADMIN_SETUP_KEY:
-        raise HTTPException(status_code=403, detail="Admin setup not configured")
+    current_key = os.getenv("ADMIN_SETUP_KEY", "")
     
-    if setup_key != ADMIN_SETUP_KEY:
-        raise HTTPException(status_code=403, detail="Invalid setup key")
+    if not current_key:
+        raise HTTPException(status_code=403, detail="Admin setup not configured - ADMIN_SETUP_KEY env var is empty")
+    
+    if setup_key != current_key:
+        raise HTTPException(status_code=403, detail=f"Invalid setup key. Expected length: {len(current_key)}, got length: {len(setup_key)}")
     
     user = db.query(User).filter(User.email == email).first()
     if not user:
@@ -94,3 +96,13 @@ def make_user_admin_get(email: str, setup_key: str, db: Session = Depends(get_db
     db.commit()
     
     return {"message": f"User {email} is now admin", "user_id": user.id}
+
+
+@router.get("/debug-env")
+def debug_env():
+    """Debug endpoint to check if ADMIN_SETUP_KEY is set (only shows if exists, not value)"""
+    key = os.getenv("ADMIN_SETUP_KEY", "")
+    return {
+        "admin_setup_key_exists": bool(key),
+        "admin_setup_key_length": len(key) if key else 0
+    }
