@@ -12,7 +12,7 @@ from ..database import get_db
 from ..models import User, PasswordResetToken
 from ..services.password import hash_password, verify_password
 from ..services.jwt_token import create_access_token, verify_token
-from ..services.email_service import send_password_reset_email
+from ..services.email_service import send_password_reset_email, send_welcome_email
 from ..config import settings
 
 logger = logging.getLogger(__name__)
@@ -76,6 +76,16 @@ def register(request: RegisterRequest, db: Session = Depends(get_db)):
     db.add(new_user)
     db.commit()
     db.refresh(new_user)
+    
+    # Send welcome email
+    try:
+        send_welcome_email(
+            to_email=new_user.email,
+            user_name=new_user.name,
+            plan="Free Trial"
+        )
+    except Exception as e:
+        logger.error(f"Failed to send welcome email: {e}")
     
     access_token = create_access_token(data={"sub": str(new_user.id), "email": new_user.email})
     
