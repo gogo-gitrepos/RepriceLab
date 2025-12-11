@@ -4,12 +4,18 @@ from sqlalchemy.orm import Session
 from pydantic import BaseModel, EmailStr
 from typing import Optional
 from datetime import datetime, timedelta
+import secrets
+import os
+import logging
 
 from ..database import get_db
-from ..models import User
+from ..models import User, PasswordResetToken
 from ..services.password import hash_password, verify_password
 from ..services.jwt_token import create_access_token, verify_token
+from ..services.email_service import send_password_reset_email
 from ..config import settings
+
+logger = logging.getLogger(__name__)
 
 
 router = APIRouter(prefix="/auth", tags=["auth"])
@@ -196,3 +202,116 @@ def get_current_user(token: str = Depends(oauth2_scheme), db: Session = Depends(
         "has_connected_stores": has_stores,
         "has_products": has_products
     }
+
+
+class ForgotPasswordRequest(BaseModel):
+    email: EmailStr
+
+
+class ResetPasswordRequest(BaseModel):
+    token: str
+    new_password: str
+
+
+@router.post("/forgot-password")
+def forgot_password(request: ForgotPasswordRequest, db: Session = Depends(get_db)):
+    """Request password reset - sends email with reset link"""
+    user = db.query(User).filter(User.email == request.email).first()
+    
+    if not user:
+        return {"message": "If an account with that email exists, a password reset link has been sent."}
+    
+    if not user.password_hash:
+        return {"message": "This account uses Google Sign-In. Please login with Google instead."}
+    
+    db.query(PasswordResetToken).filter(
+        PasswordResetToken.user_id == user.id,
+        PasswordResetToken.used == False
+    ).update({"used": True})
+    db.commit()
+    
+    token = secrets.token_urlsafe(48)
+    expires_at = datetime.utcnow() + timedelta(hours=1)
+    
+    reset_token = PasswordResetToken(
+        user_id=user.id,
+        token=token,
+        expires_at=expires_at
+    )
+    db.add(reset_token)
+    db.commit()
+    
+    base_url = os.getenv("FRONTEND_URL", "https://repricelab.com")
+    reset_link = f"{base_url}/reset-password?token={token}"
+    
+    email_sent = send_password_reset_email(
+        to_email=user.email,
+        reset_link=reset_link,
+        user_name=user.name
+    )
+    
+    if not email_sent:
+        logger.warning(f"Failed to send password reset email to {user.email}")
+    
+    return {"message": "If an account with that email exists, a password reset link has been sent."}
+
+
+@router.post("/reset-password")
+def reset_password(request: ResetPasswordRequest, db: Session = Depends(get_db)):
+    """Reset password using token from email"""
+    if len(request.new_password) < 8:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Password must be at least 8 characters long"
+        )
+    
+    reset_token = db.query(PasswordResetToken).filter(
+        PasswordResetToken.token == request.token,
+        PasswordResetToken.used == False
+    ).first()
+    
+    if not reset_token:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Invalid or expired reset link"
+        )
+    
+    if reset_token.expires_at < datetime.utcnow():
+        reset_token.used = True
+        db.commit()
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Reset link has expired. Please request a new one."
+        )
+    
+    user = db.query(User).filter(User.id == reset_token.user_id).first()
+    if not user:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="User not found"
+        )
+    
+    user.password_hash = hash_password(request.new_password)
+    reset_token.used = True
+    db.commit()
+    
+    logger.info(f"Password reset successful for user {user.email}")
+    
+    return {"message": "Password has been reset successfully. You can now login with your new password."}
+
+
+@router.get("/verify-reset-token")
+def verify_reset_token(token: str, db: Session = Depends(get_db)):
+    """Verify if a reset token is valid"""
+    reset_token = db.query(PasswordResetToken).filter(
+        PasswordResetToken.token == token,
+        PasswordResetToken.used == False
+    ).first()
+    
+    if not reset_token:
+        return {"valid": False, "message": "Invalid or already used reset link"}
+    
+    if reset_token.expires_at < datetime.utcnow():
+        return {"valid": False, "message": "Reset link has expired"}
+    
+    return {"valid": True, "message": "Token is valid"}
