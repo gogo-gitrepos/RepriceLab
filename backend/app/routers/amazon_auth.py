@@ -24,14 +24,11 @@ def get_db():
         yield db
     finally:
         db.close()
-from ..models import Store, User
+from ..models import Store, User, OAuthState
 from ..services.amazon_spapi import AmazonOAuthFlow, get_spapi_config, create_spapi_client
 
 logger = logging.getLogger(__name__)
 router = APIRouter(prefix="/auth/amazon", tags=["Amazon Authentication"])
-
-# In-memory state storage (in production, use Redis or database)
-_oauth_states = {}
 
 @router.get("/connect")
 async def initiate_amazon_oauth(
@@ -39,6 +36,7 @@ async def initiate_amazon_oauth(
     db: Session = Depends(get_db)
 ):
     """Initiate Amazon OAuth flow to connect seller account"""
+    from datetime import timedelta
     
     # Check if user exists
     user = db.execute(select(User).where(User.id == user_id)).scalar_one_or_none()
@@ -56,12 +54,25 @@ async def initiate_amazon_oauth(
     # Generate secure state parameter
     state = secrets.token_urlsafe(32)
     
-    # Store state with user context (expires in 10 minutes)
-    _oauth_states[state] = {
-        "user_id": user_id,
-        "created_at": datetime.utcnow(),
-        "expires_at": datetime.utcnow().timestamp() + 600  # 10 minutes
-    }
+    # Clean up expired states for this user
+    db.execute(
+        select(OAuthState).where(
+            OAuthState.user_id == user_id,
+            OAuthState.expires_at < datetime.utcnow()
+        )
+    )
+    db.query(OAuthState).filter(
+        OAuthState.expires_at < datetime.utcnow()
+    ).delete(synchronize_session=False)
+    
+    # Store state in database (expires in 10 minutes)
+    oauth_state = OAuthState(
+        state=state,
+        user_id=user_id,
+        expires_at=datetime.utcnow() + timedelta(minutes=10)
+    )
+    db.add(oauth_state)
+    db.commit()
     
     # Create OAuth flow
     oauth_flow = AmazonOAuthFlow(
@@ -72,6 +83,8 @@ async def initiate_amazon_oauth(
     
     # Generate authorization URL
     auth_url = oauth_flow.generate_authorization_url(state)
+    
+    logger.info(f"Generated OAuth URL for user {user_id}, state stored in database")
     
     return {
         "authorization_url": auth_url,
@@ -88,18 +101,29 @@ async def amazon_oauth_callback(
 ):
     """Handle Amazon OAuth callback and create store connection"""
     
-    # Validate state parameter
-    if state not in _oauth_states:
+    # Validate state parameter from database
+    oauth_state = db.execute(
+        select(OAuthState).where(
+            OAuthState.state == state,
+            OAuthState.used == False
+        )
+    ).scalar_one_or_none()
+    
+    if not oauth_state:
+        logger.warning(f"Invalid or already used OAuth state: {state[:20]}...")
         raise HTTPException(status_code=400, detail="Invalid or expired state parameter")
     
-    state_data = _oauth_states[state]
-    
     # Check if state is expired
-    if datetime.utcnow().timestamp() > state_data["expires_at"]:
-        del _oauth_states[state]
+    if datetime.utcnow() > oauth_state.expires_at:
+        oauth_state.used = True
+        db.commit()
         raise HTTPException(status_code=400, detail="Authorization session expired")
     
-    user_id = state_data["user_id"]
+    user_id = oauth_state.user_id
+    
+    # Mark state as used immediately to prevent replay attacks
+    oauth_state.used = True
+    db.commit()
     
     try:
         # Get SP-API configuration
@@ -169,8 +193,7 @@ async def amazon_oauth_callback(
         
         db.commit()
         
-        # Clean up state
-        del _oauth_states[state]
+        logger.info(f"Successfully connected Amazon store {store.id} for user {user_id}")
         
         # Redirect to multichannel page with success message
         # Use environment variable for frontend URL (works in both dev and production)
@@ -183,10 +206,6 @@ async def amazon_oauth_callback(
     except Exception as e:
         logger.error(f"Amazon OAuth callback error: {e}")
         db.rollback()
-        
-        # Clean up state
-        if state in _oauth_states:
-            del _oauth_states[state]
         
         raise HTTPException(
             status_code=500,

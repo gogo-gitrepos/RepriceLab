@@ -168,16 +168,10 @@ export default function DashboardPage() {
               <div className="text-left">
                 <h4 className="font-semibold text-gray-900 mb-1">Need Help Getting Started?</h4>
                 <p className="text-sm text-gray-600 mb-3">Our support team is ready to help you connect your store and get up and running.</p>
-                <div className="flex gap-3">
-                  <Button variant="outline" size="sm" className="border-blue-200">
+                <Button variant="outline" size="sm" className="border-blue-200">
                     <Mail className="w-4 h-4 mr-2" />
                     Email Support
                   </Button>
-                  <Button variant="outline" size="sm" className="border-blue-200">
-                    <Phone className="w-4 h-4 mr-2" />
-                    Schedule Call
-                  </Button>
-                </div>
               </div>
             </div>
           </div>
@@ -300,16 +294,10 @@ export default function DashboardPage() {
                 </div>
               </div>
               
-              <div className="space-y-2 sm:space-y-3">
-                <Button variant="outline" size="sm" className="w-full justify-start border-purple-200 text-purple-700 hover:bg-purple-50 hover:border-purple-300 transition-all duration-200 font-medium py-2 sm:py-3 rounded-lg sm:rounded-xl text-sm">
+              <Button variant="outline" size="sm" className="w-full justify-start border-purple-200 text-purple-700 hover:bg-purple-50 hover:border-purple-300 transition-all duration-200 font-medium py-2 sm:py-3 rounded-lg sm:rounded-xl text-sm">
                   <Mail className="w-3 h-3 sm:w-4 sm:h-4 mr-2 sm:mr-3" />
                   Send us an email
                 </Button>
-                <Button variant="outline" size="sm" className="w-full justify-start border-purple-200 text-purple-700 hover:bg-purple-50 hover:border-purple-300 transition-all duration-200 font-medium py-2 sm:py-3 rounded-lg sm:rounded-xl text-sm">
-                  <Phone className="w-3 h-3 sm:w-4 sm:h-4 mr-2 sm:mr-3" />
-                  Schedule a call
-                </Button>
-              </div>
             </div>
           </CardContent>
         </Card>
