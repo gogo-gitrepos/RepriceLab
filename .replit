@@ -64,3 +64,4 @@ build = ["sh", "-c", "pip install -r backend/requirements.txt && cd frontend && 
 
 [userenv.shared]
 PUBLIC_REGISTRATION_ENABLED = "false"
+ADMIN_SETUP_KEY = "reprice2024admin"

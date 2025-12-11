@@ -16,6 +16,9 @@ class User(Base):
     picture: Mapped[str | None] = mapped_column(String(512), nullable=True)
     created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
     
+    # Admin Role
+    is_admin: Mapped[bool] = mapped_column(Boolean, default=False)
+    
     # Subscription & Billing
     subscription_plan: Mapped[str] = mapped_column(String(32), default='free')  # free, plus, pro, enterprise
     subscription_status: Mapped[str] = mapped_column(String(32), default='trial')  # trial, active, canceled, past_due, incomplete
@@ -171,3 +174,17 @@ class Notification(Base):
     payload_json: Mapped[str] = mapped_column(Text)
     ts: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
     sent: Mapped[bool] = mapped_column(Boolean, default=False)
+
+
+class ErrorLog(Base):
+    __tablename__ = "error_logs"
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    user_id: Mapped[int | None] = mapped_column(ForeignKey("users.id"), nullable=True)
+    error_type: Mapped[str] = mapped_column(String(64))  # api_error, repricing_error, amazon_error, stripe_error
+    error_code: Mapped[str | None] = mapped_column(String(32), nullable=True)
+    message: Mapped[str] = mapped_column(Text)
+    stack_trace: Mapped[str | None] = mapped_column(Text, nullable=True)
+    endpoint: Mapped[str | None] = mapped_column(String(255), nullable=True)
+    request_data: Mapped[str | None] = mapped_column(Text, nullable=True)
+    resolved: Mapped[bool] = mapped_column(Boolean, default=False)
+    created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
