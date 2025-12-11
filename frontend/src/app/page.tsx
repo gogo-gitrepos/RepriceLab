@@ -141,10 +141,10 @@ export default function LandingPage() {
       </nav>
 
       {/* Hero Section */}
-      <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 py-8 sm:py-12 lg:py-16">
-        <div className="grid lg:grid-cols-2 gap-8 lg:gap-16 items-center">
+      <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 py-4 sm:py-6 lg:py-8">
+        <div className="grid lg:grid-cols-2 gap-6 lg:gap-10 items-center">
           {/* Left side - Hero content */}
-          <div className="space-y-6 sm:space-y-8 order-2 lg:order-1">
+          <div className="space-y-4 sm:space-y-6 order-2 lg:order-1">
             <div className="inline-flex items-center space-x-2 bg-white/10 backdrop-blur-sm px-3 sm:px-4 py-1.5 sm:py-2 rounded-full border border-white/20">
               <Star className="w-3 h-3 sm:w-4 sm:h-4 text-yellow-300 fill-yellow-300" />
               <span className="text-xs sm:text-sm font-semibold text-white">Trusted by thousands of pro sellers worldwide</span>
@@ -192,16 +192,16 @@ export default function LandingPage() {
           </div>
 
           {/* Right side - Login form */}
-          <div className="lg:pl-8 order-1 lg:order-2">
+          <div className="lg:pl-4 order-1 lg:order-2">
             <Card className="bg-white/95 backdrop-blur-xl shadow-2xl border-0">
-              <CardHeader className="space-y-2 pb-4 sm:pb-6">
+              <CardHeader className="space-y-1 pb-3 sm:pb-4">
                 <CardTitle className="text-2xl sm:text-3xl font-bold text-gray-900">Welcome Back</CardTitle>
                 <CardDescription className="text-sm sm:text-base text-gray-600">
                   Sign in to access your repricing dashboard
                 </CardDescription>
               </CardHeader>
               <CardContent>
-                <form onSubmit={handleLogin} className="space-y-4 sm:space-y-5">
+                <form onSubmit={handleLogin} className="space-y-3 sm:space-y-4">
                   {loginError && (
                     <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg text-sm">
                       {loginError}
