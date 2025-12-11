@@ -150,10 +150,32 @@ def send_welcome_email(to_email: str, user_name: str = None, plan: str = "Free",
     </head>
     <body style="margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f4f4f5;">
         <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="max-width: 600px; margin: 0 auto; background-color: #ffffff; border-radius: 16px; overflow: hidden; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);">
-            <!-- Header with banner image -->
+            <!-- Header with gradient and text logo -->
             <tr>
-                <td style="padding: 0;">
-                    <img src="https://repricelab.com/email-banner.png" alt="RepriceLab - AI Pricing Automation" style="width: 100%; height: auto; display: block; border-radius: 16px 16px 0 0;" />
+                <td style="padding: 40px 30px; background: linear-gradient(135deg, #9333ea 0%, #7c3aed 50%, #6366f1 100%); text-align: center;">
+                    <table style="margin: 0 auto;">
+                        <tr>
+                            <td style="background: rgba(255,255,255,0.15); border-radius: 16px; padding: 12px; vertical-align: middle;">
+                                <table style="border-collapse: collapse;">
+                                    <tr>
+                                        <td style="width: 3px; height: 20px; background: white; border-radius: 2px;"></td>
+                                        <td style="width: 8px;"></td>
+                                        <td rowspan="2" style="vertical-align: bottom;">
+                                            <div style="width: 0; height: 0; border-left: 12px solid transparent; border-right: 12px solid transparent; border-bottom: 22px solid white;"></div>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td colspan="2"></td>
+                                    </tr>
+                                </table>
+                            </td>
+                            <td style="padding-left: 15px; vertical-align: middle;">
+                                <span style="color: #ffffff; font-size: 28px; font-weight: 700; letter-spacing: -0.5px;">RepriceLab.com</span>
+                                <br/>
+                                <span style="color: rgba(255,255,255,0.85); font-size: 14px;">AI Pricing Automation</span>
+                            </td>
+                        </tr>
+                    </table>
                 </td>
             </tr>
             
