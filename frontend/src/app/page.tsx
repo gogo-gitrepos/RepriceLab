@@ -229,9 +229,12 @@ export default function LandingPage() {
                       <Label htmlFor="password" className="text-xs sm:text-sm font-semibold text-gray-700">
                         Password
                       </Label>
-                      <button type="button" className="text-xs sm:text-sm font-medium text-purple-600 hover:text-purple-700">
+                      <a 
+                        href="/forgot-password"
+                        className="text-xs sm:text-sm font-medium text-purple-600 hover:text-purple-700 cursor-pointer"
+                      >
                         Forgot password?
-                      </button>
+                      </a>
                     </div>
                     <Input
                       id="password"
