@@ -37,15 +37,32 @@ async def initiate_amazon_oauth(
 ):
     """Initiate Amazon OAuth flow to connect seller account"""
     from datetime import timedelta
+    from ..models import ErrorLog
+    
+    logger.info(f"[AMAZON_OAUTH] /connect called for user_id={user_id}")
     
     # Check if user exists
     user = db.execute(select(User).where(User.id == user_id)).scalar_one_or_none()
     if not user:
+        logger.error(f"[AMAZON_OAUTH] User not found: user_id={user_id}")
         raise HTTPException(status_code=404, detail="User not found")
+    
+    logger.info(f"[AMAZON_OAUTH] User found: {user.email}")
     
     # Get SP-API configuration
     config = get_spapi_config()
+    logger.info(f"[AMAZON_OAUTH] SP-API config loaded - client_id exists: {bool(config['client_id'])}, redirect_uri: {config['redirect_uri']}")
+    
     if not all([config["client_id"], config["client_secret"]]):
+        logger.error("[AMAZON_OAUTH] SP-API credentials missing!")
+        db.add(ErrorLog(
+            user_id=user_id,
+            error_type="amazon_error",
+            error_code="CONFIG_MISSING",
+            message="Amazon SP-API credentials not configured",
+            endpoint="/auth/amazon/connect"
+        ))
+        db.commit()
         raise HTTPException(
             status_code=500, 
             detail="Amazon SP-API not configured. Please contact administrator."
@@ -53,17 +70,14 @@ async def initiate_amazon_oauth(
     
     # Generate secure state parameter
     state = secrets.token_urlsafe(32)
+    logger.info(f"[AMAZON_OAUTH] Generated state: {state[:15]}...")
     
-    # Clean up expired states for this user
-    db.execute(
-        select(OAuthState).where(
-            OAuthState.user_id == user_id,
-            OAuthState.expires_at < datetime.utcnow()
-        )
-    )
-    db.query(OAuthState).filter(
+    # Clean up expired states
+    deleted_count = db.query(OAuthState).filter(
         OAuthState.expires_at < datetime.utcnow()
     ).delete(synchronize_session=False)
+    if deleted_count > 0:
+        logger.info(f"[AMAZON_OAUTH] Cleaned up {deleted_count} expired states")
     
     # Store state in database (expires in 10 minutes)
     oauth_state = OAuthState(
@@ -73,6 +87,7 @@ async def initiate_amazon_oauth(
     )
     db.add(oauth_state)
     db.commit()
+    logger.info(f"[AMAZON_OAUTH] State saved to database, expires in 10 minutes")
     
     # Create OAuth flow
     oauth_flow = AmazonOAuthFlow(
@@ -83,8 +98,7 @@ async def initiate_amazon_oauth(
     
     # Generate authorization URL
     auth_url = oauth_flow.generate_authorization_url(state)
-    
-    logger.info(f"Generated OAuth URL for user {user_id}, state stored in database")
+    logger.info(f"[AMAZON_OAUTH] Generated auth URL: {auth_url[:80]}...")
     
     return {
         "authorization_url": auth_url,
@@ -100,6 +114,10 @@ async def amazon_oauth_callback(
     db: Session = Depends(get_db)
 ):
     """Handle Amazon OAuth callback and create store connection"""
+    from ..models import ErrorLog
+    
+    logger.info(f"[AMAZON_OAUTH] /callback received - selling_partner_id={selling_partner_id}, state={state[:15]}...")
+    logger.info(f"[AMAZON_OAUTH] OAuth code received (length={len(spapi_oauth_code)})")
     
     # Validate state parameter from database
     oauth_state = db.execute(
@@ -110,12 +128,38 @@ async def amazon_oauth_callback(
     ).scalar_one_or_none()
     
     if not oauth_state:
-        logger.warning(f"Invalid or already used OAuth state: {state[:20]}...")
+        logger.error(f"[AMAZON_OAUTH] FAILED: Invalid or already used OAuth state: {state[:20]}...")
+        # Check if state exists but was already used
+        existing_state = db.execute(
+            select(OAuthState).where(OAuthState.state == state)
+        ).scalar_one_or_none()
+        if existing_state:
+            logger.error(f"[AMAZON_OAUTH] State exists but used={existing_state.used}, expired={datetime.utcnow() > existing_state.expires_at}")
+        else:
+            logger.error(f"[AMAZON_OAUTH] State not found in database at all!")
+        
+        db.add(ErrorLog(
+            error_type="amazon_error",
+            error_code="INVALID_STATE",
+            message=f"Invalid or expired OAuth state. State exists: {existing_state is not None}",
+            endpoint="/auth/amazon/callback"
+        ))
+        db.commit()
         raise HTTPException(status_code=400, detail="Invalid or expired state parameter")
+    
+    logger.info(f"[AMAZON_OAUTH] State valid - user_id={oauth_state.user_id}, created={oauth_state.created_at}")
     
     # Check if state is expired
     if datetime.utcnow() > oauth_state.expires_at:
+        logger.error(f"[AMAZON_OAUTH] FAILED: State expired at {oauth_state.expires_at}, now is {datetime.utcnow()}")
         oauth_state.used = True
+        db.add(ErrorLog(
+            user_id=oauth_state.user_id,
+            error_type="amazon_error",
+            error_code="STATE_EXPIRED",
+            message=f"OAuth state expired. Expired at: {oauth_state.expires_at}",
+            endpoint="/auth/amazon/callback"
+        ))
         db.commit()
         raise HTTPException(status_code=400, detail="Authorization session expired")
     
@@ -124,10 +168,12 @@ async def amazon_oauth_callback(
     # Mark state as used immediately to prevent replay attacks
     oauth_state.used = True
     db.commit()
+    logger.info(f"[AMAZON_OAUTH] State marked as used for user_id={user_id}")
     
     try:
         # Get SP-API configuration
         config = get_spapi_config()
+        logger.info(f"[AMAZON_OAUTH] Config loaded, exchanging code for tokens...")
         
         # Create OAuth flow
         oauth_flow = AmazonOAuthFlow(
@@ -140,19 +186,34 @@ async def amazon_oauth_callback(
         token_result = await oauth_flow.exchange_code_for_tokens(spapi_oauth_code)
         
         if not token_result["success"]:
+            logger.error(f"[AMAZON_OAUTH] FAILED: Token exchange failed - {token_result['error']}")
+            db.add(ErrorLog(
+                user_id=user_id,
+                error_type="amazon_error",
+                error_code="TOKEN_EXCHANGE_FAILED",
+                message=f"Token exchange failed: {token_result['error']}",
+                endpoint="/auth/amazon/callback"
+            ))
+            db.commit()
             raise HTTPException(
                 status_code=400, 
                 detail=f"Token exchange failed: {token_result['error']}"
             )
         
+        logger.info(f"[AMAZON_OAUTH] Token exchange successful, got refresh_token (length={len(token_result.get('refresh_token', ''))})")
         refresh_token = token_result["refresh_token"]
         
-        # Test the connection
-        spapi_client = create_spapi_client(refresh_token)
-        if spapi_client:
-            test_result = await spapi_client.test_connection()
-            if not test_result["success"]:
-                logger.warning(f"SP-API test failed: {test_result['message']}")
+        # Test the connection (optional, don't fail if this fails)
+        try:
+            spapi_client = create_spapi_client(refresh_token)
+            if spapi_client:
+                test_result = await spapi_client.test_connection()
+                if not test_result["success"]:
+                    logger.warning(f"[AMAZON_OAUTH] SP-API test failed (non-blocking): {test_result.get('message', 'unknown')}")
+                else:
+                    logger.info(f"[AMAZON_OAUTH] SP-API connection test passed")
+        except Exception as test_e:
+            logger.warning(f"[AMAZON_OAUTH] SP-API test skipped (AWS creds may not be configured): {test_e}")
         
         # Check if store already exists for this seller
         existing_store = db.execute(
@@ -163,12 +224,13 @@ async def amazon_oauth_callback(
         ).scalar_one_or_none()
         
         if existing_store:
-            # Update existing store
+            logger.info(f"[AMAZON_OAUTH] Updating existing store {existing_store.id}")
             existing_store.refresh_token = refresh_token
             existing_store.is_active = True
             existing_store.last_sync = datetime.utcnow()
             store = existing_store
         else:
+            logger.info(f"[AMAZON_OAUTH] Creating new store for seller {selling_partner_id}")
             # Check store limit before creating new store
             from ..services.plan_limiter import check_store_limit
             from ..models import User
@@ -193,19 +255,32 @@ async def amazon_oauth_callback(
         
         db.commit()
         
-        logger.info(f"Successfully connected Amazon store {store.id} for user {user_id}")
+        logger.info(f"[AMAZON_OAUTH] SUCCESS: Connected Amazon store {store.id} for user {user_id}")
         
         # Redirect to multichannel page with success message
-        # Use environment variable for frontend URL (works in both dev and production)
         frontend_url = os.getenv("FRONTEND_URL", "http://localhost:5000")
-        return RedirectResponse(
-            url=f"{frontend_url}/multichannel?connected=success&store_id={store.id}",
-            status_code=302
-        )
+        redirect_url = f"{frontend_url}/multichannel?connected=success&store_id={store.id}"
+        logger.info(f"[AMAZON_OAUTH] Redirecting to: {redirect_url}")
         
+        return RedirectResponse(url=redirect_url, status_code=302)
+        
+    except HTTPException:
+        raise
     except Exception as e:
-        logger.error(f"Amazon OAuth callback error: {e}")
+        logger.error(f"[AMAZON_OAUTH] CRITICAL ERROR: {type(e).__name__}: {e}")
+        import traceback
+        logger.error(f"[AMAZON_OAUTH] Traceback: {traceback.format_exc()}")
+        
+        db.add(ErrorLog(
+            user_id=user_id,
+            error_type="amazon_error",
+            error_code="CALLBACK_ERROR",
+            message=str(e),
+            stack_trace=traceback.format_exc(),
+            endpoint="/auth/amazon/callback"
+        ))
         db.rollback()
+        db.commit()  # Commit the error log
         
         raise HTTPException(
             status_code=500,
