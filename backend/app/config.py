@@ -29,10 +29,7 @@ class Settings(BaseSettings):
     @property
     def amazon_sp_api_redirect_uri(self) -> str:
         """Dynamic redirect URI based on environment"""
-        if self.environment == "production":
-            return "https://repricelab.com/api/auth/amazon/callback"
-        else:
-            return "http://localhost:8000/auth/amazon/callback"
+        return "https://repricelab.com/api/auth/amazon/callback"
     
     # Google OAuth
     google_redirect_uri: str = "http://localhost:5000/auth/google/callback"
