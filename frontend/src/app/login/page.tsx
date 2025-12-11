@@ -6,6 +6,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { ArrowRight, ArrowLeft, FlaskConical } from 'lucide-react';
 import { useRouter } from 'next/navigation';
+import Link from 'next/link';
 
 export default function LoginPage() {
   const router = useRouter();
@@ -131,13 +132,12 @@ export default function LoginPage() {
                   <Label htmlFor="password" className="text-sm font-semibold text-gray-700">
                     Password
                   </Label>
-                  <button 
-                    type="button" 
+                  <Link 
+                    href="/forgot-password"
                     className="text-sm font-medium text-purple-600 hover:text-purple-700"
-                    onClick={() => router.push('/forgot-password')}
                   >
                     Forgot password?
-                  </button>
+                  </Link>
                 </div>
                 <Input
                   id="password"

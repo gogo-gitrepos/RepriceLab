@@ -8,6 +8,8 @@ export function ConditionalLayout({ children }: { children: React.ReactNode }) {
   const isPublicPage = pathname === '/' || 
                        pathname === '/login' || 
                        pathname === '/register' ||
+                       pathname === '/forgot-password' ||
+                       pathname === '/reset-password' ||
                        pathname === '/features' || 
                        pathname === '/pricing' || 
                        pathname === '/contact' ||
