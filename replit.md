@@ -114,5 +114,27 @@ Preferred communication style: Simple, everyday language.
 
 ### Registration Control System
 - **PUBLIC_REGISTRATION_ENABLED:** Environment variable to enable/disable public signups
-- **Current Status:** Disabled (false) - No public registration during Amazon app review
+- **Current Status:** Enabled (true) - Public registration is open
 - **Affects:** Email/password login, registration, Google OAuth
+
+### December 11, 2025 - Password Reset Feature
+
+**Added Complete Password Reset Functionality:**
+- **Backend Endpoints:**
+  - `POST /auth/forgot-password` - Request password reset email
+  - `POST /auth/reset-password` - Reset password with token
+  - `GET /auth/verify-reset-token` - Verify token validity
+- **PasswordResetToken Model:** Secure token storage with expiration (1 hour)
+- **Email Service:** SMTP-based email sending with professional HTML templates
+- **Frontend Pages:**
+  - `/forgot-password` - Email input form
+  - `/reset-password` - New password form with token verification
+- **Security Features:**
+  - Token expires after 1 hour
+  - Token invalidated after single use
+  - Generic error messages to prevent email enumeration
+  - Password minimum 8 characters
+- **Files:**
+  - Backend: `backend/app/routers/auth.py`, `backend/app/models.py`, `backend/app/services/email_service.py`
+  - Frontend: `frontend/src/app/forgot-password/page.tsx`, `frontend/src/app/reset-password/page.tsx`
+- **Database:** Created `password_reset_tokens` table
