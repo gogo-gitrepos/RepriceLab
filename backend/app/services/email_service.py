@@ -150,32 +150,12 @@ def send_welcome_email(to_email: str, user_name: str = None, plan: str = "Free",
     </head>
     <body style="margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f4f4f5;">
         <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="max-width: 600px; margin: 0 auto; background-color: #ffffff; border-radius: 16px; overflow: hidden; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);">
-            <!-- Header with gradient and text logo -->
+            <!-- Header with gradient -->
             <tr>
-                <td style="padding: 40px 30px; background: linear-gradient(135deg, #9333ea 0%, #7c3aed 50%, #6366f1 100%); text-align: center;">
-                    <table style="margin: 0 auto;">
-                        <tr>
-                            <td style="background: rgba(255,255,255,0.15); border-radius: 16px; padding: 12px; vertical-align: middle;">
-                                <table style="border-collapse: collapse;">
-                                    <tr>
-                                        <td style="width: 3px; height: 20px; background: white; border-radius: 2px;"></td>
-                                        <td style="width: 8px;"></td>
-                                        <td rowspan="2" style="vertical-align: bottom;">
-                                            <div style="width: 0; height: 0; border-left: 12px solid transparent; border-right: 12px solid transparent; border-bottom: 22px solid white;"></div>
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td colspan="2"></td>
-                                    </tr>
-                                </table>
-                            </td>
-                            <td style="padding-left: 15px; vertical-align: middle;">
-                                <span style="color: #ffffff; font-size: 28px; font-weight: 700; letter-spacing: -0.5px;">RepriceLab.com</span>
-                                <br/>
-                                <span style="color: rgba(255,255,255,0.85); font-size: 14px;">AI Pricing Automation</span>
-                            </td>
-                        </tr>
-                    </table>
+                <td style="padding: 50px 30px; background: linear-gradient(135deg, #7c3aed 0%, #4f46e5 50%, #6366f1 100%); text-align: center;">
+                    <div style="width: 70px; height: 70px; background: rgba(255,255,255,0.2); border-radius: 18px; margin: 0 auto 20px; line-height: 70px; font-size: 36px;">&#9879;</div>
+                    <h1 style="color: #ffffff; margin: 0; font-size: 32px; font-weight: 700; letter-spacing: -0.5px;">RepriceLab</h1>
+                    <p style="color: rgba(255,255,255,0.9); margin: 15px 0 0 0; font-size: 18px;">Welcome! Your Amazon repricing journey starts now</p>
                 </td>
             </tr>
             
