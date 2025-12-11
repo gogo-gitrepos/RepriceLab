@@ -1,12 +1,22 @@
 # backend/app/config.py
-from pydantic import Field
-from pydantic_settings import BaseSettings
+import os
+from pydantic import Field, computed_field
+from pydantic_settings import BaseSettings, SettingsConfigDict
 
 class Settings(BaseSettings):
+    model_config = SettingsConfigDict(
+        env_file=".env",
+        case_sensitive=False,
+        extra="ignore"  # Ignore extra env vars that don't match fields
+    )
+    
     database_url: str = "postgresql+psycopg2://app:app@localhost:5432/app"
     cors_origins: str = "http://localhost:5000,http://localhost:3000,https://*.replit.dev"
     app_base_url: str = "http://localhost:8000"
     frontend_url: str = "http://localhost:5000"
+    
+    # Environment setting (development or production)
+    environment: str = Field(default="development", validation_alias="ENVIRONMENT")
 
     # Amazon SP-API (Private App - Self-Authorization)
     lwa_client_id: str = Field(default="changeme", validation_alias="AMAZON_SP_API_CLIENT_ID")
@@ -15,8 +25,14 @@ class Settings(BaseSettings):
     amazon_sp_api_role_arn: str = Field(default="", validation_alias="AMAZON_SP_API_ROLE_ARN")
     amazon_sp_api_app_id: str = Field(default="", validation_alias="AMAZON_SP_API_APP_ID")
     
-    # Legacy OAuth fields (not used for private app)
-    amazon_sp_api_redirect_uri: str = Field(default="http://localhost:5000/api/auth/amazon/callback", validation_alias="AMAZON_SP_API_REDIRECT_URI")
+    @computed_field
+    @property
+    def amazon_sp_api_redirect_uri(self) -> str:
+        """Dynamic redirect URI based on environment"""
+        if self.environment == "production":
+            return "https://repricelab.com/api/auth/amazon/callback"
+        else:
+            return "http://localhost:8000/auth/amazon/callback"
     
     # Google OAuth
     google_redirect_uri: str = "http://localhost:5000/auth/google/callback"
@@ -42,8 +58,4 @@ class Settings(BaseSettings):
     development_mode: bool = False  # Set to True only in development via DEVELOPMENT_MODE env var
     public_registration_enabled: bool = True  # Set to False in production to disable public signups temporarily
 
-    class Config:
-        env_file = ".env"
-        case_sensitive = False
-
-settings = Settings()  # <-- ÖNEMLİ: main.py bunu import ediyor
+settings = Settings()
