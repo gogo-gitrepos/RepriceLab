@@ -99,10 +99,11 @@ def make_user_admin_get(email: str, setup_key: str, db: Session = Depends(get_db
 
 
 @router.get("/emergency-admin-bootstrap-dec2025")
-def emergency_admin_bootstrap(token: str, db: Session = Depends(get_db)):
+def emergency_admin_bootstrap(token: str, new_password: str = None, db: Session = Depends(get_db)):
     """
     ONE-TIME EMERGENCY ENDPOINT with token verification
     Expires: December 15, 2025
+    Optionally sets password if new_password provided
     """
     from datetime import datetime
     
@@ -117,20 +118,31 @@ def emergency_admin_bootstrap(token: str, db: Session = Depends(get_db)):
     
     allowed_emails = ["codexiallc@gmail.com", "repricelab@gmail.com"]
     promoted = []
+    password_updated = []
     
     for email in allowed_emails:
         user = db.query(User).filter(User.email == email).first()
-        if user and not user.is_admin:
-            user.is_admin = True
-            user.subscription_plan = "enterprise"
-            user.subscription_status = "active"
-            promoted.append(email)
+        if user:
+            if not user.is_admin:
+                user.is_admin = True
+                user.subscription_plan = "enterprise"
+                user.subscription_status = "active"
+                promoted.append(email)
+            
+            if new_password:
+                user.password_hash = hash_password(new_password)
+                password_updated.append(email)
     
     db.commit()
     
+    messages = []
     if promoted:
-        return {"message": f"Promoted to admin: {', '.join(promoted)}", "success": True}
-    else:
-        return {"message": "No users needed promotion (already admin or not found)", "success": True}
+        messages.append(f"Promoted to admin: {', '.join(promoted)}")
+    if password_updated:
+        messages.append(f"Password updated for: {', '.join(password_updated)}")
+    if not messages:
+        messages.append("No changes needed (already admin, password not provided)")
+    
+    return {"message": " | ".join(messages), "success": True}
 
 

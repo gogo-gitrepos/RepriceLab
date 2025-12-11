@@ -122,6 +122,15 @@ export default function AdminLogin() {
                   </div>
                 )}
               </Button>
+
+              <div className="text-center">
+                <a 
+                  href="/forgot-password" 
+                  className="text-sm text-gray-400 hover:text-orange-400 transition-colors"
+                >
+                  Forgot your password?
+                </a>
+              </div>
             </form>
           </CardContent>
         </Card>
