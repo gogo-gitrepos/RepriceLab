@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { Bell, MessageSquare, HelpCircle, ChevronDown, Settings, CreditCard, LogOut, Package, Star, Monitor, X, Send, Search } from 'lucide-react';
+import { Bell, MessageSquare, HelpCircle, ChevronDown, Settings, CreditCard, LogOut, Package, Star, Monitor, X, Send, Search, FlaskConical } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
 interface User {
@@ -33,53 +33,9 @@ export function TopHeader() {
     }
   }, []);
 
-  const [notifications, setNotifications] = useState([
-    {
-      id: 1,
-      title: 'Price Update Alert',
-      message: 'Product ASIN B089XYZ123 price changed by competitor',
-      time: '2 minutes ago',
-      read: false
-    },
-    {
-      id: 2,
-      title: 'Buy Box Lost',
-      message: 'You lost the Buy Box for SKU ABC-123',
-      time: '15 minutes ago',
-      read: false
-    },
-    {
-      id: 3,
-      title: 'Repricing Complete',
-      message: 'Daily repricing cycle completed for 245 products',
-      time: '1 hour ago',
-      read: true
-    },
-    {
-      id: 4,
-      title: 'Low Stock Warning',
-      message: 'Product SKU DEF-456 has only 3 units remaining',
-      time: '2 hours ago',
-      read: true
-    }
-  ]);
+  const [notifications, setNotifications] = useState<{id: number; title: string; message: string; time: string; read: boolean}[]>([]);
 
-  const [conversations, setConversations] = useState([
-    {
-      id: 1,
-      name: 'Support Team',
-      lastMessage: 'Thank you for contacting us. How can we help you today?',
-      time: '10:30 AM',
-      unread: false
-    },
-    {
-      id: 2,
-      name: 'Technical Support',
-      lastMessage: 'Your API integration issue has been resolved.',
-      time: 'Yesterday',
-      unread: true
-    }
-  ]);
+  const [conversations, setConversations] = useState<{id: number; name: string; lastMessage: string; time: string; unread: boolean}[]>([]);
 
   const markAllAsRead = () => {
     setNotifications(notifications.map(n => ({ ...n, read: true })));
@@ -158,34 +114,15 @@ export function TopHeader() {
     router.push('/');
   };
 
-  const LabLogo = () => (
-    <div className="relative w-10 h-10">
-      {/* Laboratory Flask */}
-      <svg 
-        viewBox="0 0 32 32" 
-        className="w-10 h-10 text-white drop-shadow-lg"
-        fill="currentColor"
-      >
-        <path d="M12 4h8v6l6 12H6l6-12V4z" stroke="currentColor" strokeWidth="2" fill="none"/>
-        <path d="M10 4h12" stroke="currentColor" strokeWidth="2"/>
-        <circle cx="16" cy="18" r="6" fill="currentColor" opacity="0.3"/>
-      </svg>
-      {/* R Symbol in the center */}
-      <div className="absolute inset-0 flex items-center justify-center">
-        <span className="text-white font-bold text-lg drop-shadow-md">R</span>
-      </div>
-    </div>
-  );
-
   return (
     <header className="h-14 sm:h-16 bg-gradient-to-r from-purple-600 via-purple-700 to-indigo-600 flex items-center justify-between px-3 sm:px-4 md:px-6 border-b relative z-40 shadow-lg">
       {/* Left side - RepriceLab Branding */}
       <div className="flex items-center space-x-2 sm:space-x-3">
-        <LabLogo />
-        <div className="flex items-center space-x-1">
-          <h1 className="text-base sm:text-lg md:text-xl font-bold text-white drop-shadow-md tracking-tight">RepriceLab</h1>
-          <span className="text-purple-200 text-xs sm:text-sm font-medium">.com</span>
+        <div className="relative w-10 h-10 sm:w-11 sm:h-11 bg-gradient-to-br from-purple-400 via-purple-500 to-indigo-500 rounded-xl flex items-center justify-center shadow-lg">
+          <div className="absolute inset-0 bg-gradient-to-br from-white/20 to-transparent rounded-xl"></div>
+          <FlaskConical className="w-5 h-5 sm:w-6 sm:h-6 text-white relative z-10 drop-shadow-lg" />
         </div>
+        <span className="text-base sm:text-lg md:text-xl font-bold text-white drop-shadow-md tracking-tight">RepriceLab<span className="text-purple-200">.com</span></span>
       </div>
       
       {/* Right side - Navigation Icons */}
