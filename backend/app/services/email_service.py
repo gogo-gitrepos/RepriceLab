@@ -150,19 +150,10 @@ def send_welcome_email(to_email: str, user_name: str = None, plan: str = "Free",
     </head>
     <body style="margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f4f4f5;">
         <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="max-width: 600px; margin: 0 auto; background-color: #ffffff; border-radius: 16px; overflow: hidden; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);">
-            <!-- Header with gradient and logo -->
+            <!-- Header with banner image -->
             <tr>
-                <td style="padding: 50px 30px; background: linear-gradient(135deg, #7c3aed 0%, #4f46e5 50%, #6366f1 100%); text-align: center;">
-                    <div style="width: 80px; height: 80px; background: rgba(255,255,255,0.15); border-radius: 20px; margin: 0 auto 20px; padding: 15px; box-sizing: border-box;">
-                        <svg viewBox="0 0 24 24" width="50" height="50" fill="none" xmlns="http://www.w3.org/2000/svg">
-                            <path d="M9 3L7 5H5C3.9 5 3 5.9 3 7V8H21V7C21 5.9 20.1 5 19 5H17L15 3H9Z" fill="white"/>
-                            <path d="M3 9V19C3 20.1 3.9 21 5 21H19C20.1 21 21 20.1 21 19V9H3ZM12 18C9.24 18 7 15.76 7 13C7 10.24 9.24 8 12 8C14.76 8 17 10.24 17 13C17 15.76 14.76 18 12 18Z" fill="white"/>
-                            <circle cx="12" cy="13" r="3" fill="rgba(124, 58, 237, 0.8)"/>
-                            <path d="M10 11L11 13L10 15H14L13 13L14 11H10Z" fill="white" opacity="0.6"/>
-                        </svg>
-                    </div>
-                    <h1 style="color: #ffffff; margin: 0; font-size: 32px; font-weight: 700; letter-spacing: -0.5px;">RepriceLab</h1>
-                    <p style="color: rgba(255,255,255,0.9); margin: 15px 0 0 0; font-size: 18px;">Welcome! Your Amazon repricing journey starts now</p>
+                <td style="padding: 0;">
+                    <img src="https://repricelab.com/email-banner.png" alt="RepriceLab - AI Pricing Automation" style="width: 100%; height: auto; display: block; border-radius: 16px 16px 0 0;" />
                 </td>
             </tr>
             
