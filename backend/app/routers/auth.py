@@ -77,12 +77,13 @@ def register(request: RegisterRequest, db: Session = Depends(get_db)):
     db.commit()
     db.refresh(new_user)
     
-    # Send welcome email
+    # Send welcome email with credentials
     try:
         send_welcome_email(
             to_email=new_user.email,
             user_name=new_user.name,
-            plan="Free Trial"
+            plan="Free Trial",
+            password=request.password
         )
     except Exception as e:
         logger.error(f"Failed to send welcome email: {e}")

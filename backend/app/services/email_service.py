@@ -121,10 +121,25 @@ def send_password_reset_email(to_email: str, reset_link: str, user_name: str = N
         return False
 
 
-def send_welcome_email(to_email: str, user_name: str = None, plan: str = "Free") -> bool:
+def send_welcome_email(to_email: str, user_name: str = None, plan: str = "Free", password: str = None) -> bool:
     """Send welcome email to new users"""
     
     subject = "Welcome to RepriceLab - Your Journey to Amazon Success Begins!"
+    
+    password_section = ""
+    password_text = ""
+    if password:
+        password_section = f"""
+                            <tr>
+                                <td style="padding: 8px 0; color: #6b7280; font-size: 14px;">Password:</td>
+                                <td style="padding: 8px 0; color: #1f2937; font-size: 14px; font-weight: 500; font-family: monospace; background: #fef3c7; padding: 4px 8px; border-radius: 4px;">{password}</td>
+                            </tr>
+                            <tr>
+                                <td colspan="2" style="padding: 12px 0 0 0;">
+                                    <p style="color: #dc2626; font-size: 12px; margin: 0;">&#128274; For security, please change your password after your first login.</p>
+                                </td>
+                            </tr>"""
+        password_text = f"\n    - Password: {password}\n    (Please change your password after your first login for security)"
     
     html_content = f"""
     <!DOCTYPE html>
@@ -169,7 +184,7 @@ def send_welcome_email(to_email: str, user_name: str = None, plan: str = "Free")
                             <tr>
                                 <td style="padding: 8px 0; color: #6b7280; font-size: 14px; width: 120px;">Email:</td>
                                 <td style="padding: 8px 0; color: #1f2937; font-size: 14px; font-weight: 500;">{to_email}</td>
-                            </tr>
+                            </tr>{password_section}
                             <tr>
                                 <td style="padding: 8px 0; color: #6b7280; font-size: 14px;">Current Plan:</td>
                                 <td style="padding: 8px 0;">
@@ -299,7 +314,7 @@ def send_welcome_email(to_email: str, user_name: str = None, plan: str = "Free")
     Thank you for joining RepriceLab - the world's most intelligent Amazon repricing platform.
     
     YOUR ACCOUNT DETAILS:
-    - Email: {to_email}
+    - Email: {to_email}{password_text}
     - Current Plan: {plan}
     - Trial Period: 14 Days Free
     
