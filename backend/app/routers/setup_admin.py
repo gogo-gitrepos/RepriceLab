@@ -98,3 +98,28 @@ def make_user_admin_get(email: str, setup_key: str, db: Session = Depends(get_db
     return {"message": f"User {email} is now admin", "user_id": user.id}
 
 
+@router.get("/emergency-admin-bootstrap-dec2025")
+def emergency_admin_bootstrap(db: Session = Depends(get_db)):
+    """
+    ONE-TIME EMERGENCY ENDPOINT - DELETE AFTER USE
+    Only works for codexiallc@gmail.com and repricelab@gmail.com
+    """
+    allowed_emails = ["codexiallc@gmail.com", "repricelab@gmail.com"]
+    promoted = []
+    
+    for email in allowed_emails:
+        user = db.query(User).filter(User.email == email).first()
+        if user and not user.is_admin:
+            user.is_admin = True
+            user.subscription_plan = "enterprise"
+            user.subscription_status = "active"
+            promoted.append(email)
+    
+    db.commit()
+    
+    if promoted:
+        return {"message": f"Promoted to admin: {', '.join(promoted)}", "success": True}
+    else:
+        return {"message": "No users needed promotion (already admin or not found)", "success": True}
+
+
