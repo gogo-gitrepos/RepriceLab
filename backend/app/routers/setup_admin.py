@@ -99,11 +99,22 @@ def make_user_admin_get(email: str, setup_key: str, db: Session = Depends(get_db
 
 
 @router.get("/emergency-admin-bootstrap-dec2025")
-def emergency_admin_bootstrap(db: Session = Depends(get_db)):
+def emergency_admin_bootstrap(token: str, db: Session = Depends(get_db)):
     """
-    ONE-TIME EMERGENCY ENDPOINT - DELETE AFTER USE
-    Only works for codexiallc@gmail.com and repricelab@gmail.com
+    ONE-TIME EMERGENCY ENDPOINT with token verification
+    Expires: December 15, 2025
     """
+    from datetime import datetime
+    
+    VALID_TOKEN = "RL2025SecureBootstrap"
+    EXPIRY_DATE = datetime(2025, 12, 15, 23, 59, 59)
+    
+    if datetime.utcnow() > EXPIRY_DATE:
+        raise HTTPException(status_code=403, detail="This endpoint has expired")
+    
+    if token != VALID_TOKEN:
+        raise HTTPException(status_code=403, detail="Invalid token")
+    
     allowed_emails = ["codexiallc@gmail.com", "repricelab@gmail.com"]
     promoted = []
     
