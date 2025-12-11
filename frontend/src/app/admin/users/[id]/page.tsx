@@ -14,7 +14,8 @@ import {
   Package,
   AlertTriangle,
   Save,
-  Shield
+  Shield,
+  LogOut
 } from 'lucide-react';
 
 interface UserDetails {
@@ -147,35 +148,22 @@ export default function AdminUserDetail() {
     }
   };
 
-  const getPlanBadge = (plan: string) => {
-    switch (plan) {
-      case 'enterprise':
-        return <Badge className="bg-orange-100 text-orange-800">Enterprise</Badge>;
-      case 'pro':
-        return <Badge className="bg-purple-100 text-purple-800">Pro</Badge>;
-      case 'plus':
-        return <Badge className="bg-blue-100 text-blue-800">Plus</Badge>;
-      default:
-        return <Badge variant="secondary">Free</Badge>;
-    }
-  };
-
   if (loading) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <RefreshCw className="w-8 h-8 animate-spin text-purple-600" />
+      <div className="min-h-screen bg-gray-900 flex items-center justify-center">
+        <RefreshCw className="w-10 h-10 animate-spin text-orange-500" />
       </div>
     );
   }
 
   if (error) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <Card className="max-w-md">
+      <div className="min-h-screen bg-gray-900 flex items-center justify-center">
+        <Card className="max-w-md bg-gray-800 border-gray-700">
           <CardContent className="pt-6 text-center">
-            <h2 className="text-xl font-semibold text-gray-900 mb-2">Error</h2>
-            <p className="text-gray-600 mb-4">{error}</p>
-            <Button onClick={() => router.push('/admin/users')}>
+            <h2 className="text-xl font-semibold text-white mb-2">Error</h2>
+            <p className="text-gray-400 mb-4">{error}</p>
+            <Button onClick={() => router.push('/admin/users')} className="bg-orange-600 hover:bg-orange-700">
               Back to Users
             </Button>
           </CardContent>
@@ -185,71 +173,85 @@ export default function AdminUserDetail() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <div className="max-w-5xl mx-auto px-4 py-8">
-        <div className="flex items-center gap-4 mb-8">
-          <Button variant="ghost" onClick={() => router.push('/admin/users')}>
-            <ArrowLeft className="w-4 h-4 mr-2" />
-            Back
-          </Button>
-          <h1 className="text-3xl font-bold text-gray-900 flex items-center gap-2">
-            <User className="w-8 h-8" />
-            User Details
-          </h1>
+    <div className="min-h-screen bg-gray-900">
+      <header className="bg-gray-800 border-b border-gray-700 sticky top-0 z-50">
+        <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex items-center justify-between h-16">
+            <div className="flex items-center gap-3">
+              <Button variant="ghost" size="sm" onClick={() => router.push('/admin/users')} className="text-gray-300 hover:text-white hover:bg-gray-700">
+                <ArrowLeft className="w-4 h-4 mr-2" />
+                Back
+              </Button>
+              <div className="w-10 h-10 bg-gradient-to-br from-purple-500 to-purple-600 rounded-xl flex items-center justify-center">
+                <User className="w-6 h-6 text-white" />
+              </div>
+              <h1 className="text-xl font-bold text-white">User Details</h1>
+            </div>
+            <Button onClick={() => {
+              localStorage.removeItem('admin_token');
+              localStorage.removeItem('admin_user');
+              router.push('/admin/login');
+            }} variant="ghost" size="sm" className="text-gray-300 hover:text-white hover:bg-gray-700">
+              <LogOut className="w-4 h-4" />
+            </Button>
+          </div>
         </div>
+      </header>
 
+      <main className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          <Card className="lg:col-span-2">
-            <CardHeader>
-              <CardTitle className="flex items-center justify-between">
+          <Card className="bg-gray-800 border-gray-700 lg:col-span-2">
+            <CardHeader className="border-b border-gray-700">
+              <CardTitle className="text-white flex items-center justify-between">
                 <span>Edit User</span>
                 {data?.user.is_admin && (
-                  <Badge className="bg-red-100 text-red-800">
+                  <Badge className="bg-red-900/50 text-red-400 border-red-700">
                     <Shield className="w-3 h-3 mr-1" />
                     Admin
                   </Badge>
                 )}
               </CardTitle>
             </CardHeader>
-            <CardContent className="space-y-6">
+            <CardContent className="pt-6 space-y-6">
               <div className="flex items-center gap-4">
                 {data?.user.picture ? (
                   <img src={data.user.picture} alt="" className="w-16 h-16 rounded-full" />
                 ) : (
-                  <div className="w-16 h-16 rounded-full bg-purple-100 flex items-center justify-center">
-                    <span className="text-purple-600 font-bold text-2xl">
+                  <div className="w-16 h-16 rounded-full bg-gradient-to-br from-purple-500 to-blue-500 flex items-center justify-center">
+                    <span className="text-white font-bold text-2xl">
                       {(data?.user.name || data?.user.email || 'U')[0].toUpperCase()}
                     </span>
                   </div>
                 )}
                 <div>
-                  <p className="font-semibold text-lg">{data?.user.email}</p>
-                  <p className="text-sm text-gray-500">
+                  <p className="font-semibold text-lg text-white">{data?.user.email}</p>
+                  <p className="text-sm text-gray-400">
                     Joined {new Date(data?.user.created_at || '').toLocaleDateString()}
                   </p>
                   {data?.user.google_id && (
-                    <Badge variant="outline" className="mt-1">Google Account</Badge>
+                    <Badge variant="outline" className="mt-1 border-gray-600 text-gray-300">Google Account</Badge>
                   )}
                 </div>
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
-                  <Label htmlFor="name">Name</Label>
+                  <Label htmlFor="name" className="text-gray-300">Name</Label>
                   <Input
                     id="name"
                     value={editName}
                     onChange={(e) => setEditName(e.target.value)}
                     placeholder="User name"
+                    className="bg-gray-700 border-gray-600 text-white"
                   />
                 </div>
                 <div>
-                  <Label htmlFor="plan">Subscription Plan</Label>
+                  <Label htmlFor="plan" className="text-gray-300">Subscription Plan</Label>
                   <select
                     id="plan"
                     value={editPlan}
                     onChange={(e) => setEditPlan(e.target.value)}
-                    className="w-full px-3 py-2 border rounded-md"
+                    className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-md text-white"
                   >
                     <option value="free">Free</option>
                     <option value="plus">Plus ($99/mo)</option>
@@ -258,12 +260,12 @@ export default function AdminUserDetail() {
                   </select>
                 </div>
                 <div>
-                  <Label htmlFor="status">Subscription Status</Label>
+                  <Label htmlFor="status" className="text-gray-300">Subscription Status</Label>
                   <select
                     id="status"
                     value={editStatus}
                     onChange={(e) => setEditStatus(e.target.value)}
-                    className="w-full px-3 py-2 border rounded-md"
+                    className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-md text-white"
                   >
                     <option value="trial">Trial</option>
                     <option value="active">Active</option>
@@ -280,33 +282,33 @@ export default function AdminUserDetail() {
                     onChange={(e) => setEditIsAdmin(e.target.checked)}
                     className="w-4 h-4"
                   />
-                  <Label htmlFor="isAdmin">Admin Access</Label>
+                  <Label htmlFor="isAdmin" className="text-gray-300">Admin Access</Label>
                 </div>
               </div>
 
-              <div className="pt-4 border-t">
-                <h3 className="font-medium mb-3">Stripe Information</h3>
+              <div className="pt-4 border-t border-gray-700">
+                <h3 className="font-medium text-white mb-3">Stripe Information</h3>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
                   <div>
-                    <span className="text-gray-500">Customer ID:</span>
-                    <p className="font-mono">{data?.user.stripe_customer_id || 'N/A'}</p>
+                    <span className="text-gray-400">Customer ID:</span>
+                    <p className="font-mono text-gray-300">{data?.user.stripe_customer_id || 'N/A'}</p>
                   </div>
                   <div>
-                    <span className="text-gray-500">Subscription ID:</span>
-                    <p className="font-mono">{data?.user.stripe_subscription_id || 'N/A'}</p>
+                    <span className="text-gray-400">Subscription ID:</span>
+                    <p className="font-mono text-gray-300">{data?.user.stripe_subscription_id || 'N/A'}</p>
                   </div>
                   <div>
-                    <span className="text-gray-500">Trial Ends:</span>
-                    <p>{data?.user.trial_ends_at ? new Date(data.user.trial_ends_at).toLocaleDateString() : 'N/A'}</p>
+                    <span className="text-gray-400">Trial Ends:</span>
+                    <p className="text-gray-300">{data?.user.trial_ends_at ? new Date(data.user.trial_ends_at).toLocaleDateString() : 'N/A'}</p>
                   </div>
                   <div>
-                    <span className="text-gray-500">Period End:</span>
-                    <p>{data?.user.subscription_period_end ? new Date(data.user.subscription_period_end).toLocaleDateString() : 'N/A'}</p>
+                    <span className="text-gray-400">Period End:</span>
+                    <p className="text-gray-300">{data?.user.subscription_period_end ? new Date(data.user.subscription_period_end).toLocaleDateString() : 'N/A'}</p>
                   </div>
                 </div>
               </div>
 
-              <Button onClick={saveChanges} disabled={saving} className="w-full">
+              <Button onClick={saveChanges} disabled={saving} className="w-full bg-orange-600 hover:bg-orange-700">
                 {saving ? (
                   <RefreshCw className="w-4 h-4 mr-2 animate-spin" />
                 ) : (
@@ -318,27 +320,27 @@ export default function AdminUserDetail() {
           </Card>
 
           <div className="space-y-6">
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <Store className="w-5 h-5" />
+            <Card className="bg-gray-800 border-gray-700">
+              <CardHeader className="border-b border-gray-700">
+                <CardTitle className="text-white flex items-center gap-2">
+                  <Store className="w-5 h-5 text-purple-500" />
                   Stores ({data?.stores.length || 0})
                 </CardTitle>
               </CardHeader>
-              <CardContent>
+              <CardContent className="pt-4">
                 {data?.stores.length === 0 ? (
                   <p className="text-gray-500 text-sm">No stores connected</p>
                 ) : (
                   <div className="space-y-3">
                     {data?.stores.map((store) => (
-                      <div key={store.id} className="p-3 bg-gray-50 rounded-lg">
-                        <p className="font-medium">{store.store_name}</p>
+                      <div key={store.id} className="p-3 bg-gray-700/50 rounded-lg">
+                        <p className="font-medium text-white">{store.store_name}</p>
                         <div className="flex items-center gap-2 mt-1">
-                          <Badge variant="outline">{store.region.toUpperCase()}</Badge>
+                          <Badge variant="outline" className="border-gray-600 text-gray-300">{store.region.toUpperCase()}</Badge>
                           {store.is_active ? (
-                            <Badge className="bg-green-100 text-green-800">Active</Badge>
+                            <Badge className="bg-green-900/50 text-green-400 border-green-700">Active</Badge>
                           ) : (
-                            <Badge className="bg-red-100 text-red-800">Inactive</Badge>
+                            <Badge className="bg-red-900/50 text-red-400 border-red-700">Inactive</Badge>
                           )}
                         </div>
                       </div>
@@ -348,50 +350,50 @@ export default function AdminUserDetail() {
               </CardContent>
             </Card>
 
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <Package className="w-5 h-5" />
+            <Card className="bg-gray-800 border-gray-700">
+              <CardHeader className="border-b border-gray-700">
+                <CardTitle className="text-white flex items-center gap-2">
+                  <Package className="w-5 h-5 text-blue-500" />
                   Products
                 </CardTitle>
               </CardHeader>
-              <CardContent>
+              <CardContent className="pt-4">
                 <div className="space-y-2">
                   <div className="flex justify-between">
-                    <span className="text-gray-600">Total Products</span>
-                    <span className="font-medium">{data?.products_count || 0}</span>
+                    <span className="text-gray-400">Total Products</span>
+                    <span className="font-medium text-white">{data?.products_count || 0}</span>
                   </div>
                   <div className="flex justify-between">
-                    <span className="text-gray-600">Repricing Active</span>
-                    <span className="font-medium text-purple-600">{data?.repricing_enabled_count || 0}</span>
+                    <span className="text-gray-400">Repricing Active</span>
+                    <span className="font-medium text-purple-400">{data?.repricing_enabled_count || 0}</span>
                   </div>
                 </div>
               </CardContent>
             </Card>
 
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <AlertTriangle className="w-5 h-5" />
+            <Card className="bg-gray-800 border-gray-700">
+              <CardHeader className="border-b border-gray-700">
+                <CardTitle className="text-white flex items-center gap-2">
+                  <AlertTriangle className="w-5 h-5 text-red-500" />
                   Recent Errors
                 </CardTitle>
               </CardHeader>
-              <CardContent>
+              <CardContent className="pt-4">
                 {data?.recent_errors.length === 0 ? (
                   <p className="text-gray-500 text-sm">No recent errors</p>
                 ) : (
                   <div className="space-y-2">
                     {data?.recent_errors.slice(0, 5).map((err) => (
-                      <div key={err.id} className="p-2 bg-gray-50 rounded text-sm">
+                      <div key={err.id} className="p-2 bg-gray-700/50 rounded text-sm">
                         <div className="flex items-center gap-2">
-                          <Badge variant="outline" className="text-xs">{err.error_type}</Badge>
+                          <Badge variant="outline" className="text-xs border-gray-600 text-gray-300">{err.error_type}</Badge>
                           {err.resolved ? (
-                            <Badge className="bg-green-100 text-green-800 text-xs">Resolved</Badge>
+                            <Badge className="bg-green-900/50 text-green-400 text-xs">Resolved</Badge>
                           ) : (
-                            <Badge className="bg-red-100 text-red-800 text-xs">Open</Badge>
+                            <Badge className="bg-red-900/50 text-red-400 text-xs">Open</Badge>
                           )}
                         </div>
-                        <p className="text-gray-600 mt-1 line-clamp-1">{err.message}</p>
+                        <p className="text-gray-400 mt-1 line-clamp-1">{err.message}</p>
                       </div>
                     ))}
                   </div>
@@ -400,7 +402,7 @@ export default function AdminUserDetail() {
             </Card>
           </div>
         </div>
-      </div>
+      </main>
     </div>
   );
 }

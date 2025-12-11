@@ -14,7 +14,8 @@ export function ConditionalLayout({ children }: { children: React.ReactNode }) {
                        pathname.startsWith('/product/') ||
                        pathname.startsWith('/resources/') ||
                        pathname.startsWith('/company/') ||
-                       pathname.startsWith('/legal/');
+                       pathname.startsWith('/legal/') ||
+                       pathname.startsWith('/admin');
 
   if (isPublicPage) {
     return <>{children}</>;
