@@ -1,0 +1,164 @@
+025-11-19 08:51:02.91
+f692897f
+User
+⚠ Warning: Next.js inferred your workspace root, but it may not be correct.
+2025-11-19 08:51:02.91
+f692897f
+User
+To silence this warning, set `outputFileTracingRoot` in your Next.js config, or consider removing one of the lockfiles if it's not needed.
+2025-11-19 08:51:02.91
+f692897f
+User
+Detected additional lockfiles:
+2025-11-19 08:51:02.91
+f692897f
+User
+See https://nextjs.org/docs/app/api-reference/config/next-config-js/output#caveats for more information.
+2025-11-19 08:51:02.91
+f692897f
+User
+We detected multiple lockfiles and selected the directory of /home/runner/workspace/package-lock.json as the root directory.
+2025-11-19 08:51:02.91
+f692897f
+User
+* /home/runner/workspace/frontend/package-lock.json
+2025-11-19 08:51:04.10
+f692897f
+User
+✓ Ready in 4.2s
+2025-12-05 15:54:17.43
+f692897f
+User
+⨯ [Error: Unexpected end of form] { digest: '646566243' }
+2025-12-05 16:41:40.00
+f692897f
+User
+⨯ [Error: Unexpected end of form] { digest: '646566243' }
+2025-12-05 17:59:17.20
+f692897f
+User
+⨯ [TypeError: Cannot read properties of undefined (reading 'aa')] {
+2025-12-05 17:59:17.20
+f692897f
+User
+digest: '541314401'
+2025-12-05 17:59:17.20
+f692897f
+User
+}
+2025-12-05 17:59:17.79
+f692897f
+User
+⨯ [Error: aborted] { code: 'ECONNRESET', digest: '3419021255' }
+2025-12-05 17:59:18.22
+f692897f
+User
+⨯ [Error: aborted] { code: 'ECONNRESET', digest: '3419021255' }
+2025-12-05 21:41:06.38
+f692897f
+User
+⨯ [TypeError: Cannot read properties of undefined (reading 'aa')] {
+2025-12-05 21:41:06.38
+f692897f
+User
+digest: '541314401'
+2025-12-05 21:41:06.38
+f692897f
+User
+}
+2025-12-05 21:41:11.32
+f692897f
+User
+⨯ [Error: aborted] { code: 'ECONNRESET', digest: '3419021255' }
+2025-12-05 21:41:11.77
+f692897f
+User
+⨯ [Error: aborted] { code: 'ECONNRESET', digest: '3419021255' }
+2025-12-06 03:26:06.71
+f692897f
+User
+⨯ [Error: aborted] { code: 'ECONNRESET', digest: '3419021255' }
+2025-12-07 08:18:53.82
+f692897f
+User
+⨯ [Error: aborted] { code: 'ECONNRESET', digest: '3419021255' }
+2025-12-07 08:18:53.87
+f692897f
+User
+⨯ [Error: aborted] { code: 'ECONNRESET', digest: '3419021255' }
+2025-12-07 10:10:29.89
+f692897f
+User
+⨯ [Error: aborted] { code: 'ECONNRESET', digest: '3419021255' }
+2025-12-08 04:23:24.74
+f692897f
+User
+⨯ [TypeError: Cannot read properties of undefined (reading 'aa')] {
+2025-12-08 04:23:24.74
+f692897f
+User
+}
+2025-12-08 04:23:24.74
+f692897f
+User
+digest: '541314401'
+2025-12-08 05:26:42.14
+f692897f
+User
+⨯ [Error: aborted] { code: 'ECONNRESET', digest: '3419021255' }
+2025-12-08 11:44:44.95
+f692897f
+User
+⨯ [Error: aborted] { code: 'ECONNRESET', digest: '3419021255' }
+2025-12-08 11:44:45.59
+f692897f
+User
+⨯ [Error: aborted] { code: 'ECONNRESET', digest: '3419021255' }
+2025-12-08 19:54:52.43
+f692897f
+User
+⨯ [Error: aborted] { code: 'ECONNRESET', digest: '3419021255' }
+2025-12-08 23:01:07.27
+f692897f
+User
+⨯ [Error: Unexpected end of form] { digest: '646566243' }
+2025-12-09 00:45:25.86
+f692897f
+User
+⨯ [Error: Unexpected end of form] { digest: '646566243' }
+2025-12-09 06:24:54.48
+f692897f
+User
+⨯ [TypeError: Cannot read properties of undefined (reading 'aa')] {
+2025-12-09 06:24:54.48
+f692897f
+User
+digest: '541314401'
+2025-12-09 06:24:54.48
+f692897f
+User
+}
+2025-12-09 09:58:59.71
+f692897f
+User
+⨯ [Error: aborted] { code: 'ECONNRESET', digest: '3419021255' }
+2025-12-10 07:35:25.55
+f692897f
+User
+digest: '541314401'
+2025-12-10 07:35:25.55
+f692897f
+User
+⨯ [TypeError: Cannot read properties of undefined (reading 'aa')] {
+2025-12-10 07:35:25.55
+f692897f
+User
+}
+2025-12-10 10:13:36.52
+f692897f
+User
+⨯ [Error: aborted] { code: 'ECONNRESET', digest: '3419021255' }
+2025-12-10 10:13:36.72
+f692897f
+User
+⨯ [Error: aborted] { code: 'ECONNRESET', digest: '3419021255' }
