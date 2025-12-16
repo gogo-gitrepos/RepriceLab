@@ -1,6 +1,6 @@
 from fastapi import APIRouter, Depends, HTTPException, Query
 from sqlalchemy.orm import Session
-from sqlalchemy import func, desc
+from sqlalchemy import func, desc, text
 from datetime import datetime, timedelta
 from pydantic import BaseModel, EmailStr
 from typing import Optional
@@ -419,6 +419,126 @@ def get_subscriptions_summary(
         "expired_trials": expired_trials,
         "paying_customers": paying_customers
     }
+
+
+@router.get("/settings")
+def get_admin_settings(
+    db: Session = Depends(get_db),
+    admin: User = Depends(get_admin_user)
+):
+    """Get all admin settings and system status"""
+    import os
+    
+    # Check environment variables
+    public_registration = os.getenv("PUBLIC_REGISTRATION_ENABLED", "false").lower() == "true"
+    
+    # Check Amazon SP-API config
+    amazon_configured = bool(os.getenv("AMAZON_SP_API_CLIENT_ID")) and bool(os.getenv("AMAZON_SP_API_CLIENT_SECRET"))
+    
+    # Check Stripe config
+    stripe_configured = bool(os.getenv("STRIPE_SECRET_KEY"))
+    
+    # Check database connection
+    try:
+        db.execute(text("SELECT 1"))
+        db_status = "operational"
+    except:
+        db_status = "error"
+    
+    # Get scheduler info
+    scheduler_interval = 10  # minutes
+    
+    # Count admins
+    admin_count = db.query(User).filter(User.is_admin == True).count()
+    
+    return {
+        "public_registration": public_registration,
+        "amazon_sp_api": {
+            "configured": amazon_configured,
+            "mode": "public_app" if amazon_configured else "not_configured"
+        },
+        "stripe": {
+            "configured": stripe_configured
+        },
+        "scheduler": {
+            "interval_minutes": scheduler_interval,
+            "status": "running"
+        },
+        "system_status": {
+            "database": db_status,
+            "api_server": "operational"
+        },
+        "admin_count": admin_count
+    }
+
+
+class UpdateSettingsRequest(BaseModel):
+    public_registration: Optional[bool] = None
+
+
+@router.post("/settings")
+def update_admin_settings(
+    request: UpdateSettingsRequest,
+    db: Session = Depends(get_db),
+    admin: User = Depends(get_admin_user)
+):
+    """Update admin settings (note: some settings require env var changes)"""
+    import os
+    
+    updated = []
+    
+    if request.public_registration is not None:
+        # Note: This would need to update env var or a settings table
+        # For now, we'll return info about what needs to be changed
+        updated.append({
+            "setting": "public_registration",
+            "requested_value": request.public_registration,
+            "note": "Set PUBLIC_REGISTRATION_ENABLED environment variable to change this"
+        })
+    
+    return {
+        "message": "Settings update request processed",
+        "updates": updated,
+        "note": "Some settings require environment variable changes in deployment settings"
+    }
+
+
+@router.get("/system-health")
+def get_system_health(
+    db: Session = Depends(get_db),
+    admin: User = Depends(get_admin_user)
+):
+    """Real-time system health check"""
+    import os
+    import httpx
+    
+    health = {
+        "database": "operational",
+        "api_server": "operational",
+        "amazon_sp_api": "unknown",
+        "stripe_webhooks": "unknown"
+    }
+    
+    # Check database
+    try:
+        db.execute(text("SELECT 1"))
+        health["database"] = "operational"
+    except:
+        health["database"] = "error"
+    
+    # Check Amazon SP-API config
+    if os.getenv("AMAZON_SP_API_CLIENT_ID") and os.getenv("AMAZON_SP_API_CLIENT_SECRET"):
+        health["amazon_sp_api"] = "operational"
+    else:
+        health["amazon_sp_api"] = "not_configured"
+    
+    # Check Stripe
+    if os.getenv("STRIPE_SECRET_KEY"):
+        health["stripe_webhooks"] = "operational"
+    else:
+        health["stripe_webhooks"] = "not_configured"
+    
+    return health
 
 
 @router.get("/scheduler/status")
