@@ -1,0 +1,139 @@
+Build Admin Dashboard with Kanban Board (Agency Client Portal)
+
+Task Description:
+Create an Admin Dashboard page for an agency-style client portal. The page must include a Kanban board with multiple workflow columns, task cards, status indicators, and a left-side admin navigation panel.
+
+✅ Core Requirements
+1️⃣ Left Sidebar (Admin Navigation)
+
+Create a fixed left sidebar with the following menu items:
+
+Dashboard
+
+All Requests
+
+Clients
+
+User Management
+
+Analytics
+
+Activity Log
+
+Workload
+
+Settings
+
+Footer section:
+
+Logged-in user avatar
+
+Role label: Agency Admin
+
+2️⃣ Main Content – Kanban Board
+
+Implement a Kanban board with horizontal columns:
+
+Columns (from left to right):
+
+Pending
+
+Active
+
+In Review
+
+Revision
+
+Completed
+
+Each column must:
+
+Display a task count badge
+
+Support vertical scrolling
+
+Have a distinct color theme
+
+3️⃣ Task Cards
+
+Each task card should include:
+
+Task title (e.g. “Mobile App UI Kit”)
+
+Category label (e.g. Web Design, Branding, Development)
+
+Assigned user (avatar or name)
+
+Status badge:
+
+Overdue (red)
+
+Normal (neutral)
+
+Optional priority icon
+
+4️⃣ Status Logic
+
+If task due date < today → show “Overdue” badge
+
+Completed tasks → move to Completed column automatically
+
+Status change should update column placement
+
+5️⃣ Admin Capabilities
+
+Admin should be able to:
+
+Move tasks between columns (drag & drop OR status dropdown)
+
+Assign / reassign tasks to users
+
+Edit task title, category, due date
+
+Mark task as completed
+
+6️⃣ UI / UX Requirements
+
+Dark mode theme (similar to screenshot)
+
+Rounded cards
+
+Smooth hover & transition effects
+
+Clean, modern SaaS look
+
+Responsive layout (desktop-first)
+
+🛠️ Tech Constraints (Replit-friendly)
+
+Frontend: React + Tailwind CSS
+
+State management: use local state or mock data
+
+No backend required (mock data is OK)
+
+Use reusable components:
+
+Sidebar
+
+KanbanColumn
+
+TaskCard
+
+📦 Deliverables
+
+/AdminDashboard.jsx
+
+/components/Sidebar.jsx
+
+/components/KanbanBoard.jsx
+
+/components/KanbanColumn.jsx
+
+/components/TaskCard.jsx
+
+Mock task data structure
+
+🎯 Goal
+
+Replicate the visual structure and behavior of the provided Kanban admin dashboard and make it suitable for a real agency client portal.
