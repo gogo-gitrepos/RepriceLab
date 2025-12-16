@@ -138,3 +138,32 @@ Preferred communication style: Simple, everyday language.
   - Backend: `backend/app/routers/auth.py`, `backend/app/models.py`, `backend/app/services/email_service.py`
   - Frontend: `frontend/src/app/forgot-password/page.tsx`, `frontend/src/app/reset-password/page.tsx`
 - **Database:** Created `password_reset_tokens` table
+
+### December 16, 2025 - Kanban Board Admin Dashboard
+
+**Added Agency-Style Kanban Board for Task Management:**
+- **Kanban Components:**
+  - `Sidebar.tsx` - Fixed left navigation with menu items (Dashboard, All Requests, Clients, etc.)
+  - `TaskCard.tsx` - Draggable task cards with edit functionality
+  - `KanbanColumn.tsx` - Column component with task count and color theming
+  - `KanbanBoard.tsx` - Main board with drag-and-drop between columns
+- **Features:**
+  - 5 workflow columns: Pending, Active, In Review, Revision, Completed
+  - Drag-and-drop task movement between columns
+  - Inline task editing (title, category, assignee, due date)
+  - Status dropdown for quick status changes
+  - Overdue task indicator with red badge
+  - Category badges (Web-Design, Branding, Development, Other)
+  - Assignee avatars with color coding
+- **UI/UX:**
+  - Dark mode theme matching design specs
+  - Custom scrollbar styling
+  - Smooth hover transitions
+  - Responsive layout
+- **Files:**
+  - `frontend/src/components/kanban/Sidebar.tsx`
+  - `frontend/src/components/kanban/TaskCard.tsx`
+  - `frontend/src/components/kanban/KanbanColumn.tsx`
+  - `frontend/src/components/kanban/KanbanBoard.tsx`
+  - `frontend/src/app/admin/kanban/page.tsx`
+- **Route:** `/admin/kanban`
