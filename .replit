@@ -56,12 +56,12 @@ externalPort = 8000
 exposeLocalhost = true
 
 [deployment]
-deploymentTarget = "gce"
-run = ["sh", "-c", "(cd backend && python -m gunicorn app.main:app --worker-class uvicorn.workers.UvicornWorker --bind 127.0.0.1:8000 --workers 1 --access-logfile - --error-logfile - --daemon) && sleep 3 && cd frontend && npm start"]
-build = ["sh", "-c", "pip install -r backend/requirements.txt && cd frontend && npm install && npm run build"]
+deploymentTarget = "autoscale"
+run = ["bash", "-c", "cd backend && python -m uvicorn app.main:app --host 0.0.0.0 --port 5000 & cd frontend && npm run start -- -p 3000"]
+build = ["bash", "-c", "cd frontend && npm run build"]
 
 [userenv]
 
 [userenv.shared]
-PUBLIC_REGISTRATION_ENABLED = "true"
+PUBLIC_REGISTRATION_ENABLED = "false"
 ADMIN_SETUP_KEY = "reprice2024admin"
